@@ -1,0 +1,65 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{D2EDD5A8-3DB3-4590-AC0E-5B691E5BFA79}|EPlatform_API\\EPlatform_API.csproj|d:\\ecommerce-project\\ecommerce-platform\\eplatform_api\\eplatform_api\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{D2EDD5A8-3DB3-4590-AC0E-5B691E5BFA79}|EPlatform_API\\EPlatform_API.csproj|solutionrelative:eplatform_api\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 278,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": ".gitignore",
+              "DocumentMoniker": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\.gitignore",
+              "RelativeDocumentMoniker": "EPlatform_API\\.gitignore",
+              "ToolTip": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\.gitignore",
+              "RelativeToolTip": "EPlatform_API\\.gitignore",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAAABcAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-10-29T16:14:05.356Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedHeight": 119,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            }
+          ]
+        },
+        {
+          "DockedHeight": 200,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

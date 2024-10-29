@@ -1,0 +1,26 @@
+# Ignore Visual Studio temporary files
+*.suo
+*.user
+*.tmp
+*.pdb
+*.cache
+*.suo
+*.sln.docstates
+
+
+# Ignore Visual Studio debugger files
+**/bin/
+**/obj/
+
+# Ignore EntityFramework migrations metadata
+/EntityFrameworkMigrationsHistory
+
+# Ignore *.user files
+*.user
+**/Migrations
+# JetBrains Rider
+.idea/ *.sln.iml
+# Exclude appsettings files
+**/appsettings*.json
+# Exclude launchSettings files
+**/launchSettings*.json
