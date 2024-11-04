@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using EPlatform_API.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 
 namespace EPlatform_API.ExtensionMethods
@@ -53,9 +55,7 @@ namespace EPlatform_API.ExtensionMethods
 
         public static void ConfigureAPILoad(this IServiceCollection services){
             services.AddControllers().AddNewtonsoftJson(options => {
-                services.AddControllers().AddNewtonsoftJson(options => {
-                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                });
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
         }
 
@@ -67,6 +67,16 @@ namespace EPlatform_API.ExtensionMethods
                     .AllowAnyHeader()
                     .AllowAnyMethod();
                 });
+            });
+        }
+
+        public static void ConfigRedisCatching(this IServiceCollection services){
+            services.AddStackExchangeRedisCache(options => {
+                options.Configuration = "localhost";
+                options.ConfigurationOptions = new StackExchange.Redis.ConfigurationOptions(){
+                    AbortOnConnectFail = true,
+                    EndPoints = {options.Configuration}
+                };
             });
         }
     }

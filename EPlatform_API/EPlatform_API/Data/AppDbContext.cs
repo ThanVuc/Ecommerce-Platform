@@ -25,6 +25,10 @@ namespace EPlatform_API.Data
             builder.Entity<GroupOfRole>(entity => {
                 entity.HasKey(gr => new {gr.GroupID, gr.RoleID});
             });
+
+            builder.Entity<Users>(entity => {
+                entity.HasIndex(u => new {u.Username, u.Email, u.PhoneNumber});
+            });
         }
 
         public DbSet<Users> Users {get; set;}

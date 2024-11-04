@@ -15,5 +15,6 @@ namespace EPlatform_API.Models
         [Required]
         public string RoleName { get; set; } = string.Empty;
         public bool RoleStatus { get; set; }
+        public List<GroupOfRole>? GroupOfRoles {get; set;}
     }
 }

@@ -10,9 +10,11 @@ namespace EPlatform_API.Models
     {
         [Key]
         public int ID {get; set;}
+
         [MinLength(2)]
         [MaxLength(128)]
         [Required]
-        public string GroupName = string.Empty;
+        public string GroupName {get; set;} = string.Empty;
+        public List<GroupOfRole>? GroupOfRoles {get; set;}
     }
 }
