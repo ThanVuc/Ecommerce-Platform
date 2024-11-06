@@ -9,6 +9,9 @@ import { RegisterComponent } from './components/auth/register/register.component
 import { ErrorlayoutComponent } from './shares/layouts/errorlayout/errorlayout.component';
 import { ResetpasswordComponent } from './components/auth/resetpassword/resetpassword.component';
 import { ForgetpasswordComponent } from './components/auth/forgetpassword/forgetpassword.component';
+import { inject } from '@angular/core';
+import { AuthGuard } from '../guard/auth.guard';
+import { title } from 'process';
 
 export const routes: Routes = [
     {
@@ -24,7 +27,8 @@ export const routes: Routes = [
     },
     {
         path: 'admin',
-        component: AdminlayoutComponent
+        component: AdminlayoutComponent,
+        canActivate: [AuthGuard]
     },
     {
         path: 'auth',
@@ -45,11 +49,13 @@ export const routes: Routes = [
             },
             {
                 path: 'reset-password',
-                component: ResetpasswordComponent
+                component: ResetpasswordComponent,
+                canActivate: [AuthGuard]
             },
             {
                 path: 'forget-password',
-                component: ForgetpasswordComponent
+                component: ForgetpasswordComponent,
+                canActivate: [AuthGuard]
             }
         ]
     },

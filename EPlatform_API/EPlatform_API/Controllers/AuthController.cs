@@ -53,7 +53,7 @@ namespace EPlatform_API.Controllers
         public async Task<IActionResult> Login(LoginRequestModel loginModel){
             if (!ModelState.IsValid){
                 return new BadRequestObjectResult(new ApiResponseStandard<JwtTokenReponseModel>{
-                    Status = "Fail",
+                    Status = 400,
                     Message = "The input is invalid"
                 });
             }
@@ -61,21 +61,15 @@ namespace EPlatform_API.Controllers
             var user = await _unitOfWork.UserRepo.FindAsync(u => u.Username == loginModel.Username);
             if (user == null){
                 return StatusCode(400, new ApiResponseStandard<JwtTokenReponseModel>{
-                    Status = "Fail",
-                    Message = "Bad Request",
-                    Errors = new Dictionary<string, string>(){
-                        {"Username" , "Username doesn't exist"}
-                    }
+                    Status = 400,
+                    Message = "Username doesn't exist",
                 });
             }
 
             if (!_passwordHasher.Verify(user.PasswordHash,loginModel.Password)){
                 return StatusCode(400, new ApiResponseStandard<JwtTokenReponseModel>{
-                    Status = "Fail",
-                    Message = "Bad Request",
-                    Errors = new Dictionary<string, string>(){
-                        {"Password" , "Password is incorrect"}
-                    }
+                    Status = 400,
+                    Message = "Password is incorrect",
                 });
             }
 
@@ -84,11 +78,8 @@ namespace EPlatform_API.Controllers
 
             if (group == null){
                 return StatusCode(500, new ApiResponseStandard<JwtTokenReponseModel>{
-                    Status = "Fail",
-                    Message = "Server Error",
-                    Errors = new Dictionary<string, string>(){
-                        {"Group of Role" , "The Group doesn't exist"}
-                    }
+                    Status = 500,
+                    Message = "The Group doesn't exist",
                 });
             }
 
@@ -108,7 +99,7 @@ namespace EPlatform_API.Controllers
             );
 
             ApiResponseStandard<JwtTokenReponseModel> response = new ApiResponseStandard<JwtTokenReponseModel>(){
-                Status = "Success",
+                Status = 200,
                 Message = "Login Successful",
                 Data = tokenResponse
             };
@@ -120,7 +111,7 @@ namespace EPlatform_API.Controllers
         public async Task<IActionResult> Register(RegisterRequestModel registerModel){
             if (!ModelState.IsValid){
                 return new BadRequestObjectResult(new ApiResponseStandard<JwtTokenReponseModel>{
-                    Status = "Fail",
+                    Status = 400,
                     Message = "The input is invalid"
                 });
             }
@@ -128,11 +119,15 @@ namespace EPlatform_API.Controllers
             var user = await _unitOfWork.UserRepo.FindAsync(u => u.Username == registerModel.Username);
             if (user != null){
                 return StatusCode(400, new ApiResponseStandard<JwtTokenReponseModel>{
-                    Status = "Fail",
+                    Status = 400,
+                    Message = "Username existed in the system",
+                });
+            }
+
+            if (registerModel.Password != registerModel.ConfirmPassword){
+                return StatusCode(400, new ApiResponseStandard<JwtTokenReponseModel>{
+                    Status = 400,
                     Message = "Bad Request Error",
-                    Errors = new Dictionary<string, string>(){
-                        {"Username" , "Username existed in the system"}
-                    }
                 });
             }
 
@@ -142,11 +137,8 @@ namespace EPlatform_API.Controllers
             
             if (group == null){
                 return StatusCode(500, new ApiResponseStandard<JwtTokenReponseModel>{
-                    Status = "Fail",
-                    Message = "Server Error",
-                    Errors = new Dictionary<string, string>(){
-                        {"Group of Role" , "The Group doesn't exist"}
-                    }
+                    Status = 500,
+                    Message = "The Group doesn't exist",
                 });
             }
 
@@ -171,7 +163,7 @@ namespace EPlatform_API.Controllers
             );
 
             ApiResponseStandard<JwtTokenReponseModel> response = new ApiResponseStandard<JwtTokenReponseModel>(){
-                Status = "Success",
+                Status = 201,
                 Message = "Register User Successful",
                 Data = tokenResponse
             };

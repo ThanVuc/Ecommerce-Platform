@@ -16,6 +16,7 @@ namespace EPlatform_API.DTOs.AuthDTOs
         public string? PhoneNumber {get; set;}
         [Required]
         public string Password {get; set;} = string.Empty;
+        public string ConfirmPassword {get; set;} = string.Empty;
         [Required]
         [MaxLength(512)]
         public string Address {get; set;} = string.Empty;

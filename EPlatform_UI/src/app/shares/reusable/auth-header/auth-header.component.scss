@@ -1,0 +1,44 @@
+.header {
+    background-color: #000;
+    border-bottom: 1px solid #fff;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px; /* Điều chỉnh khoảng cách trong và ngoài header */
+    .logo{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      width: 10em;
+      text-decoration: none;
+      color: #fff;
+      img {
+          margin-right: 0.3rem;
+          width: 50px; /* Điều chỉnh kích thước logo */
+          height: auto;
+      }
+    }
+    
+    .spacing{
+      width: 10em;
+    }
+  
+    .text {
+      font-size: 24px;
+      font-weight: bold;
+    }
+  
+    .sign-in {
+      position: relative;
+      top: 0.12em;
+      background-image: linear-gradient(to right, #C405AE, #999999);
+      background-clip: text;
+      color: transparent;
+      font-size: 2em;
+      font-family: Aboreto;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+    }
+  }

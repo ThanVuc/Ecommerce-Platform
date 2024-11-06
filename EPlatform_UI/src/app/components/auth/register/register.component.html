@@ -1,36 +1,89 @@
-<div class="header">
-    <div class="logo">
-      <img src="/assets/img/abc.jpg" alt="Logo" />
-      <div class="text">TRANS</div>
-    </div>
-    <p class="sign-in" >Sign Up</p>
-    <div class="spacing" ></div>
-  </div>
+<app-auth-header title={{title}}></app-auth-header>
   <div class="content">
     <div class="row" >
-      <div class="col-6">
-        <form>
+      <div class="left col-6">
+        @if (extraErr != null){
+          <p class="extra-err">{{extraErr}}</p>
+        }
+        <form #form="ngForm" >
           <div class="container">
             <div class="fullname">
-              <input class="input-form" type="text" name="" id="" placeholder="First" >
-              <input class="input-form" type="text" name="" id="" placeholder="Last" >
+              <input class="input-form" #first="ngModel" type="text" required maxlength="64" name="first" [(ngModel)]="signUpModel.first" placeholder="First" >
+              <input class="input-form" #last="ngModel" type="text" required maxlength="64" name="last" [(ngModel)]="signUpModel.last" placeholder="Last" >
             </div>
-            <input class="input-form" type="text" name="" id="" placeholder="Email" >
-            <input class="input-form" type="text" name="" id="" placeholder="Password" >
-            <input class="input-form" type="text" name="" id="" placeholder="Confirm Password" >
-            <input class="input-form" type="text" name="" id="" placeholder="Address" >
-  
-            <button class="sign-in" >Sign Up</button>
+            @if ((first.invalid && first.touched)||(last.invalid && last.touched)) {
+              @if (first.errors?.['required']){
+                <p class="extra-err">First is require</p>
+              }
+              @if (last.errors?.['required']){
+                <p class="extra-err">Last is require</p>
+              }
+            }
+            <input class="input-form" type="email" email  required minlength="3" #username="ngModel" name="username" [(ngModel)]="signUpModel.username"  placeholder="Email" >
+            @if (username.invalid && username.touched) {
+              @if (username.errors?.['required']){
+                <p class="extra-err">Email is require</p>
+              }
+              @if (username.errors?.['email']){
+                <p class="extra-err">Please, Enter the Email</p>
+              }
+            }
+            <input class="input-form" type="password" #password="ngModel" required minlength="3" maxlength="64" required name="password" [(ngModel)]="signUpModel.password"  placeholder="Password" >
+            @if (password.invalid && password.touched) {
+              @if (password.errors?.['required']){
+                <p class="extra-err">Passowrd is require</p>
+              }
+              @if (password.errors?.['minlength']){
+                <p class="extra-err">Minlength is 3</p>
+              }
+            }
+            <input class="input-form" type="password" #confirm="ngModel" required name="confirmPassword" [(ngModel)]="signUpModel.confirmPassword"  placeholder="Confirm Password" >
+            @if (confirm.invalid && confirm.touched) {
+              @if (confirm.errors?.['required']){
+                <p class="extra-err">Confirm Password is require</p>
+              }
+            }
+            <input class="input-form" type="tel" #phone="ngModel" phone required name="phoneNumber" [(ngModel)]="signUpModel.phoneNumber"  placeholder="Phone Number" >
+            @if (phone.invalid && phone.touched){
+              @if (phone.errors?.['required']){
+                <p class="extra-err">Phone is require</p>
+              }
+              @if (phone.errors?.['phone']){
+                <p class="extra-err">Please, Enter the Phone</p>
+              }
+            }
+            <input class="input-form" type="text" #address="ngModel" required maxlength="512" required name="address" [(ngModel)]="signUpModel.address"  placeholder="Address" >
+            @if (address.invalid && address.touched){
+              @if (address.errors?.['required']){
+                <p class="extra-err">Address is require</p>
+              }
+            }
+
+            <a class="addition-link" routerLink="/auth">Have a account? Sign In</a>
+            <div class="format-btn">
+              @if (!form.valid){
+                <button class="submit-btn disabled" type="submit" (click)="signUp()" [disabled]="!form.valid" >Sign Up</button>
+              } @else {
+                <button class="submit-btn" type="submit" (click)="signUp()" [disabled]="!form.valid" >Sign Up</button>
+              }
+            </div>
+            
+
+            
           </div>
           
         </form>
       </div>
-      <div class="col-5">
+      <div class="right col-5">
         <div class="welcome">
           <p class="welcome-title">Welcome To You!</p>
           <p class="welcome-con" >We expect that you will have a best experience while using our platform &lt;3</p>
-        </div> 
+        </div>
+        <div class="external-login">
+          <button class="submit-btn google" type="submit" [disabled] >Google</button>
+          <button class="submit-btn facebook" type="submit" [disabled] >Facebook</button>
+        </div>
       </div>
     </div>
   </div>
-  <div class="footer"></div>
+ 

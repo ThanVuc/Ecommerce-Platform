@@ -42,22 +42,28 @@ namespace EPlatform_API.Controllers
                 .SetAbsoluteExpiration(TimeSpan.FromDays(7));
         }
 
-        [HttpPost("refresh"), Authorize]
-        public async Task<IActionResult> Refresh(JwtTokenRequestModel tokenModel)
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody]JwtTokenRequestModel tokenModel)
         {
             if (tokenModel == null)
             {
                 return BadRequest(new ApiResponseStandard<JwtTokenRequestModel>
                 {
-                    Status = "Fail",
-                    Message = "Bad Request",
-                    Errors = new Dictionary<string, string>{
-                        {"Token","Not Found Token Model"}
-                    }
+                    Status = 400,
+                    Message = "Not Found Token Model",
                 });
             }
             var accessToken = tokenModel.AccessToken;
             var refreshToken = tokenModel.RefreshToken;
+
+            if (accessToken == null){
+                return BadRequest(new ApiResponseStandard<JwtTokenRequestModel>
+                {
+                    Status = 400,
+                    Message = "Access Token doen not Exist",
+                });
+            }
+
             var principle = _tokenService.GetPrincipalFromExpiredToken(accessToken);
             var userName = principle.Identity.Name;
 
@@ -70,11 +76,8 @@ namespace EPlatform_API.Controllers
             {
                 return StatusCode(404, new ApiResponseStandard<JwtTokenRequestModel>
                 {
-                    Status = "Fail",
-                    Message = "Not Found",
-                    Errors = new Dictionary<string, string>{
-                        {"Token","Not Found Refresh Token"}
-                    }
+                    Status = 404,
+                    Message = "Not Found Refresh Token",
                 });
             }
 
@@ -84,11 +87,8 @@ namespace EPlatform_API.Controllers
             {
                 return BadRequest(new ApiResponseStandard<JwtTokenRequestModel>
                 {
-                    Status = "Fail",
-                    Message = "Bad Request",
-                    Errors = new Dictionary<string, string>{
-                        {"Token","The Refresh Token is invalid"}
-                    }
+                    Status = 400,
+                    Message = "The Refresh Token is invalid"
                 });
             }
 
@@ -103,7 +103,7 @@ namespace EPlatform_API.Controllers
 
             return Ok(new ApiResponseStandard<JwtTokenReponseModel>
             {
-                Status = "Success",
+                Status = 200,
                 Message = "Refresh Token Successful",
                 Data = new JwtTokenReponseModel
                 {
@@ -122,11 +122,8 @@ namespace EPlatform_API.Controllers
             {
                 return BadRequest(new ApiResponseStandard<object>
                 {
-                    Status = "Fail",
-                    Message = "Bad Request",
-                    Errors = new Dictionary<string, string>{
-                        {"Username", "Username is not found"}
-                    }
+                    Status = 400,
+                    Message = "Username is not found"
                 });
             }
             var refreshKey = _configuration["JWT:RefreshKey"] + user.ID;

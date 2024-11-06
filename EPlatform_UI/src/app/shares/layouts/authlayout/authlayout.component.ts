@@ -1,9 +1,10 @@
-import { Component, Inject, inject, OnInit } from '@angular/core';
+import { Component, Inject, inject, Input, input, OnInit } from '@angular/core';
 import { Router } from 'express';
 import { routes } from '../layout.routes';
 import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
 import { Title } from '@angular/platform-browser';
+import { PassDataService } from '../../../components/services/pass-data.service';
 
 @Component({
   selector: 'app-authlayout',
@@ -13,7 +14,7 @@ import { Title } from '@angular/platform-browser';
   styleUrl: './authlayout.component.scss'
 })
 export class AuthlayoutComponent implements OnInit {
-  document: Document = inject(DOCUMENT)
+  document: Document = inject(DOCUMENT);
   constructor(){
     
   }

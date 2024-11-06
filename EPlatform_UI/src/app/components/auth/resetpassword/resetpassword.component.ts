@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, inject, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-resetpassword',
@@ -7,6 +8,11 @@ import { Component } from '@angular/core';
   templateUrl: './resetpassword.component.html',
   styleUrl: './resetpassword.component.scss'
 })
-export class ResetpasswordComponent {
+export class ResetpasswordComponent implements OnInit {
+  http = inject(HttpClient)
+  ngOnInit(): void {
+    this.http.get("http://localhost:5119/api/admin").subscribe((res) => {
 
+    });
+  }
 }

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 
 @Component({
@@ -8,6 +9,11 @@ import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
   templateUrl: './adminlayout.component.html',
   styleUrl: './adminlayout.component.scss'
 })
-export class AdminlayoutComponent {
+export class AdminlayoutComponent{
+  http = inject(HttpClient);
+  constructor(){
+    this.http.get("http://localhost:5119/api/admin").subscribe((res) => {
 
+    });
+  }
 }

@@ -7,10 +7,9 @@ namespace EPlatform_API.DTOs.ApiStandard
 {
     public class ApiResponseStandard<T>
     {
-        public string Status {get; set;} = string.Empty;
+        public int Status {get; set;}
         public string Message {get; set;} = string.Empty;
         public T? Data {get; set;}
         public DateTime Timestamp { get; set; } = DateTime.Now;
-        public Dictionary<string,string>? Errors {get; set;}
     }
 }
