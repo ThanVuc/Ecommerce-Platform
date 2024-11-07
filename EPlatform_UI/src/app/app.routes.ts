@@ -53,8 +53,8 @@ export const routes: Routes = [
             },
             {
                 path: 'reset-password',
-                component: ResetpasswordComponent
-                //canActivate: [AuthGuard]
+                component: ResetpasswordComponent,
+                canActivate: [AuthGuard]
             }
         ]
     },

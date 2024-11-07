@@ -75,7 +75,7 @@ export class RegisterComponent implements OnInit {
   otpFailCount: number = 0;
 
   confirmOTP(){
-    this.http.post<ApiModel<JwtTokenModel>>(environment.ConfirmPasswordAPI,this.signUpModel)
+    this.http.post<ApiModel<JwtTokenModel>>(environment.RegisterConfirmAPI,this.signUpModel)
     .pipe(
       catchError((err:ApiModel<JwtTokenModel>) => {
         this.otpFailCount++;

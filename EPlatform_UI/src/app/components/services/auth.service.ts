@@ -7,6 +7,8 @@ import { JwtTokenModel } from '../auth/models/JwtTokenModel';
 import { environment } from '../../../environments/environment.development';
 import { SignInRequestModel } from '../auth/models/SignInRequestModel';
 import { LocalStorageService } from './local-storage.service';
+import { ResetPasswordRequestModel } from '../auth/models/ResetPasswordRequestModel';
+import { ForgotPasswordRequestModel } from '../auth/models/ForgotPasswordRequestMode';
 
 @Injectable({
   providedIn: 'root'
@@ -34,5 +36,13 @@ export class AuthService {
 
     this.localStorage.removeValue('AccessToken');
     this.localStorage.removeValue('RefreshToken');
+  }
+
+  resetPassword(resetPasswordModel: ResetPasswordRequestModel): Observable<ApiModel<object>>{
+    return this.http.post<ApiModel<object>>(environment.ResetPasswordAPI,resetPasswordModel);
+  }
+
+  recoveryPassword(forgotPasswordModel: ForgotPasswordRequestModel): Observable<ApiModel<object>>{
+    return this.http.post<ApiModel<object>>(environment.ForgotPasswordAPI,forgotPasswordModel);
   }
 }

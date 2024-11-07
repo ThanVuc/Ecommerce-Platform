@@ -16,13 +16,17 @@
               <p class="extra-err">Please, Enter the email</p>
             }
           }
-          <input class="input-form" type="password" autocomplete="current-password" #password="ngModel" required [(ngModel)]="signInModel.password" name="password" placeholder="Password" >
+          <input class="input-form" type="password"  autocomplete="current-password" #password="ngModel" required minlength="3" [(ngModel)]="signInModel.password" name="password" placeholder="Password" >
           @if(password.invalid && password.touched){
             @if(password.errors?.['required']){
               <p class="extra-err">The password is required</p>
             }
+
+            @if(password.errors?.['minlength']){
+              <p class="extra-err">Min Length is 3</p>
+            }
           }
-          <a routerLink="/auth/forget-password" class="addition-link">Forgot password?</a>
+          <a (click)="showForgotPassword()" class="addition-link">Forgot password?</a>
           <a routerLink="/auth/register" class="addition-link">Have not account yet? Sign up</a>
           <div class="format-btn">
             @if (!form.valid){
@@ -36,7 +40,7 @@
     </div>
     <div class="col-5 right">
       <div class="welcome">
-        <p class="welcome-title">Welcome To You!</p>
+        <p class="welcome-title">Welcome To You Again!</p>
         <p class="welcome-con" >We expect that you will have a best experience while using our platform &lt;3</p>
       </div>
       <div class="external-login">
@@ -45,4 +49,50 @@
       </div>
     </div>
   </div>
+</div>
+
+<div id="form-modal" class="form-modal">
+  <div class="otp-box">
+    <div id="forgot-password" >
+      <p class="title" >Forgot Password</p>
+    <form #formFogot="ngForm" class="otp-form" >
+      <label for="otp">Email</label>
+      <input id="email" class="input-form" type="email" required email #forgotPassword="ngModel" required name="otp" [(ngModel)]="forgotPasswordModel.email" >
+      @if (forgotFailErr){
+        <p class="extra-err">{{forgotFailErr}}</p>
+      }
+      @if (forgotPassword.invalid && forgotPassword.touched){
+        @if (forgotPassword.errors?.["required"]){
+          <p class="extra-err">Email is Required</p>
+        }
+        @if (forgotPassword.errors?.["email"]){
+          <p class="extra-err">Please, Enter your email</p>
+        }
+      }
+      <button class="submit-btn" type="submit" (click)="recoveryPassword()" [disabled]="!formFogot.valid" >Verify Email</button>
+      <a routerLink="/auth/login" (click)="backToRegister()" class="otp-footer">Back To Sign In</a>
+    </form>
+    </div>
+
+    <div id="otp-confirm">
+    <p class="title" >OTP Confirm</p>
+    <form #formOTP="ngForm" class="otp-form" >
+      <label for="otp">OTP</label>
+      <input id="otp" class="input-form" type="text" #otp="ngModel" required name="otp" [(ngModel)]="forgotPasswordModel.otp" >
+      @if (otp.invalid && otp.touched){
+        @if (otp.errors?.["required"]){
+          <p class="extra-err">OTP is Required</p>
+        }
+      }
+      @if (otpFailCount>0){
+        <p class="extra-err">Enter wrong otp: {{otpFailCount}}/5</p>
+      }
+      <button class="submit-btn" type="submit" (click)="confirmOTP()" [disabled]="!formOTP.valid" >Send OTP</button>
+      <a routerLink="/auth/register" (click)="backToRegister()" class="otp-footer">Back To Sign Up</a>
+    </form>
+    </div>
+
+
+  </div>
+
 </div>

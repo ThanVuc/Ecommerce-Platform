@@ -63,7 +63,9 @@ namespace EPlatform_API.Controllers
                 });
             }
 
-            var user = await _unitOfWork.UserRepo.FindAsync(u => u.Username == loginModel.Username);
+            var user = await _unitOfWork.UserRepo.GetAllDataSet()
+            .Include(u => u.Group)
+            .FirstOrDefaultAsync(u => u.Username == loginModel.Username);
             if (user == null){
                 return StatusCode(400, new ApiResponseStandard<JwtTokenReponseModel>{
                     Status = 400,
@@ -79,7 +81,7 @@ namespace EPlatform_API.Controllers
             }
 
             // claim group
-            var group = await GetGroupOfRole();
+            var group = user.Group;
 
             if (group == null){
                 return StatusCode(500, new ApiResponseStandard<JwtTokenReponseModel>{
@@ -138,7 +140,7 @@ namespace EPlatform_API.Controllers
             }
             // Send Mail
             var OTP = GenerateOTP();
-            await _sendMailService.SendEmailAsync(registerModel.Username,"OTP From TRANS",OTP);
+            await _sendMailService.SendEmailAsync(registerModel.Username,"OTP From TRANS to Sign Up",OTP);
 
             await _cache.SetAsync<string>($"OTP:{registerModel.Username}",OTP,new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
 
@@ -148,8 +150,8 @@ namespace EPlatform_API.Controllers
             });
         }
 
-        [HttpPost("confirm-password")]
-        public async Task<IActionResult> ConfirmPassword([FromBody] RegisterRequestModel registerModel){
+        [HttpPost("register-confirm")]
+        public async Task<IActionResult> ConfirmRegister([FromBody] RegisterRequestModel registerModel){
             if (!ModelState.IsValid){
                 return BadRequest();
             }
@@ -210,7 +212,7 @@ namespace EPlatform_API.Controllers
 
             var username = User?.Identity?.Name;
             var user = await _unitOfWork.UserRepo.FindAsync(u => u.Username == username);
-
+            
             if (user == null){
                 return StatusCode(404, new ApiResponseStandard<object>{
                     Status = 404,
@@ -239,6 +241,7 @@ namespace EPlatform_API.Controllers
             _unitOfWork.UserRepo.Update(user);
             await _unitOfWork.SaveAsync();
             _unitOfWork.Dispose();
+            
             return Ok(new ApiResponseStandard<object>{
                 Status = 200,
                 Message = "Updated Successful!",
@@ -246,12 +249,80 @@ namespace EPlatform_API.Controllers
             });
         }
 
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestModel forgotPasswordModel){
+            if (!ModelState.IsValid){
+                return BadRequest();
+            }
 
-        private async Task<Group> GetGroupOfRole(){
+            var user = await _unitOfWork.UserRepo.FindAsync(u => u.Email == forgotPasswordModel.Email);
+            if (user == null){
+                return BadRequest(new ApiResponseStandard<object>{
+                    Status = 400,
+                    Message = "The email does not exist"
+                });
+            }
+            var OTP = GenerateOTP();
+            await _sendMailService.SendEmailAsync(user.Email,"OTP From TRANS to Recovery Password",OTP);
+            await _cache.SetAsync<string>($"OTP:{user.Email}",OTP,new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+            return Ok(new ApiResponseStandard<object>{
+                Status = 200,
+                Message = "Please, Verify OTP"
+            });
+        }
+        [HttpPost("confirm-recovery-otp")]
+        public async Task<IActionResult> ConfirmRecoveryOTP(ForgotPasswordRequestModel forgotPasswordModel){
+            if (!ModelState.IsValid){
+                return BadRequest();
+            }
+
+            var user = await _unitOfWork.UserRepo.GetAllDataSet()
+            .Include(u => u.Group)
+            .FirstOrDefaultAsync(u => u.Email == forgotPasswordModel.Email);
+
+            if (user == null){
+                return BadRequest(new ApiResponseStandard<object>{
+                    Status = 400,
+                    Message = "The email doesn't exist"
+                });
+            }
+            var OTP = "";
+            _cache.TryGetValue<string>($"OTP:{user.Username}", out OTP);
+            if (OTP != forgotPasswordModel.OTP){
+                return BadRequest(new ApiResponseStandard<object>{
+                    Status = 400,
+                    Message = "OTP is incorrect",
+                    Timestamp = DateTime.Now
+                });
+            }
+
+            var claims = new List<Claim>{
+                new Claim(ClaimTypes.Role,user.Group.GroupName),
+                new Claim(ClaimTypes.Name,user.Username)
+            };
+
+            var jwtToken = new JwtTokenReponseModel{
+                AccessToken = _tokenService.GenerateAccessToken(claims),
+                RefreshToken = _tokenService.GenerateRefreshToken()
+            };
+            await _cache.SetAsync<string>(
+                _configuration["JWT:RefreshKey"],
+                jwtToken.RefreshToken,
+                cacheOption
+            );
+
+            return Ok(new ApiResponseStandard<JwtTokenReponseModel>{
+                Status = 200,
+                Data = jwtToken,
+                Message = "Recovery Password Successful!"
+            });
+
+        }
+        private async Task<Group> GetGroupOfRole(string grName = "Customer"){
             return await _unitOfWork.GroupRepo.GetAllDataSet()
             .Include(g => g.GroupOfRoles)
             .ThenInclude(gOR => gOR.Role)
-            .FirstOrDefaultAsync(gr => gr.GroupName.ToUpper() == "Customer".ToUpper());
+            .FirstOrDefaultAsync(gr => gr.GroupName == grName);
         }
     
         private string GenerateOTP(int length=5){
