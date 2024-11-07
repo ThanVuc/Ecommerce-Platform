@@ -24,5 +24,6 @@ namespace EPlatform_API.DTOs.AuthDTOs
         public string First {get; set;} = string.Empty;
         [MaxLength(64)]
         public string Last {get; set;} = string.Empty;
+        public string? OTP {get; set;}
     }
 }

@@ -11,6 +11,10 @@
           color: rgb(218, 6, 6);
           font-size: 0.8em;
         }
+
+        #otp-wrong-5-times{
+          display: none;
+        }
       }
     }
 
@@ -111,7 +115,95 @@
     }
   }
 
+.form-modal{
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
 
+
+  .otp-box{
+    background-color: #000;
+    flex-direction: row;
+    width: 30%;
+    height: 60%;
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    justify-content: center;
+
+    .title{
+      background-image: linear-gradient(to right, #C405AE, #999999);
+      background-clip: text;
+      color: transparent;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    .otp-form{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      .input-form{
+        width: 75%;
+        height: 2rem;
+        background-color: #000;
+        // border-bottom: solid 1px #fff;
+        border: none;
+        outline: none;
+        border-bottom: 1px solid white;
+        color: white;
+        -webkit-text-fill-color: white;
+        -webkit-box-shadow: 0 0 0px 1000px #000 inset;
+        text-align: center;
+      }
+
+      label{
+        margin-top: 10%;
+      }
+
+      .extra-err{
+        position: relative;
+        top: 1.8em;
+        text-align: center;
+        color: rgb(218, 6, 6);
+        font-size: 0.8em;
+      }
+
+      .input-form::placeholder{
+        color: white;
+        text-align: center;
+      }
+  
+      .submit-btn{
+        margin: 1.5rem 0.8rem;
+        width: 35%;
+        font-size: 1.3rem;
+        background-color: #000;
+        color: #fff;
+        border: none;
+        font-family: 'Times New Roman', Times, serif;
+        border: solid 1px #fff;
+        border-radius: 0.5rem;
+      }
+      .submit-btn:hover{
+        background-color: #3b3c3b; 
+      }
+
+      .otp-footer{
+        margin-top: 5%;
+        color: #fff;
+      }
+    }
+
+  }
+}
 
   
 

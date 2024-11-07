@@ -6,4 +6,5 @@ export interface SignUpRequestModel {
     address: string
     first: string
     last: string
+    otp: string
 }

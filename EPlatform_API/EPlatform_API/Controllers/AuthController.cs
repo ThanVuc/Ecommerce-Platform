@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using EPlatform_API.Data;
@@ -13,6 +14,7 @@ using EPlatform_API.IServices;
 using EPlatform_API.Mappers;
 using EPlatform_API.Models;
 using EPlatform_API.UnitOfWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -29,6 +31,7 @@ namespace EPlatform_API.Controllers
         private readonly ITokenService _tokenService;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IConfiguration _configuration;
+        private readonly ISendMailService _sendMailService;
         private readonly DistributedCacheEntryOptions cacheOption;
         public AuthController(
             IUnitOfWork unitOfWork, 
@@ -36,7 +39,8 @@ namespace EPlatform_API.Controllers
             IDistributedCache cache,
             ITokenService tokenService,
             IPasswordHasher passwordHasher,
-            IConfiguration configuration
+            IConfiguration configuration,
+            ISendMailService sendMailService
         )
         {
             _unitOfWork = unitOfWork;
@@ -45,6 +49,7 @@ namespace EPlatform_API.Controllers
             _tokenService = tokenService;
             _passwordHasher = passwordHasher;
             _configuration = configuration;
+            _sendMailService = sendMailService;
             cacheOption = new DistributedCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromDays(7));
         }
@@ -109,6 +114,7 @@ namespace EPlatform_API.Controllers
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequestModel registerModel){
+            // Check infor
             if (!ModelState.IsValid){
                 return new BadRequestObjectResult(new ApiResponseStandard<JwtTokenReponseModel>{
                     Status = 400,
@@ -130,8 +136,32 @@ namespace EPlatform_API.Controllers
                     Message = "Bad Request Error",
                 });
             }
+            // Send Mail
+            var OTP = GenerateOTP();
+            await _sendMailService.SendEmailAsync(registerModel.Username,"OTP From TRANS",OTP);
 
-            user = registerModel.ToUser();
+            await _cache.SetAsync<string>($"OTP:{registerModel.Username}",OTP,new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+
+            return StatusCode(200, new ApiResponseStandard<object>{
+                Status = 200,
+                Message = "Please, Confirm The OTP"
+            });
+        }
+
+        [HttpPost("confirm-password")]
+        public async Task<IActionResult> ConfirmPassword([FromBody] RegisterRequestModel registerModel){
+            if (!ModelState.IsValid){
+                return BadRequest();
+            }
+            string OTP = "";
+            _cache.TryGetValue<string>($"OTP:{registerModel.Username}",out OTP);
+            _logger.LogCritical($"OTP: {OTP} -- ClientOTP: {registerModel.OTP}");
+            if (OTP != registerModel.OTP){
+                return BadRequest(new ApiResponseStandard<object>{
+                    Status = 400,
+                    Message = "OTP is incorrect"
+                });
+            }
             
             var group = await GetGroupOfRole();
             
@@ -141,6 +171,8 @@ namespace EPlatform_API.Controllers
                     Message = "The Group doesn't exist",
                 });
             }
+
+            Users user = registerModel.ToUser();
 
             user.GroupID = group.ID;
             user.PasswordHash = _passwordHasher.Hash(user.PasswordHash);
@@ -167,15 +199,78 @@ namespace EPlatform_API.Controllers
                 Message = "Register User Successful",
                 Data = tokenResponse
             };
+            return StatusCode(201,response);
+        } 
 
-            return StatusCode(201, response);
+        [HttpPost("reset-password"),Authorize]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequestDto resetPasswordModel){
+            if (!ModelState.IsValid){
+                return BadRequest();
+            }
+
+            var username = User?.Identity?.Name;
+            var user = await _unitOfWork.UserRepo.FindAsync(u => u.Username == username);
+
+            if (user == null){
+                return StatusCode(404, new ApiResponseStandard<object>{
+                    Status = 404,
+                    Message = "We don't found the user",
+                    Timestamp = DateTime.Now
+                });
+            }
+            
+            if (resetPasswordModel.NewPassword != resetPasswordModel.ConfirmNewPassword){
+                return StatusCode(400, new ApiResponseStandard<object>{
+                    Status = 400,
+                    Message = "The confirm passowrd has to equal with new password",
+                    Timestamp = DateTime.Now
+                });
+            }
+
+            if (!_passwordHasher.Verify(user.PasswordHash,resetPasswordModel.OldPassword)){
+                return StatusCode(400, new ApiResponseStandard<object>{
+                    Status = 400,
+                    Message = "The old passowrd is incorrect",
+                    Timestamp = DateTime.Now
+                });
+            }
+
+            user.PasswordHash = _passwordHasher.Hash(resetPasswordModel.NewPassword);
+            _unitOfWork.UserRepo.Update(user);
+            await _unitOfWork.SaveAsync();
+            _unitOfWork.Dispose();
+            return Ok(new ApiResponseStandard<object>{
+                Status = 200,
+                Message = "Updated Successful!",
+                Timestamp = DateTime.Now
+            });
         }
+
 
         private async Task<Group> GetGroupOfRole(){
             return await _unitOfWork.GroupRepo.GetAllDataSet()
             .Include(g => g.GroupOfRoles)
             .ThenInclude(gOR => gOR.Role)
             .FirstOrDefaultAsync(gr => gr.GroupName.ToUpper() == "Customer".ToUpper());
+        }
+    
+        private string GenerateOTP(int length=5){
+            using (var rng = RandomNumberGenerator.Create()){
+                var bytes = new byte[length/2];
+                rng.GetBytes(bytes);
+                
+                var OTP = new StringBuilder();
+                
+                foreach (var b in bytes){
+                    OTP.Append(((int)b%10).ToString());
+                }
+
+                while (OTP.Length < 5){
+                    rng.GetBytes(bytes);
+                    OTP.Append(((int)bytes[0]%10).ToString());
+                }
+                return OTP.ToString();
+            }
         }
     }
 }

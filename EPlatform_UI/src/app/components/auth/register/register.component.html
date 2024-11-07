@@ -5,6 +5,7 @@
         @if (extraErr != null){
           <p class="extra-err">{{extraErr}}</p>
         }
+        <p id="otp-wrong-5-times" class="extra-err" >You have entered wrong otp 5 time, please try again later!</p>
         <form #form="ngForm" >
           <div class="container">
             <div class="fullname">
@@ -67,9 +68,6 @@
                 <button class="submit-btn" type="submit" (click)="signUp()" [disabled]="!form.valid" >Sign Up</button>
               }
             </div>
-            
-
-            
           </div>
           
         </form>
@@ -85,5 +83,21 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div id="form-modal" class="form-modal">
+    <div class="otp-box">
+      <p class="title" >OTP Confirm</p>
+      <form class="otp-form" >
+        <label for="otp">OTP</label>
+        <input id="otp" class="input-form" type="text" #otp="ngModel" required name="otp" [(ngModel)]="signUpModel.otp" >
+        @if (otpFailCount>0){
+          <p class="extra-err">Enter wrong otp: {{otpFailCount}}/5</p>
+        }
+        <button class="submit-btn" type="submit" (click)="confirmOTP()" [disabled]="!form.valid" >Send OTP</button>
+        <a routerLink="/auth/register" (click)="backToRegister()" class="otp-footer">Back To Sign Up</a>
+      </form>
+    </div>
+
   </div>
  

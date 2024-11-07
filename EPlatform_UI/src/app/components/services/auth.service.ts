@@ -24,6 +24,14 @@ export class AuthService {
   }
 
   signOut(){
+    let refreshToken = this.localStorage.getValue("RefreshToken");
+
+    if (refreshToken){
+      this.http.post(environment.RevokeJWTTokenAPI,null).subscribe((res) => {
+        console.log("Logut Successful")
+      });
+    }
+
     this.localStorage.removeValue('AccessToken');
     this.localStorage.removeValue('RefreshToken');
   }

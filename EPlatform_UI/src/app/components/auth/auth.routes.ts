@@ -18,13 +18,6 @@ export const routes: Routes = [
     {
         path: '',
         loadComponent() {
-            return import('./forgetpassword/forgetpassword.component')
-            .then(fp => fp.ForgetpasswordComponent)
-        }
-    },
-    {
-        path: '',
-        loadComponent() {
             return import('./resetpassword/resetpassword.component')
             .then(rp => rp.ResetpasswordComponent)
         },

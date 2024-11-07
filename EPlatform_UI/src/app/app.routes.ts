@@ -8,22 +8,26 @@ import { register } from 'module';
 import { RegisterComponent } from './components/auth/register/register.component';
 import { ErrorlayoutComponent } from './shares/layouts/errorlayout/errorlayout.component';
 import { ResetpasswordComponent } from './components/auth/resetpassword/resetpassword.component';
-import { ForgetpasswordComponent } from './components/auth/forgetpassword/forgetpassword.component';
 import { inject } from '@angular/core';
 import { AuthGuard } from '../guard/auth.guard';
 import { title } from 'process';
+import { HomeCustomerComponent } from './components/customer/home-customer/home-customer.component';
 
 export const routes: Routes = [
     {
         path: '',
-        loadChildren() {
-            return import('./shares/layouts/layout.routes')
-            .then(r => r.routes)
-        }
-    },
-    {
-        path: '',
-        component: CustomerlayoutComponent
+        component: CustomerlayoutComponent,
+        loadChildren: () => [
+            {
+                path: '',
+                redirectTo: 'home',
+                pathMatch: 'full'
+            },
+            {
+                path: 'home',
+                component: HomeCustomerComponent
+            }
+        ]
     },
     {
         path: 'admin',
@@ -49,13 +53,8 @@ export const routes: Routes = [
             },
             {
                 path: 'reset-password',
-                component: ResetpasswordComponent,
-                canActivate: [AuthGuard]
-            },
-            {
-                path: 'forget-password',
-                component: ForgetpasswordComponent,
-                canActivate: [AuthGuard]
+                component: ResetpasswordComponent
+                //canActivate: [AuthGuard]
             }
         ]
     },

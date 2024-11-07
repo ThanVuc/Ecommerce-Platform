@@ -3,6 +3,7 @@ using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IServices;
 using EPlatform_API.Services;
 using EPlatform_API.UnitOfWork;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,6 +65,7 @@ services.ConfigureCORS();
 services.AddTransient<IUnitOfWork,UnitOfWork>();
 services.AddTransient<ITokenService,TokenService>();
 services.AddTransient<IPasswordHasher,PasswordHasher>();
+services.AddSingleton<ISendMailService,SendMailService>();
 
 var app = builder.Build();
 
