@@ -1,0 +1,27 @@
+<div class="another-form" id="update-form" >
+    <div class="form">
+        <h1 class="title" >UPDATE ROLE</h1>
+        <form #formUpdateRole="ngForm" >
+            <input class="text-input" 
+                required #roleName="ngModel"
+                [(ngModel)]="updateRoleModel.name"
+                type="text" 
+                id="roleName"
+                placeholder="Role Name"
+                name="roleName"
+            >
+            @if (roleName.invalid && roleName.touched){
+                @if (roleName.errors?.['required']) {
+                    <p class="extra-err">The role is required</p>
+                }
+            }
+
+            @if (formUpdateRole.valid){
+                <button (click)="updateRole()" class="submit-btn" [disabled]="false" >Update Role</button>
+            } @else {
+                <button (click)="updateRole()" class="submit-btn disabled" [disabled]="true" >Update Role</button>  
+            }
+        </form>
+        <p class="back" (click)="hideUpdateForm()">Back To Role Side</p>
+    </div>
+</div>

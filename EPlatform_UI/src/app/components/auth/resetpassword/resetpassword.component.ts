@@ -38,7 +38,7 @@ export class ResetpasswordComponent implements OnInit {
     }
     this.authSVC.resetPassword(this.resetPasswordModel).pipe(
       catchError(err => {
-        this.extraErr = err.error.message;
+        this.extraErr = err;
         return of(null);
       })
     ).subscribe(res => {

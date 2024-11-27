@@ -3,9 +3,10 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideClientHydration, Title } from '@angular/platform-browser';
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { JwtModule } from '@auth0/angular-jwt';
-import { authInterceptor } from '../guard/auth.interceptor';
+import { addJwtInterceptor } from '../guard/add-jwt.interceptor';
+import { HandleErrService } from '../guard/handle-err.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,7 +21,12 @@ export const appConfig: ApplicationConfig = {
         }
       })
     ),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    provideHttpClient(
+      withFetch(), 
+      withInterceptors([addJwtInterceptor]),
+      withInterceptorsFromDi()
+    ),
+    {provide: HTTP_INTERCEPTORS, useClass: HandleErrService, multi: true},
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes), 
     provideClientHydration()]

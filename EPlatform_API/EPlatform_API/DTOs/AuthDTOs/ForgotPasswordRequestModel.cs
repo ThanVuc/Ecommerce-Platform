@@ -8,7 +8,7 @@ namespace EPlatform_API.DTOs.AuthDTOs
 {
     public class ForgotPasswordRequestModel
     {
-        public string? OTP {get; set;}
+        public string? VerifyCode {get; set;}
         [EmailAddress]
         [Required]
         public string? Email {get; set;}

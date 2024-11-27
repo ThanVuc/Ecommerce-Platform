@@ -1,9 +1,11 @@
+using System.Net.NetworkInformation;
 using EPlatform_API.Data;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IServices;
 using EPlatform_API.Services;
 using EPlatform_API.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,6 +54,9 @@ services.ConfigRedisCatching();
 // Route Config
 services.ConfigureRoute();
 
+// Config Identity Framework
+services.ConfigureIdentityFramework();
+
 // Config JWT
 services.ConfigureJWT(configuration);
 
@@ -60,6 +65,9 @@ services.ConfigureAPILoad();
 
 // Cors Config
 services.ConfigureCORS();
+
+// Policy
+services.ConfigurePolicy();
 
 // DI
 services.AddTransient<IUnitOfWork,UnitOfWork>();
@@ -76,9 +84,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles(new StaticFileOptions{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "Image")
+    ),
+    RequestPath = "/images"
+});
 app.UseHttpsRedirection();
 
+
 app.UseCors("AllowAllCORS");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

@@ -1,0 +1,78 @@
+@import url(../share.scss);
+$background-color: #0d0d0d;
+
+.container{
+    display: flex;
+    flex-direction: column;
+}
+
+.title{
+    text-align: center;
+    margin-block: 1rem;
+}
+
+.tool{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .search-bar{
+        width: 30%;
+        height: 3rem;
+        padding: 0.5rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border: 1px solid #E4D016;
+        border-radius: 10rem;
+
+        span{
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: 0.2rem;
+            color: #E4D016;
+        }
+
+        input{
+            width: 90%;
+            background-color: $background-color;
+            border: none;
+            -webkit-text-fill-color: white;
+            -webkit-box-shadow: 0 0 0px 1000px #000 inset;
+            outline-color: red;
+        }
+
+        input:focus{
+            border: none;
+            outline: none;
+            border-bottom: 1px #696864 solid;
+        }
+
+    }
+
+}
+
+.active{
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+
+    .status{
+        width: 1rem;
+        height: 1rem;
+        background-color: aqua;
+        border-radius: 0.5rem;
+    }
+    
+    .on{
+        background-color: rgb(3, 178, 3);
+        margin-left: 0.5rem;
+    }
+    
+    .off{
+        background-color: gray;
+        margin-right: 0.5rem;
+    }
+}
+

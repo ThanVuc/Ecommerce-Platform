@@ -1,0 +1,33 @@
+@import url("../../../icon.component.scss");
+$paging-background-color: #FDE4F6;
+
+
+.paging{
+    height: 2rem;
+    width: 40%;
+    display: flex;
+    margin: 0 auto;
+    padding-left: 1.4rem;
+    background-color: $paging-background-color;
+    border-radius: 3rem;
+    color: black;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+
+    .page-element{
+        height: 80%;
+        padding: auto 0;
+        width: 2rem;
+        font-size: medium;
+    }
+
+    .page-element:hover{
+        cursor: pointer;
+    }
+
+    .active{
+        color: green;
+    }
+
+}

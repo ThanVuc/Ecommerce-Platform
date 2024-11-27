@@ -1,0 +1,29 @@
+<button class="create-btn" (click)="showCreateForm()" >Create Role</button>
+
+<div class="another-form" id="create-form" >
+    <div class="form">
+        <h1 class="title" >CREATE ROLE</h1>
+        <form #formCreate="ngForm" >
+            <input class="text-input" 
+                required #roleName="ngModel" 
+                [(ngModel)]="createRoleModel.roleName"
+                type="text" 
+                id="roleName"
+                placeholder="Role Name"
+                name="roleName"
+            >
+            @if (roleName.invalid && roleName.touched){
+                @if (roleName.errors?.['required']) {
+                    <p class="extra-err">The role is required</p>
+                }
+            }
+
+            @if (formCreate.valid){
+                <button (click)="createRole()" class="submit-btn" [disabled]="false" >Create Role</button>
+            } @else {
+                <button (click)="createRole()" class="submit-btn disabled" [disabled]="true" >Create Role</button>  
+            }
+        </form>
+        <p class="back" (click)="hideCreateForm()">Back To Role Side</p>
+    </div>
+</div>

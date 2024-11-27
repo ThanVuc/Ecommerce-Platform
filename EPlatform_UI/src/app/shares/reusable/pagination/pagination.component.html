@@ -1,0 +1,19 @@
+<div class="paging">
+    @if (hasPrevious){
+        <div id="previous" class="page-element" (click)="pageChange(pageIndex-1)" >
+            <span class="grommet-icons--previous"></span>
+        </div>
+    }
+
+
+    @for (item of numbers; track $index) {
+        <div class="page-element" (click)="pageChange(item)">{{item}}</div>
+    }
+
+    @if (hasNext){
+        <div id="next" class="page-element" (click)="pageChange(pageIndex+1)" >
+            <span class="grommet-icons--next"></span>
+        </div>
+    }
+
+</div>

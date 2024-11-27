@@ -32,8 +32,8 @@ export const routes: Routes = [
     {
         path: '',
         loadComponent() {
-            return import('./errorlayout/errorlayout.component')
-            .then(err => err.ErrorlayoutComponent)
+            return import('../reusable/not-found-page/not-found-page.component')
+            .then(err => err.NotFoundPageComponent)
         },
     }
 ];

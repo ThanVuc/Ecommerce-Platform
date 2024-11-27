@@ -1,0 +1,48 @@
+@import url(../../../icon.component.scss);
+$background-color: #0d0d0d;
+.header{
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+
+    .title{
+        text-align: center;
+        margin-block: 1rem;
+    }
+}
+
+.loading-effect{
+    position: absolute;
+    left: 55%;
+    top: 40%;
+}
+
+.table-box{
+    width: 100%;
+    height: 65vh;
+    overflow-y: scroll;
+
+    .action{
+        border: none;
+        border-radius: 0.6rem;
+        margin-right: 0.3rem;
+        
+    }
+
+    .edit{
+        background-color: rgb(223, 223, 62);
+    }
+
+    .delete{
+        background-color: rgb(244, 115, 115);
+    }
+}
+
+app-message{
+    position: absolute;
+    top: 40%;
+    left: 40%;
+    transform: translateX(-50%);
+    transform: translateY(-50%);
+}
+

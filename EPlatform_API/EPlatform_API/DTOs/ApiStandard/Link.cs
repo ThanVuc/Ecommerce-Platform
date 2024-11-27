@@ -7,7 +7,7 @@ namespace EPlatform_API.DTOs.ApiStandard
 {
     public class Link
     {
-        public string Href = string.Empty;
+        public string _Link = string.Empty;
         public string Method = string.Empty;
     }
 }

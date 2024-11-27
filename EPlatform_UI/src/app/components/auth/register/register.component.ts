@@ -29,6 +29,9 @@ import { environment } from '../../../../environments/environment.development';
 export class RegisterComponent implements OnInit {
   ngOnInit(): void {
     this.titleService.setTitle(this.title);
+    if (this.document.defaultView?.localStorage){
+      this.authService.signOut();
+    }
   }
   title = "Sign Up";
   signUpModel: SignUpRequestModel = {
@@ -39,7 +42,7 @@ export class RegisterComponent implements OnInit {
     last: "",
     phoneNumber: "",
     confirmPassword: "",
-    otp: ""
+    verifyCode: ""
   }
   titleService = inject(Title)
   authService = inject(AuthService);
@@ -58,12 +61,12 @@ export class RegisterComponent implements OnInit {
     this.authService.signUp(this.signUpModel)
     .pipe(
       catchError((err) => {
-        this.extraErr = err.error.message;
+        this.extraErr = err;
         return of(null)
       })
     ).subscribe((res) => {
       if (res !== null){
-        this.otpFailCount = 0;
+        this.verifyFailCount = 0;
         const formModal = this.document.getElementById("form-modal");
         if (formModal){
           formModal.style.display = 'block';
@@ -72,16 +75,16 @@ export class RegisterComponent implements OnInit {
     })
   }
 
-  otpFailCount: number = 0;
+  verifyFailCount: number = 0;
 
-  confirmOTP(){
+  confirmVerify(){
     this.http.post<ApiModel<JwtTokenModel>>(environment.RegisterConfirmAPI,this.signUpModel)
     .pipe(
       catchError((err:ApiModel<JwtTokenModel>) => {
-        this.otpFailCount++;
+        this.verifyFailCount++;
 
-        if (this.otpFailCount == 5){
-          this.otpFailCount = 0;
+        if (this.verifyFailCount == 5){
+          this.verifyFailCount = 0;
           this.backToRegister(true);
         }
 
@@ -89,7 +92,7 @@ export class RegisterComponent implements OnInit {
       })
     ).subscribe((res) => {
       if (res?.data){
-        this.otpFailCount = 0;
+        this.verifyFailCount = 0;
         this.tokenService.saveJWTToken(res.data);
         this.router.navigate(["/"]);
       }
@@ -98,14 +101,14 @@ export class RegisterComponent implements OnInit {
 
   backToRegister(isFailCount5Times:boolean = false){
     const formModal = this.document.getElementById("form-modal");
-    const otpWrong5Times = this.document.getElementById("otp-wrong-5-times");
+    const verifyWrong5Times = this.document.getElementById("verify-wrong-5-times");
     if (formModal){
       formModal.style.display = 'none';
     }
 
     if (isFailCount5Times){
-      if (otpWrong5Times){
-        otpWrong5Times.style.display = 'block';
+      if (verifyWrong5Times){
+        verifyWrong5Times.style.display = 'block';
       }
     }
 

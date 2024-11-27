@@ -9,10 +9,6 @@ namespace EPlatform_API.UnitOfWork
 {
     public interface IUnitOfWork : IDisposable
     {
-        IRepositoryBase<Users> UserRepo {get;}
-        IRepositoryBase<Roles> RoleRepo {get;}
-        IRepositoryBase<Group> GroupRepo {get;}
-
         int Save();
         Task<int> SaveAsync();
     }

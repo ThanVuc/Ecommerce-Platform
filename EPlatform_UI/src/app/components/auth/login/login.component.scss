@@ -14,6 +14,10 @@
     }
   }
 
+  #otp-wrong-5-times{
+    display: none;
+  }
+
   .container{
     display: flex;
     flex-direction: column;
@@ -122,7 +126,7 @@
   z-index: 9999;
 
 
-  .otp-box{
+  .verify-box{
     background-color: #000;
     flex-direction: row;
     width: 30%;
@@ -133,7 +137,7 @@
     transform: translate(-50%, -50%);
     justify-content: center;
 
-    #otp-confirm{
+    #verify-confirm{
       display: none;
     }
 
@@ -145,7 +149,7 @@
       text-align: center;
     }
 
-    .otp-form{
+    .verify-form{
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -200,7 +204,7 @@
         background-color: #707171;
       }
 
-      .otp-footer{
+      .verify-footer{
         margin-top: 5%;
         color: #fff;
       }

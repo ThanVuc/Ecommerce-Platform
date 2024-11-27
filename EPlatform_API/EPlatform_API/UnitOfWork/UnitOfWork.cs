@@ -18,17 +18,9 @@ namespace EPlatform_API.UnitOfWork
         )
         {
             _context = context;
-            UserRepo = new RepositoryBase<Users>(_context);
-            RoleRepo = new RepositoryBase<Roles>(_context);
-            GroupRepo = new RepositoryBase<Group>(_context);
         }
 
         private bool disposed = false;
-
-        public IRepositoryBase<Users> UserRepo {get;}
-
-        public IRepositoryBase<Roles> RoleRepo {get;}
-        public IRepositoryBase<Group> GroupRepo {get;}
 
         protected virtual void Dispose(bool disposing)
         {

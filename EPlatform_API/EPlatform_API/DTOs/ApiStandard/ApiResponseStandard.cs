@@ -10,6 +10,7 @@ namespace EPlatform_API.DTOs.ApiStandard
         public int Status {get; set;}
         public string Message {get; set;} = string.Empty;
         public T? Data {get; set;}
+        public List<Link>? Resources {get; set;}
         public DateTime Timestamp { get; set; } = DateTime.Now;
     }
 }

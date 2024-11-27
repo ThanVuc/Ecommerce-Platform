@@ -1,0 +1,130 @@
+@import url(../../icon.component.scss);
+$background-color: #0d0d0d;
+
+.create-btn{
+    margin-block: 1rem;
+    background-image: linear-gradient(90deg,#2A09C0,#C210BF);
+    padding: 0.5rem;
+    padding-inline: 2rem;
+    color: white;
+    border-radius: 1.2rem;
+    border: none;
+    cursor: pointer;
+}
+
+.create-btn:active{
+    opacity: 0.8;
+}
+
+app-message{
+    position: absolute;
+    top: 40%;
+    left: 40%;
+    transform: translateX(-50%);
+    transform: translateY(-50%);
+}
+
+.another-form {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+
+    .form{
+        background-color: #000;
+        width: 30%;
+        height: 65%;
+        position: absolute;
+        top: 45%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border:#C405AE 1px solid;
+        border-radius: 3px;
+
+        .title{
+            background-image: linear-gradient(to right, #C405AE, #999999);
+            background-clip: text;
+            color: transparent;
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 5% 0 12% 0;
+        }
+
+        form{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            
+            .text-input{
+                width: 80%;
+                background-color: $background-color;
+                border: none;
+                border-bottom: 1px white solid;
+                color: white;
+                -webkit-text-fill-color: white;
+                -webkit-box-shadow: 0 0 0px 1000px #000 inset;
+                margin-bottom: 3%;
+            }
+            
+            .text-input:focus{
+                border-bottom: 1px white solid;
+                outline: none;
+            }
+
+            .text-input::placeholder{
+                color: white;
+            }
+
+            .submit-btn{
+                margin-top: 1rem;
+                width: 80%;
+                padding: 0.2rem 0;
+                border-radius: 0.5rem;
+                background-color: $background-color;
+                border: 1px solid white;
+                color: white;
+                opacity: 1;
+            }
+
+            .submit-btn:hover{
+                opacity: 0.9;
+            }
+
+            .submit-btn:active{
+                border: 1px solid #c0099b;
+                background-color: #c0099b;
+                opacity: 0.8;
+            }
+
+            .disabled{
+                cursor: default;
+            }
+
+            .disabled.submit-btn:active{
+                border: 1px solid white;
+                background-color: inherit;
+            }
+
+            .disabled.submit-btn:hover{
+                opacity: 1;
+            }
+        }
+
+        .back{
+            margin-top: 12%;
+            color: rgb(221, 220, 220);
+            text-align: center;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    }
+}
+
+.extra-err{
+    color: red;
+}

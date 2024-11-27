@@ -1,0 +1,81 @@
+$background-pink : #B90E99;
+$background-blue : #3116CE;
+$white: #ffffff;
+$active-color: #20121F;
+@import url("../../../icon.component.scss");
+
+.admin-layout{
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+}
+
+.sidebar{
+    position: fixed;
+    background-image: linear-gradient($background-pink,$background-blue);
+    left: 0;
+    height: 100%;
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .avatar{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+        overflow: hidden;
+        border-bottom: #ffffff 2px solid;
+
+        img{
+            width: 3em;
+            height: 3em;
+            border-radius: 1.5em;
+        }
+
+        p{
+            margin: 0.5rem 0 0 0.5rem;
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace;
+            text-decoration: underline;
+        }
+    }
+
+    .menu{
+        width: 100%;
+        margin-top: 5%;
+
+        .menu-element{
+            width: 100%;
+            margin-top: 1.5em;
+            height: 3em;
+            
+            display: flex;
+            justify-content: center;
+            padding-top: 0.6em;
+
+            border-radius: 0 40px 40px 0;
+
+            cursor: pointer;
+
+            p{
+                font-size: large;
+                font-weight: bold;
+            }
+        }
+        .active{
+            background-color: $active-color;
+        }
+
+    }
+
+}
+
+.body{
+    height: 100%;
+    width: 100%;
+}

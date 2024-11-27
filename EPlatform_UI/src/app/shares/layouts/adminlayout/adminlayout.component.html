@@ -1,3 +1,29 @@
-<p>adminlayout works!</p>
-<a routerLink="/auth/login">login</a>
-<router-outlet></router-outlet>
+<div class="admin-layout" >
+    <div class="col-2">
+        <div class="sidebar" >
+            <div class="avatar">
+                <img src="/assets/img/luoi.jpg" alt="no-image" >
+                <p>Sinh Nguyen</p>
+            </div>
+            <div class="menu" >
+                <div class="menu-element" routerLinkActive="active" routerLink="/admin/roles" >
+                    <span class="eos-icons--cluster-role"></span>
+                    <p>Role</p>
+                </div>
+                <div class="menu-element" routerLinkActive="active" routerLink="/admin/users" >
+                    <span class="lets-icons--group center"></span>
+                    <p class="center">User</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-10">
+        <div class="body">
+            <div class="body-content">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+    </div>
+    
+
+</div>

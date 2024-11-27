@@ -1,0 +1,43 @@
+<button class="create-btn" (click)="showAddFunction()" >Add New Claim</button>
+
+<div class="another-form" id="create-form" >
+    <div class="form">
+        <h1 class="title" >CREATE ROLE</h1>
+        <form #formCreate="ngForm" >
+            <input class="text-input" 
+                required #claimType="ngModel" 
+                [(ngModel)]="addNewClaimModel.claimType"
+                type="text" 
+                id="claim-type"
+                placeholder="Claim Type"
+                name="claimType"
+            >
+            @if (claimType.invalid && claimType.touched){
+                @if (claimType.errors?.['required']) {
+                    <p class="extra-err">The claim type is required</p>
+                }
+            }
+
+            <input class="text-input" 
+                required #claimValue="ngModel" 
+                [(ngModel)]="addNewClaimModel.claimValue"
+                type="text" 
+                id="claim-value"
+                placeholder="Claim Value"
+                name="claimValue"
+            >
+            @if (claimValue.invalid && claimValue.touched){
+                @if (claimValue.errors?.['required']) {
+                    <p class="extra-err">The claim value is required</p>
+                }
+            }
+
+            @if (formCreate.valid){
+                <button (click)="addClaim()" class="submit-btn" [disabled]="false" >Create Role</button>
+            } @else {
+                <button (click)="addClaim()" class="submit-btn disabled" [disabled]="true" >Create Role</button>  
+            }
+        </form>
+        <p class="back" (click)="hideAddFunction()">Back To Role Side</p>
+    </div>
+</div>

@@ -6,7 +6,11 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using EPlatform_API.Data;
 using EPlatform_API.IServices;
+using EPlatform_API.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EPlatform_API.Services
@@ -14,13 +18,22 @@ namespace EPlatform_API.Services
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
-        public TokenService(IConfiguration configuration)
+        private readonly UserManager<AppUser> _userManager;
+        private readonly AppDbContext _appDbContext;
+        public TokenService(
+            IConfiguration configuration,
+            UserManager<AppUser> userManager,
+            AppDbContext appDbContext
+        )
         {
             _configuration = configuration;
+            _userManager = userManager;
+            _appDbContext = appDbContext;
         }
 
-        public string GenerateAccessToken(IEnumerable<Claim> claims)
+        public async Task<string> GenerateAccessToken(AppUser user)
         {
+            var claims = await GetListClaim(user);
             var secureKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SigningKey"]));
             var signingCredentials = new SigningCredentials(
                 secureKey,
@@ -35,6 +48,24 @@ namespace EPlatform_API.Services
             );
             var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return tokenString;
+        }
+
+        public async Task<List<Claim>> GetListClaim(AppUser user){
+            var claims = new List<Claim>{
+                new Claim(ClaimTypes.Name, user.UserName)
+            };
+
+            var rolesName = await _userManager.GetRolesAsync(user);
+            foreach (var roleName in rolesName)
+            {
+                claims.Add(new Claim(ClaimTypes.Role,roleName));
+                var role = await _appDbContext.Roles.Select(r => new {r.Id, r.Name}).FirstOrDefaultAsync(r => r.Name == roleName);
+                var roleClaims = _appDbContext.RoleClaims.Where(rc => rc.RoleId == role.Id);
+                foreach (var roleClaim in roleClaims){
+                    claims.Add(new Claim(roleClaim.ClaimType,roleClaim.ClaimValue));
+                }
+            }
+            return claims;
         }
 
         public string GenerateRefreshToken()

@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using EPlatform_API.Data;
+using EPlatform_API.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +31,40 @@ namespace EPlatform_API.ExtensionMethods
                 options.LowercaseUrls = true;
                 options.LowercaseQueryStrings = false;
             });
+        }
+
+        public static void ConfigureIdentityFramework(this IServiceCollection services){
+            
+            services.AddOptions();
+
+            services.AddIdentity<AppUser, IdentityRole>()   
+            .AddEntityFrameworkStores<AppDbContext>();
+
+
+            services.Configure<IdentityOptions>(options => {
+                options.Password.RequireDigit = false; // Không bắt phải có số
+                options.Password.RequireLowercase = false; // Không bắt phải có chữ thường
+                options.Password.RequireNonAlphanumeric = false; // Không bắt ký tự đặc biệt
+                options.Password.RequireUppercase = false; // Không bắt buộc chữ in
+                options.Password.RequiredLength = 3; // Số ký tự tối thiểu của password
+                options.Password.RequiredUniqueChars = 1; // Số ký tự riêng biệt
+
+                // Cấu hình Lockout - khóa user
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // Khóa 5 phút
+                options.Lockout.MaxFailedAccessAttempts = 5; // Thất bại 5 lầ thì khóa
+                options.Lockout.AllowedForNewUsers = true;
+
+                // Cấu hình về User.
+                options.User.AllowedUserNameCharacters = // các ký tự đặt tên user
+                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = true;  // Email là duy nhất
+
+                // Cấu hình đăng nhập.
+                options.SignIn.RequireConfirmedEmail = false;            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
+                options.SignIn.RequireConfirmedPhoneNumber = false;     // Xác thực số điện thoại
+                options.SignIn.RequireConfirmedAccount = false;
+            });
+
         }
     
         public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration){
@@ -65,7 +101,8 @@ namespace EPlatform_API.ExtensionMethods
                 builder => {
                     builder.AllowAnyOrigin()
                     .AllowAnyHeader()
-                    .AllowAnyMethod();
+                    .AllowAnyMethod()
+                    .WithExposedHeaders("X-Pagination");
                 });
             });
         }
@@ -77,6 +114,17 @@ namespace EPlatform_API.ExtensionMethods
                     AbortOnConnectFail = true,
                     EndPoints = {options.Configuration}
                 };
+            });
+        }
+
+        public static void ConfigurePolicy(this IServiceCollection services){
+            services.AddAuthorization(options => {
+                options.AddPolicy("RoleManagePolicy", policy => {
+                    policy.RequireClaim("CanManipulateRolePage","true");
+                });
+                options.AddPolicy("UserManagePolicy", policy => {
+                    policy.RequireClaim("CanManipulateUserPage","true");
+                });
             });
         }
     }

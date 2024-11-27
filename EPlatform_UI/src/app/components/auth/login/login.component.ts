@@ -37,17 +37,19 @@ export class LoginComponent implements OnInit {
 
   forgotPasswordModel: ForgotPasswordRequestModel = {
     email: "",
-    otp: ""
+    verifyCode: ""
   }
 
   isRemember: boolean = false;
   extraErr:string | null = null;
   constructor(){
-
   }
 
   ngOnInit(): void {
     this.titleService.setTitle(this.title);
+    if (this.document.defaultView?.localStorage){
+      this.authService.signOut();
+    }
   }
 
   signIn(){
@@ -57,7 +59,7 @@ export class LoginComponent implements OnInit {
 
     this.authService.signIn(this.signInModel).pipe(
       catchError((err) => {
-        this.extraErr = err.error.message;
+        this.extraErr = err;
         return of(null)
       })
     ).subscribe((res) => {
@@ -68,13 +70,15 @@ export class LoginComponent implements OnInit {
     })
   }
 
-  otpFailCount: number = 0;
+  verifyFailCount: number = 0;
   forgotFailErr: string = "";
 
   showForgotPassword(){
     var formModal = this.document.getElementById("form-modal");
-    if (formModal){
+    var forgotPassword = this.document.getElementById("forgot-password");
+    if (formModal && forgotPassword){
       formModal.style.display = 'block';
+      forgotPassword.style.display = 'block';
       this.forgotFailErr = "";
     }
   }
@@ -83,7 +87,7 @@ export class LoginComponent implements OnInit {
     this.authService.recoveryPassword(this.forgotPasswordModel)
     .pipe(
       catchError(err => {
-        this.forgotFailErr = err.error.message;
+        this.forgotFailErr = err;
         return of(null);
       })
     )
@@ -92,24 +96,24 @@ export class LoginComponent implements OnInit {
         if (res.status === 200){
           this.forgotFailErr = "";
           let forgotPassword = this.document.getElementById("forgot-password");
-          let otpConfirm = this.document.getElementById("otp-confirm");
-          if (forgotPassword && otpConfirm){
+          let verifyConfirm = this.document.getElementById("verify-confirm");
+          if (forgotPassword && verifyConfirm){
             forgotPassword.style.display = 'none';
-            otpConfirm.style.display = 'block';
+            verifyConfirm.style.display = 'block';
           }
         }
       }
     })
   }
 
-  confirmOTP(){
+  confirmVerifyCode(){
     this.http.post<ApiModel<JwtTokenModel>>(environment.ConfirmRecoveryPassword,this.forgotPasswordModel)
     .pipe(
       catchError((err:ApiModel<JwtTokenModel>) => {
-        this.otpFailCount++;
+        this.verifyFailCount++;
 
-        if (this.otpFailCount == 5){
-          this.otpFailCount = 0;
+        if (this.verifyFailCount == 5){
+          this.verifyFailCount = 0;
           this.backToRegister(true);
         }
 
@@ -117,7 +121,7 @@ export class LoginComponent implements OnInit {
       })
     ).subscribe((res) => {
       if (res?.data){
-        this.otpFailCount = 0;
+        this.verifyFailCount = 0;
         this.tokenService.saveJWTToken(res.data);
         this.router.navigate(["/auth/reset-password"]);
       }
@@ -126,14 +130,19 @@ export class LoginComponent implements OnInit {
 
   backToRegister(isFailCount5Times:boolean = false){
     const formModal = this.document.getElementById("form-modal");
-    const otpWrong5Times = this.document.getElementById("otp-wrong-5-times");
-    if (formModal){
+    const verifyConfirm = this.document.getElementById("verify-confirm");
+    const forgotPassword = this.document.getElementById("forgot-password");
+    
+    const verifyWrong5times = this.document.getElementById("verify-wrong-5-times");
+    if (formModal && verifyConfirm && forgotPassword){
       formModal.style.display = 'none';
+      verifyConfirm.style.display = 'none';
+      forgotPassword.style.display = 'none';
     }
 
     if (isFailCount5Times){
-      if (otpWrong5Times){
-        otpWrong5Times.style.display = 'block';
+      if (verifyWrong5times){
+        verifyWrong5times.style.display = 'block';
       }
     }
 

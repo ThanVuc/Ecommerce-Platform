@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlatform_API.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPlatform_API.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
         public AppDbContext(DbContextOptions options) : base(options)
         {
@@ -16,24 +17,22 @@ namespace EPlatform_API.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseSqlServer();
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<GroupOfRole>(entity => {
-                entity.HasKey(gr => new {gr.GroupID, gr.RoleID});
-            });
+            foreach (var entityType in builder.Model.GetEntityTypes())
+            {
+                var tableName = entityType.GetTableName();
+                if (tableName.StartsWith("AspNet"))
+                {
+                    entityType.SetTableName(tableName.Substring(6));
+                }
+            }
 
-            builder.Entity<Users>(entity => {
-                entity.HasIndex(u => new {u.Username, u.Email, u.PhoneNumber});
-            });
         }
-
-        public DbSet<Users> Users {get; set;}
-        public DbSet<Group> Groups {get; set;}
-        public DbSet<Roles> Roles {get; set;}
-        public DbSet<GroupOfRole> GroupOfRoles {get; set;}
     }
 }
