@@ -12,6 +12,8 @@ import { DeleteRoleClaimModel } from '../admin/models/roles/delete-role-claim-mo
 import { UpdateRoleClaimModel } from '../admin/models/roles/update-role-claim-model';
 import { UserModel } from '../admin/models/users/user-model';
 import { LockOrUnlockModel } from '../admin/models/users/lock-or-unlock-model';
+import { CreateUserModel } from '../admin/models/users/create-user-model';
+import { UserDetailModel } from '../admin/models/users/user-detail-model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +22,10 @@ export class AdminService {
 
   constructor(private http: HttpClient) { }
 
-  getRoles(pageIndex: number, pageSize: number) : Observable<HttpResponse<ApiResModel<RoleResModel[]>>> {
+  getRoles(pageIndex: number | null, pageSize: number | null) : Observable<HttpResponse<ApiResModel<RoleResModel[]>>> {
+    if (pageIndex == null || pageSize == null){
+      return this.http.get<ApiResModel<RoleResModel[]>>(environment.GetRoles,{observe: 'response'});
+    }
     return this.http.get<ApiResModel<RoleResModel[]>>(environment.GetRoles + `?PageNumber=${pageIndex}&PageSize=${pageSize}`,{observe: 'response'});
   }
 
@@ -53,8 +58,8 @@ export class AdminService {
     return this.http.put<ApiResModel<object>>(environment.UpdateRoleClaim+roleId+"/update-claim/"+claimId,updateRoleClaimModel);
   }
 
-  getUsers(pageIndex: number, pageSize: number) : Observable<HttpResponse<ApiResModel<UserModel[]>>>{
-    return this.http.get<ApiResModel<UserModel[]>>(environment.GetUsers+ `?PageNumber=${pageIndex}&PageSize=${pageSize}`, {observe: "response"});
+  getUsers(pageIndex: number, pageSize: number, searchString: string) : Observable<HttpResponse<ApiResModel<UserModel[]>>>{
+    return this.http.get<ApiResModel<UserModel[]>>(environment.GetUsers+ `?PageNumber=${pageIndex}&PageSize=${pageSize}&SearchString=${searchString}`, {observe: "response"});
   }
 
   changeUserStatus(id: string) : Observable<ApiResModel<Boolean>>{
@@ -62,5 +67,20 @@ export class AdminService {
       id: id
     };
     return this.http.post<ApiResModel<boolean>>(environment.LockOrUnlockUser,lockOrUnlockModel);
+  }
+
+  createUserModel(creatUserModel: CreateUserModel):Observable<ApiResModel<object>>{
+    return this.http.post<ApiResModel<object>>(environment.CreateUser,creatUserModel);
+  }
+
+  getUser(id: string) : Observable<ApiResModel<UserDetailModel>>{
+    return this.http.get<ApiResModel<UserDetailModel>>(environment.GetUserById+id);
+  }
+
+  setRole(userId: string, rolesId: string[]) : Observable<ApiResModel<object>>{
+    let model = {
+      rolesId: rolesId
+    };
+    return this.http.post<ApiResModel<object>>(environment.SettingRoleOfUser + userId + "/setting-role-for-user",model);
   }
 }

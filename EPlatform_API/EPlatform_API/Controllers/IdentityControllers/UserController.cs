@@ -168,28 +168,28 @@ namespace EPlatform_API.Controllers.Identity
             });
         }
     
-        [HttpPost("setting-role-for-user")]
-        public async Task<IActionResult> SettingRoleForUser([FromBody] SettingRoleRequestModel settingRoleModel){
+        [HttpPost("{id}/setting-role-for-user")]
+        public async Task<IActionResult> SettingRoleForUser([FromRoute] string id,[FromBody] SettingRoleRequestModel settingRoleModel){
             if (!await IsSettingRoleParameterValid(settingRoleModel.rolesId)){
                 return BadRequest(new ApiResponseStandard<object>{
                     Status = 400,
-                    Message = "Parameter is have the role not exist in the system"
+                    Message = "Parameter is had the role not exist in the system"
                 });
             }
             
-            var userRole = _context.UserRoles.Where(ur => ur.UserId == settingRoleModel.Id).Select(ur => ur.RoleId).AsNoTracking();
+            var userRole = _context.UserRoles.Where(ur => ur.UserId == id).Select(ur => ur.RoleId).AsNoTracking();
 
             var removeList = userRole.Where(rm => !settingRoleModel.rolesId.Contains(rm));
             var addList = settingRoleModel.rolesId.Where(a => !userRole.Contains(a));
 
-            var removeListObject = _context.UserRoles.Where(rm => removeList.Contains(rm.RoleId) && rm.UserId == settingRoleModel.Id);
+            var removeListObject = _context.UserRoles.Where(rm => removeList.Contains(rm.RoleId) && rm.UserId == id);
             var addListObject = new List<IdentityUserRole<string>>();
 
             foreach (var ur in addList)
             {
                 addListObject.Add(new IdentityUserRole<string>{
                     RoleId = ur,
-                    UserId = settingRoleModel.Id
+                    UserId = id
                 });
             }
 
@@ -236,7 +236,7 @@ namespace EPlatform_API.Controllers.Identity
 
 
         private async Task<bool> IsSettingRoleParameterValid(List<string> rolesParameter){
-            var roles = await _context.Roles.Select(r => r.Name).ToListAsync();
+            var roles = await _context.Roles.Select(r => r.Id).ToListAsync();
             foreach (var role in rolesParameter)
             {
                 if (!roles.Contains(role)){

@@ -1,0 +1,30 @@
+<button class="create-btn" (click)="showSetRoleForm()">Set Role</button>
+
+<div class="another-form" id="set-role-form" >
+    <div class="form">
+        <div class="header">
+            <h1 class="title" >SET ROLE</h1>
+            <button class="close" (click)="hideSetRoleForm()" >
+                <span class="material-symbols--close"></span>
+            </button>
+        </div>
+        <form #formCreate="ngForm" >
+            <div class="select-check-box">
+                @for (role of roleList; track $index) {
+                    @if (role.isChecked) {
+                        <div class="form-check">
+                            <input class="form-check-input" [(ngModel)]="role.isChecked" checked type="checkbox" name="isChecked" id="">
+                            <label class="form-check-label" for="">{{role.roleName}}</label>
+                        </div>
+                    } @else {
+                        <div class="form-check">
+                            <input class="form-check-input" [(ngModel)]="role.isChecked" type="checkbox" name="" name="isChecked" id="">
+                            <label class="form-check-label" for="">{{role.roleName}}</label>
+                        </div>
+                    }
+                }
+            </div>
+            <button class="submit-btn" (click)="setRole()" [disabled]="false" >Set Role</button>
+        </form>
+    </div>
+</div>

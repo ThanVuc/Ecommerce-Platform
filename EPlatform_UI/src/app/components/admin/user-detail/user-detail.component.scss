@@ -1,0 +1,39 @@
+@import url(../share.scss);
+
+.header{
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title{
+        background-image: linear-gradient(to right, #C405AE, #999999);
+        background-clip: text;
+        color: transparent;
+        font-size: 3rem;
+    }
+
+    app-set-role{
+        margin-right: 1rem;
+    }
+}
+
+.avatar{
+    width: 80%;
+    height: auto;
+    border-radius: 50%;
+    border: 1px rgb(87, 84, 84) solid;
+}
+
+.information{
+    width: 100%;
+    height: auto;
+
+    .join{
+        display: flex;
+
+        p{
+            width: 40%;
+        }
+    }
+}

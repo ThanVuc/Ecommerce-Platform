@@ -18,5 +18,6 @@ namespace EPlatform_API.Models
         public string? National {get; set;}
         [Range(minimum:0, maximum: 150)]
         public int Age {get; set;}
+        public bool Gender {get; set;}
     }
 }

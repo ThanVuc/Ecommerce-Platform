@@ -13,9 +13,10 @@ namespace EPlatform_API.DTOs.AdminDTOs.Users
         public string? First {get; set;}
         public string? Last {get; set;}
         public string? AvatarImageUrl {get; set;}
-        public DateTime Create {get; set;} = DateTime.Now;
+        public DateTime Created {get; set;} = DateTime.Now;
         public string? National {get; set;}
         public int Age {get; set;}
         public string? PhoneNumber {get; set;}
+        public bool Gender {get; set;}
     }
 }

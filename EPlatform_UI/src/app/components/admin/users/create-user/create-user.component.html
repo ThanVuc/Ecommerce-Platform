@@ -1,0 +1,136 @@
+<button class="create-btn" (click)="showCreateForm()">Create User</button>
+
+<div class="another-form" id="create-form">
+  <div class="form">
+    <h1 class="title">CREATE USER</h1>
+    <form #formCreate="ngForm">
+      <div id="error-modal" class="error-modal">
+        <span class="extra-err">The Field Error: </span>
+          @if (first.invalid) {
+            <span class="extra-err">[First] </span>
+          }
+
+          @if (last.invalid){
+            <span class="extra-err">[Last] </span>
+          }
+
+          @if (username.invalid) {
+            <span class="extra-err">[Username] </span>
+          }
+
+          @if (password.invalid) {
+            <span class="extra-err">[Password] </span>
+          }
+
+          @if (confirm.invalid) {
+            <span class="extra-err">[Confirm-Password] </span>
+          }
+
+          @if (phone.invalid){
+            <span class="extra-err">[Phone Number] </span>
+            
+          }
+
+          @if (address.invalid){
+            <span class="extra-err">[Address] </span>
+          }
+        </div>
+
+
+      <div class="fullname">
+        <input
+          class="sub-input"
+          #first="ngModel"
+          type="text"
+          required
+          maxlength="64"
+          name="first"
+          [(ngModel)]="createUserModel.first"
+          placeholder="First"
+        />
+        <input
+          class="sub-input"
+          #last="ngModel"
+          type="text"
+          required
+          maxlength="64"
+          name="last"
+          [(ngModel)]="createUserModel.last"
+          placeholder="Last"
+        />
+      </div>
+
+      <input
+        class="text-input"
+        type="email"
+        email
+        required
+        minlength="3"
+        #username="ngModel"
+        name="username"
+        [(ngModel)]="createUserModel.username"
+        placeholder="Email"
+      />
+
+      <input
+        class="text-input"
+        type="password"
+        #password="ngModel"
+        required
+        minlength="3"
+        maxlength="64"
+        required
+        name="password"
+        [(ngModel)]="createUserModel.password"
+        placeholder="Password"
+      />
+
+      <input
+        class="text-input"
+        type="password"
+        #confirm="ngModel"
+        required
+        name="confirmPassword"
+        [(ngModel)]="createUserModel.confirmPassword"
+        placeholder="Confirm Password"
+      />
+
+      <input
+        class="text-input"
+        type="tel"
+        #phone="ngModel"
+        phone
+        required
+        name="phoneNumber"
+        [(ngModel)]="createUserModel.phoneNumber"
+        placeholder="Phone Number"
+      />
+
+      <input
+        class="text-input"
+        type="text"
+        #address="ngModel"
+        required
+        maxlength="512"
+        required
+        name="address"
+        [(ngModel)]="createUserModel.address"
+        placeholder="Address"
+      />
+
+      @if (formCreate.valid){
+      <button (click)="createUser()" class="submit-btn" [disabled]="false">
+        Create User
+      </button>
+      } @else {
+      <button
+        (click)="showError()"
+        class="submit-btn"
+      >
+        Create User
+      </button>
+      }
+    </form>
+    <p class="back" (click)="hideCreateForm()">Back To Role Side</p>
+  </div>
+</div>

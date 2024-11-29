@@ -1,0 +1,68 @@
+@import url(../../share.scss);
+
+
+
+.another-form{
+    display: none;
+    
+    .form{
+        width: 38%;
+        height: 80%;
+        border-radius: 1rem;
+
+        .header{
+            display: flex;
+            justify-content: space-between;
+            margin: 2% 0 12% 0;
+            
+
+            .title{
+                margin: 0;
+                position: relative;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .close{
+                color: red;
+                background-color: #0c0c0c;
+                border: none;  
+
+                .material-symbols--close{
+                    width: 2rem;
+                    height: 2rem;
+                }
+
+            }
+        
+        }
+        
+        form{
+            height: 60%;
+            
+            .submit-btn{
+                width: 40%;
+            }
+
+            .select-check-box{
+                display: grid;
+                width: 90%;
+                height: 90%;
+                grid-template-columns: 50% 50%;
+                grid-template-rows: 17% 17%;
+                overflow-y: scroll;
+
+
+                .form-check{
+                    text-overflow: clip;
+                    border: 1px solid rgba(0, 0, 0, 0.8);
+                    padding: 1.5rem;
+                }
+            }
+        }
+
+    }
+
+
+
+}

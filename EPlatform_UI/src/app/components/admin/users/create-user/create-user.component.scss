@@ -1,0 +1,64 @@
+@import url(../../share.scss);
+$background-color: #0d0d0d;
+$input-focus-underline-color: #cfcdcd;
+$input-underline-color: #ffffff; 
+
+.another-form{
+    .form{
+        margin-top: 1%;
+        width: 40%;
+        height: 92%;
+
+        .title{
+            margin: 5% 0 8% 0;
+
+        }
+
+        .fullname{
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+
+            .sub-input{
+                width: 48%;
+                background-color: $background-color;
+                border: none;
+                border-bottom: 1px $input-underline-color solid;
+                color: white;
+                -webkit-text-fill-color: white;
+                -webkit-box-shadow: 0 0 0px 1000px #000 inset;
+                margin-bottom: 3%;
+            }
+            
+            .sub-input:focus{
+                border-bottom: 1px $input-focus-underline-color solid;
+                outline: none;
+            }
+    
+            .sub-input::placeholder{
+                color: white;
+            }
+    
+        }
+
+        .back{
+            margin-top: 5%;
+            color: rgb(221, 220, 220);
+            text-align: center;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    }
+}
+
+.extra-err{
+    font-size: small;
+}
+
+.error-modal{
+    display: none;
+    z-index: 1200;
+    width: 80%;
+    height: auto;
+    margin-bottom: 1rem;
+}

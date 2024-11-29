@@ -4,6 +4,12 @@ $background-color: #0d0d0d;
 .container{
     display: flex;
     flex-direction: column;
+
+    .table-box{
+        width: 100%;
+        height: 65vh;
+        overflow-y: scroll;
+    }
 }
 
 .title{
@@ -53,26 +59,73 @@ $background-color: #0d0d0d;
 }
 
 .active{
-    display: flex;
-    align-items: center;
     cursor: pointer;
-
+    width: 2.5rem;
 
     .status{
-        width: 1rem;
+        width: 100%;
         height: 1rem;
-        background-color: aqua;
         border-radius: 0.5rem;
+
+        @keyframes translate-forward {
+            0%{
+                transform: translateX(0) translateY(-18%);
+            }
+            100%{
+                transform: translateX(1rem) translateY(-18%);
+            }
+        }
+
+        @keyframes translate-backward {
+            0%{
+                transform: translateX(1rem) translateY(-18%);
+            }
+            100%{
+                transform: translateX(0) translateY(-18%);
+            }
+        }
+
+        .trigger{
+            position: relative;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 1px black solid;
+            background-color: aqua;
+            border-radius: 0.75rem;
+            transform: translateY(-18%);
+        }
+
+        .on{
+            background-color: rgb(3, 178, 3);
+            animation: translate-forward 1s forwards;
+        }
+        
+        .off{
+            background-color: gray;
+            animation: translate-backward 1s forwards;
+        }
+
     }
     
     .on{
         background-color: rgb(3, 178, 3);
-        margin-left: 0.5rem;
     }
     
     .off{
         background-color: gray;
-        margin-right: 0.5rem;
     }
 }
 
+.action{
+    border: none;
+    border-radius: 0.6rem;
+    margin-right: 0.3rem;  
+}
+
+app-message{
+    position: absolute;
+    top: 40%;
+    left: 40%;
+    transform: translateX(-50%);
+    transform: translateY(-50%);
+}

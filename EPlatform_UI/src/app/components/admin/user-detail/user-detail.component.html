@@ -1,1 +1,56 @@
-<p>user-detail works!</p>
+<div class="header" >
+    <div class="title" >User Profile</div>
+    <app-set-role (set)="setRole($event)" ></app-set-role>
+</div>
+
+@if (isLoading){
+    <div class="spinner-border" role="status">
+        <span class="sr-only"></span>
+    </div>
+} @else {
+    <div class="container">
+        <div class="row">
+            <div class="col-3">
+                <img class="avatar" src="/assets/img/luoi.jpg" alt="">
+            </div>
+            <div class="col-9">
+                <div class="information">
+                    <p>Roles: {{userDetailModel.roles.join(', ')}}</p>
+                    <p class="user-info">
+                        Username: {{userDetailModel.username}} 
+                    </p>
+                    <div class="user-info join">
+                        <p>First: {{userDetailModel.first}}</p>
+                        <p>Last: {{userDetailModel.last}}</p>
+                    </div>
+                    <p class="user-info">
+                        Fullname: {{userDetailModel.last}} {{userDetailModel.first}}
+                    </p>
+                    <p class="user-info">
+                        Created: {{userDetailModel.created}}
+                    </p>
+                    <p class="user-info">
+                        Address: {{userDetailModel.address}}
+                    </p>
+                    <p class="user-info">
+                        National: {{userDetailModel.national}}
+                    </p>
+                    <div class="user-info join">
+                        <p>Age: {{userDetailModel.age}}</p>
+                        <p>Gender: @if (userDetailModel.gender){ Man } @else { Women }</p>
+                    </div>
+                    <p class="user-info">
+                        Email: {{userDetailModel.username}}
+                    </p>
+                    <p class="user-info">
+                        Phone Number: {{userDetailModel.phoneNumber}}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+<app-message></app-message>

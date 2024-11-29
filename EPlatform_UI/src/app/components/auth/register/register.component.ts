@@ -29,9 +29,6 @@ import { environment } from '../../../../environments/environment.development';
 export class RegisterComponent implements OnInit {
   ngOnInit(): void {
     this.titleService.setTitle(this.title);
-    if (this.document.defaultView?.localStorage){
-      this.authService.signOut();
-    }
   }
   title = "Sign Up";
   signUpModel: SignUpRequestModel = {

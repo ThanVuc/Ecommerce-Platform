@@ -54,8 +54,9 @@ export class AuthGuard implements CanActivate{
         })
       }).subscribe({
         next: (res) => resolve(res.data),
-        error: (_) => {
-          reject; 
+        error: (err) => {
+          reject;
+          console.error(err);
           isRefresh = false;
           this.router.navigate(["auth"], { replaceUrl: true});
         }

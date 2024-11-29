@@ -58,12 +58,13 @@ namespace EPlatform_API.Mappers
                 Address = user.HomeAddress,
                 Age = user.Age,
                 AvatarImageUrl = user.AvatarImageUrl,
-                Create = user.Create,
+                Created = user.Create,
                 First = user.First,
                 Last = user.Last,
                 National = user.National,
                 PhoneNumber = user.PhoneNumber,
-                Username = user.UserName
+                Username = user.UserName,
+                Gender = user.Gender
             };
         }
     }

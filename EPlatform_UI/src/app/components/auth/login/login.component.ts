@@ -47,9 +47,9 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.titleService.setTitle(this.title);
-    if (this.document.defaultView?.localStorage){
-      this.authService.signOut();
-    }
+    // if (this.document.defaultView?.localStorage){
+    //   this.authService.signOut();
+    // }
   }
 
   signIn(){

@@ -1,5 +1,14 @@
 @import url(../../icon.component.scss);
 $background-color: #0d0d0d;
+$input-focus-underline-color: #cfcdcd;
+$input-underline-color: #ffffff; 
+
+
+.spinner-border{
+    position: absolute;
+    left: 55%;
+    top: 40%;
+}
 
 .create-btn{
     margin-block: 1rem;
@@ -31,6 +40,8 @@ app-message{
     left: 0;
     width: 100%;
     height: 100%;
+    max-height: 100%;
+    overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
 
@@ -64,7 +75,7 @@ app-message{
                 width: 80%;
                 background-color: $background-color;
                 border: none;
-                border-bottom: 1px white solid;
+                border-bottom: 1px  solid $input-underline-color;
                 color: white;
                 -webkit-text-fill-color: white;
                 -webkit-box-shadow: 0 0 0px 1000px #000 inset;
@@ -72,7 +83,7 @@ app-message{
             }
             
             .text-input:focus{
-                border-bottom: 1px white solid;
+                border-bottom: 1px $input-focus-underline-color solid;
                 outline: none;
             }
 
