@@ -12,6 +12,7 @@ import { RouterLink } from '@angular/router';
 import { CreateUserComponent } from "./create-user/create-user.component";
 import { CreateUserModel } from '../models/users/create-user-model';
 import { time } from 'console';
+import { SearchService } from '../../services/search.service';
 
 @Component({
   selector: 'app-user',
@@ -26,6 +27,8 @@ export class UserComponent implements OnInit {
 
   ngOnInit(): void {
     this.initPage();
+    this.searchSVC.searchInputId = "search-input";
+    this.searchSVC.suggestionsId = "suggestions";
   }
   adminSVC = inject(AdminService);
   document = inject(DOCUMENT);
@@ -42,6 +45,7 @@ export class UserComponent implements OnInit {
 
   listSuggestions: string[] = [];
   timer!: NodeJS.Timeout | null;
+  searchSVC = inject(SearchService);
 
 
   initPage() {
@@ -69,47 +73,21 @@ export class UserComponent implements OnInit {
   debounce(){
     this.timer = null;
     this.timer = setTimeout(() => {
-      this.showSuggestion();
-    },300)
-  }
-
-  showSuggestion() {
-    this.adminSVC.getSuggestionOfUser(this.searchString)
+      this.adminSVC.getSuggestionOfUser(this.searchString)
       .subscribe({
         next: (res) => {
           this.listSuggestions = res.data;
-          const suggestions = this.document.getElementById("suggestions");
-          const searchInput = this.document.getElementById("search-input");
-
-          if (suggestions) {
-            suggestions.style.display = "block";
-          }
-
-          this.document.addEventListener("click", (event) => {
-            if (!suggestions?.contains(event.target as Node) && searchInput !== suggestions){
-              this.hideSuggestion();
-            }
-          });
-
-      },
-        error: (error) => {
-          console.log(error);
+          this.searchSVC.showSuggestions();
         }
-        });
-}
-
-hideSuggestion(){
-  const suggestions = this.document.getElementById("suggestions");
-  if (suggestions){
-    suggestions.style.display = 'none';
+      })
+    },300)
   }
-}
 
-setInput(suggestion: string){
-  this.searchString = suggestion;
-  this.paginator.pageChange(1);
-  this.hideSuggestion();
-}
+  setInput(suggestion: string){
+    this.searchString = suggestion;
+    this.paginator.pageChange(1);
+    this.searchSVC.hideSuggestions();
+  }
 
 loadPage(pageModel: PageModel) {
   this.pageIndex = pageModel.pageIndex;
