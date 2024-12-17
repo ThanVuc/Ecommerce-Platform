@@ -83,4 +83,9 @@ export class AdminService {
     };
     return this.http.post<ApiResModel<object>>(environment.SettingRoleOfUser + userId + "/setting-role-for-user",model);
   }
+
+  getSuggestionOfUser(searchString: string) : Observable<ApiResModel<string[]>> {
+    return this.http.get<ApiResModel<string[]>>(environment.SuggestionOfUser+searchString);
+  }
+
 }

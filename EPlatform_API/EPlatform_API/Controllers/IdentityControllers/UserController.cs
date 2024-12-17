@@ -8,6 +8,7 @@ using EPlatform_API.DTOs.AdminDTOs.Users;
 using EPlatform_API.DTOs.ApiStandard;
 using EPlatform_API.DTOs.AuthDTOs.Users;
 using EPlatform_API.Helper;
+using EPlatform_API.IServices;
 using EPlatform_API.Mappers;
 using EPlatform_API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -26,17 +27,20 @@ namespace EPlatform_API.Controllers.Identity
         private readonly UserManager<AppUser> _userManager;
         private readonly AppDbContext _context;
         private readonly ILogger<UserController> _logger;
+        private IQueryingServices _queryingService;
 
         public UserController(
             UserManager<AppUser> userManager,
             RoleManager<IdentityRole> roleManager,
             AppDbContext dbContext,
-            ILogger<UserController> logger
+            ILogger<UserController> logger,
+            IQueryingServices queryingServices
         )
         {
             _userManager = userManager;
             _context = dbContext;
             _logger = logger;
+            _queryingService = queryingServices;
         }
 
         [HttpGet]
@@ -44,10 +48,10 @@ namespace EPlatform_API.Controllers.Identity
         {
             var usersQueryable = _userManager.Users;
             
-            if (!queryString.SearchString.IsNullOrEmpty()){
-                usersQueryable = usersQueryable.Where(u => u.UserName.Contains(queryString.SearchString));
-            }       
-            
+            if (queryString.SearchString != null){
+                usersQueryable = await _queryingService.SearchUserAsync(queryString.SearchString);
+            }
+
             var users = PageList<AppUser>.ToPageList(usersQueryable, queryString.PageNumber, queryString.PageSize);
             users.AddPagingInfoToHeader(Response);
             var usersApiResponse = new List<object>();
@@ -76,7 +80,16 @@ namespace EPlatform_API.Controllers.Identity
                 Data = usersApiResponse
             });
         }
-    
+        
+        [HttpGet("suggest")]
+        public async Task<IActionResult> GetUsersSuggest([FromQuery] UserQueryStringModel queryString){
+            var users = await _queryingService.GetUserSuggestionAsync(queryString.SearchString);
+            return Ok(new ApiResponseStandard<List<string>>(){
+                Data = users
+            });
+        }
+
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser(CreateUserRequestModel createUserModel){
             if (!ModelState.IsValid){

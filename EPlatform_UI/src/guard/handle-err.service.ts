@@ -10,7 +10,6 @@ export class HandleErrService implements HttpInterceptor {
 
   constructor(private router: Router) { }
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    console.log("In INTERCEPTER");
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 403) {

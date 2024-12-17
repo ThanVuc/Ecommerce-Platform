@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CreateUserComponent } from "./create-user/create-user.component";
 import { CreateUserModel } from '../models/users/create-user-model';
+import { time } from 'console';
 
 @Component({
   selector: 'app-user',
@@ -22,7 +23,7 @@ import { CreateUserModel } from '../models/users/create-user-model';
 export class UserComponent implements OnInit {
   @ViewChild(PaginationComponent) paginator!: PaginationComponent;
   @ViewChild(MessageComponent) messager!: MessageComponent;
-  
+
   ngOnInit(): void {
     this.initPage();
   }
@@ -38,22 +39,25 @@ export class UserComponent implements OnInit {
   isLoading = true;
 
   users: UserModel[] = [];
-  
 
-  initPage(){
-    this.adminSVC.getUsers(1,1,this.searchString).pipe(
+  listSuggestions: string[] = [];
+  timer!: NodeJS.Timeout | null;
+
+
+  initPage() {
+    this.adminSVC.getUsers(1, 1, this.searchString).pipe(
       map(res => {
         const paginationInfo = res.headers.get("X-Pagination");
-          let data: PaginationInfoModel | null = null;
-          if (paginationInfo != null){
-            data = JSON.parse(paginationInfo);
-          }
+        let data: PaginationInfoModel | null = null;
+        if (paginationInfo != null) {
+          data = JSON.parse(paginationInfo);
+        }
 
-          if (data?.TotalItem){
-            this.totalItem = data.TotalItem;
-          }
+        if (data?.TotalItem) {
+          this.totalItem = data.TotalItem;
+        }
 
-          return res.body;
+        return res.body;
       })
     ).subscribe({
       complete: () => {
@@ -62,63 +66,108 @@ export class UserComponent implements OnInit {
     });
   }
 
-  loadPage(pageModel: PageModel){
-    this.pageIndex = pageModel.pageIndex;
-    this.limit = pageModel.pageSize;
-    this.adminSVC.getUsers(this.pageIndex,this.limit,this.searchString).pipe(
-      map(res => {
-        const paginationInfo = res.headers.get("X-Pagination");
-          let data: PaginationInfoModel | null = null;
-          if (paginationInfo != null){
-            data = JSON.parse(paginationInfo);
-          }
-
-          if (data?.TotalItem){
-            this.totalItem = data.TotalItem;
-          }
-
-          return res.body;
-      })
-    ).subscribe({
-      next: (res) => {
-        if (res?.data){
-          this.users = res.data;
-          this.isLoading = false;
-        };
-        
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    });
+  debounce(){
+    this.timer = null;
+    this.timer = setTimeout(() => {
+      this.showSuggestion();
+    },300)
   }
 
-  changeStatus(id: string){
-    if (confirm("Are you sure to change user status?")){
-      this.adminSVC.changeUserStatus(id).subscribe({
+  showSuggestion() {
+    this.adminSVC.getSuggestionOfUser(this.searchString)
+      .subscribe({
         next: (res) => {
-          console.log(res.message);
-          this.paginator.pageChange(this.pageIndex);
-        },
-        error: (err) => {
-          console.log(err);
-        }
-      })
-    }
-  }
+          this.listSuggestions = res.data;
+          const suggestions = this.document.getElementById("suggestions");
+          const searchInput = this.document.getElementById("search-input");
 
-  createUser(createUserModel: CreateUserModel){
-    this.adminSVC.createUserModel(createUserModel).subscribe({
+          if (suggestions) {
+            suggestions.style.display = "block";
+          }
+
+          this.document.addEventListener("click", (event) => {
+            if (!suggestions?.contains(event.target as Node) && searchInput !== suggestions){
+              this.hideSuggestion();
+            }
+          });
+
+      },
+        error: (error) => {
+          console.log(error);
+        }
+        });
+}
+
+hideSuggestion(){
+  const suggestions = this.document.getElementById("suggestions");
+  if (suggestions){
+    suggestions.style.display = 'none';
+  }
+}
+
+setInput(suggestion: string){
+  this.searchString = suggestion;
+  this.paginator.pageChange(1);
+  this.hideSuggestion();
+}
+
+loadPage(pageModel: PageModel) {
+  this.pageIndex = pageModel.pageIndex;
+  this.limit = pageModel.pageSize;
+  this.adminSVC.getUsers(this.pageIndex, this.limit, this.searchString).pipe(
+    map(res => {
+      const paginationInfo = res.headers.get("X-Pagination");
+      let data: PaginationInfoModel | null = null;
+      if (paginationInfo != null) {
+        data = JSON.parse(paginationInfo);
+      }
+
+      if (data?.TotalItem) {
+        this.totalItem = data.TotalItem;
+      }
+
+      return res.body;
+    })
+  ).subscribe({
+    next: (res) => {
+      if (res?.data) {
+        this.users = res.data;
+        this.isLoading = false;
+      };
+
+    },
+    error: (err) => {
+      console.log(err);
+    }
+  });
+}
+
+changeStatus(id: string) {
+  if (confirm("Are you sure to change user status?")) {
+    this.adminSVC.changeUserStatus(id).subscribe({
       next: (res) => {
+        console.log(res.message);
         this.paginator.pageChange(this.pageIndex);
-        this.messager.showModal("success","Create User Success");
       },
       error: (err) => {
         console.log(err);
-        this.messager.showModal("fail",err);
       }
     })
   }
 }
+
+createUser(createUserModel: CreateUserModel) {
+  this.adminSVC.createUserModel(createUserModel).subscribe({
+    next: (res) => {
+      this.paginator.pageChange(this.pageIndex);
+      this.messager.showModal("success", "Create User Success");
+    },
+    error: (err) => {
+      console.log(err);
+      this.messager.showModal("fail", err);
+    }
+  })
+}
+  }
 
 

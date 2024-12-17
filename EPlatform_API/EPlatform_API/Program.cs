@@ -74,6 +74,9 @@ services.AddTransient<IUnitOfWork,UnitOfWork>();
 services.AddTransient<ITokenService,TokenService>();
 services.AddTransient<IPasswordHasher,PasswordHasher>();
 services.AddSingleton<ISendMailService,SendMailService>();
+services.AddScoped<ISeedDataService,SeedDataService>();
+services.AddScoped<IQueryingServices,QueryingServices>();
+services.AddScoped<IRedisServices, RedisServices>();
 
 var app = builder.Build();
 

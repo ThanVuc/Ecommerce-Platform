@@ -1,67 +1,76 @@
 <div class="container">
-    <h3 class="title" >User Management</h3>
+    <h3 class="title">User Management</h3>
     <div class="tool">
-        <div class="search-bar" >
-            <span class="iconamoon--search-light"></span>
-            <input type="text" (keyup.enter)="paginator.pageChange(pageIndex)" [(ngModel)]="searchString" name="searchString" placeholder="Search Here!" >
+        <div class="autocomplete-container">
+            <div class="search-bar">
+                <span class="iconamoon--search-light"></span>
+                <input id="search-input" (input)="debounce()" type="text" (keyup.enter)="paginator.pageChange(pageIndex)" [(ngModel)]="searchString"
+                    name="searchString" placeholder="Search Here!">
+            </div>
+            <div id="suggestions" class="autocomplete-suggestions">
+                @for (suggestion of listSuggestions; track $index) {
+                    <div (click)="setInput(suggestion)" class="autocomplete-suggestion" >{{ suggestion }}</div>
+                }
+            </div>
         </div>
-        <app-create-user (create)="createUser($event)" ></app-create-user>
+
+        <app-create-user (create)="createUser($event)"></app-create-user>
     </div>
     @if (isLoading){
-        <div class="spinner-border" role="status">
-            <span class="sr-only"></span>
-        </div>
+    <div class="spinner-border" role="status">
+        <span class="sr-only"></span>
+    </div>
     } @else {
-        <div class="table-box">
-            <table class="table table-dark table-striped" >
-                <thead>
-                    <tr>
-                        <th>Username</th>
-                        <th>Created</th>
-                        <th>Role</th>
-                        <th>Active</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (user of users; track $index) {
-                        <tr>
-                            <td>{{user.username}}</td>
-                            <td>{{user.created | date:'mediumDate'}}</td>
-                            <td>
-                                @for (role of user.roles; track $index) {
-                                    <span>{{role}}</span>
-                                }
-                            </td>
-                            <td>
-                                <div class="active" (click)="changeStatus(user.id)">
-                                    @if (user.active) {
-                                        <div class="status on">
-                                            <div class="trigger on"></div>
-                                        </div>
-                                    } @else {
-                                        <div class="status off">
-                                            <div class="trigger off"></div>
-                                        </div>
-                                    }
-                                </div>
-    
-    
-                            </td>
-                            <td>
-                                <button class="action" routerLink="/admin/users/{{user.id}}" >
-                                    <span class="icon-park-outline--view-grid-detail"></span>
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-2">
-            <app-pagination [pageIndex]="pageIndex" [limit]="limit" [totalItem]="totalItem" (page)="loadPage($event)" ></app-pagination>
-        </div>
-    } 
+    <div class="table-box">
+        <table class="table table-dark table-striped">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Created</th>
+                    <th>Role</th>
+                    <th>Active</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (user of users; track $index) {
+                <tr>
+                    <td>{{user.username}}</td>
+                    <td>{{user.created | date:'mediumDate'}}</td>
+                    <td>
+                        @for (role of user.roles; track $index) {
+                        <span>{{role}}</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="active" (click)="changeStatus(user.id)">
+                            @if (user.active) {
+                            <div class="status on">
+                                <div class="trigger on"></div>
+                            </div>
+                            } @else {
+                            <div class="status off">
+                                <div class="trigger off"></div>
+                            </div>
+                            }
+                        </div>
+
+
+                    </td>
+                    <td>
+                        <button class="action" routerLink="/admin/users/{{user.id}}">
+                            <span class="icon-park-outline--view-grid-detail"></span>
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-2">
+        <app-pagination [pageIndex]="pageIndex" [limit]="limit" [totalItem]="totalItem"
+            (page)="loadPage($event)"></app-pagination>
+    </div>
+    }
 </div>
 <app-message></app-message>
-            
