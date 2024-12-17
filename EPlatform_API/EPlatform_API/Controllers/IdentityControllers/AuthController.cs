@@ -37,6 +37,7 @@ namespace EPlatform_API.Controllers.Identity
         private readonly ISendMailService _sendMailService;
         private readonly DistributedCacheEntryOptions cacheOption;
         private readonly AppDbContext _dbContext;
+        private readonly ILoggingService _loggingService;
         public AuthController(
             ILogger<AuthController> logger, 
             IDistributedCache cache,
@@ -47,7 +48,8 @@ namespace EPlatform_API.Controllers.Identity
             SignInManager<AppUser> signInManager,
             UserManager<AppUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            AppDbContext appDbContext
+            AppDbContext appDbContext,
+            ILoggingService loggingService
         )
         {
             _logger = logger;
@@ -59,6 +61,7 @@ namespace EPlatform_API.Controllers.Identity
             _signInManager = signInManager;
             _roleManager = roleManager;
             _dbContext = appDbContext;
+            _loggingService = loggingService;
             cacheOption = new DistributedCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromDays(7));
         }
@@ -118,6 +121,8 @@ namespace EPlatform_API.Controllers.Identity
                 Message = "Login Successful",
                 Data = tokenResponse
             };
+
+            await _loggingService.WriteAccountLog(@$"login---account:{user.UserName}---id:{user.Id}---time:{DateTime.Now}");
 
             return StatusCode(200, response);
         }
@@ -226,6 +231,8 @@ namespace EPlatform_API.Controllers.Identity
                 };
 
                 transaction.Commit();
+                await _loggingService.WriteAccountLog(@$"register---account:{user.UserName}---id:{user.Id}---time:{DateTime.Now}");
+
 
                 return StatusCode(201,response);
             }
@@ -275,6 +282,8 @@ namespace EPlatform_API.Controllers.Identity
                     Timestamp = DateTime.Now
                 });
             }
+
+            await _loggingService.WriteAccountLog(@$"reset-password---account:{user.UserName}---id:{user.Id}---time:{DateTime.Now}");
 
             return Ok(new ApiResponseStandard<object>{
                 Status = 200,
@@ -337,6 +346,9 @@ namespace EPlatform_API.Controllers.Identity
                 jwtToken.RefreshToken,
                 cacheOption
             );
+
+            await _loggingService.WriteAccountLog(@$"recovery-password---account:{user.UserName}---id:{user.Id}---time:{DateTime.Now}");
+
 
             return Ok(new ApiResponseStandard<JwtTokenReponseModel>{
                 Status = 200,

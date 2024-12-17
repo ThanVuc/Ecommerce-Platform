@@ -8,6 +8,7 @@ using EPlatform_API.Data;
 using EPlatform_API.DTOs.AdminDTOs.Roles;
 using EPlatform_API.DTOs.ApiStandard;
 using EPlatform_API.Helper;
+using EPlatform_API.IServices;
 using EPlatform_API.Mappers;
 using EPlatform_API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -26,15 +27,18 @@ namespace EPlatform_API.Controllers.Identity
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly AppDbContext _context;
+        private readonly ILoggingService _loggingSVC;
         public RoleController(
             RoleManager<IdentityRole> roleManager,
             UserManager<AppUser> userManager,
-            AppDbContext appDbContext
+            AppDbContext appDbContext,
+            ILoggingService loggingService
         )
         {
             _roleManager = roleManager;
             _userManager = userManager;
             _context = appDbContext;
+            _loggingSVC = loggingService;
         }
 
         [HttpGet("role-layout"), Authorize]
@@ -166,6 +170,8 @@ namespace EPlatform_API.Controllers.Identity
                 });
             }
 
+            await _loggingSVC.WriteRoleLog(@$"admin:{User.Identity.Name}---add-role---role:{createRoleModel.RoleName}---time:{DateTime.Now}");
+
             return StatusCode(201, new ApiResponseStandard<string>
             {
                 Status = 201,
@@ -197,6 +203,9 @@ namespace EPlatform_API.Controllers.Identity
                     Message = errString
                 });
             }
+
+            await _loggingSVC.WriteRoleLog(@$"admin:{User.Identity.Name}---delete-role---role:{deleteRole.Name}---time:{DateTime.Now}");
+
 
             return Ok(new ApiResponseStandard<string>
             {
@@ -237,6 +246,9 @@ namespace EPlatform_API.Controllers.Identity
                     Message = errString
                 });
             }
+
+            await _loggingSVC.WriteRoleLog(@$"admin:{User.Identity.Name}---update-role---role:{updateRole.Name}---time:{DateTime.Now}");
+
 
             return Ok(new ApiResponseStandard<string>
             {
@@ -350,6 +362,9 @@ namespace EPlatform_API.Controllers.Identity
                     Message = errStr
                 });
             }
+
+            await _loggingSVC.WriteRoleLog(@$"admin:{User.Identity.Name}---add-role-claim---role:{role.Name}---claim:{addClaimModel.ClaimType}---time:{DateTime.Now}");
+
             return Ok(new ApiResponseStandard<object>
             {
                 Status = 200,
@@ -384,6 +399,9 @@ namespace EPlatform_API.Controllers.Identity
 
             _context.RoleClaims.Remove(claim);
             await _context.SaveChangesAsync();
+
+            await _loggingSVC.WriteRoleLog(@$"admin:{User.Identity.Name}---dlete-role-claim---role:{role.Name}---claim:{claim.ClaimType}---time:{DateTime.Now}");
+
             return Ok(new ApiResponseStandard<object>
             {
                 Status = 200,
@@ -425,6 +443,8 @@ namespace EPlatform_API.Controllers.Identity
             claim.ClaimValue = updateClaimModel.ClaimValue;
 
             await _context.SaveChangesAsync();
+
+            await _loggingSVC.WriteRoleLog(@$"admin:{User.Identity.Name}---update-role-claim---role:{role.Name}---claim:{claim.ClaimType}---time:{DateTime.Now}");
             return Ok(new ApiResponseStandard<string>
             {
                 Status = 200,

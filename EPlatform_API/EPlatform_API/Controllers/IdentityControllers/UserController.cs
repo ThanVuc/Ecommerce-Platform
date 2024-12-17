@@ -27,6 +27,7 @@ namespace EPlatform_API.Controllers.Identity
         private readonly UserManager<AppUser> _userManager;
         private readonly AppDbContext _context;
         private readonly ILogger<UserController> _logger;
+        private readonly ILoggingService _loggingSVC;
         private IQueryingServices _queryingService;
 
         public UserController(
@@ -34,13 +35,15 @@ namespace EPlatform_API.Controllers.Identity
             RoleManager<IdentityRole> roleManager,
             AppDbContext dbContext,
             ILogger<UserController> logger,
-            IQueryingServices queryingServices
+            IQueryingServices queryingServices,
+            ILoggingService loginSVC
         )
         {
             _userManager = userManager;
             _context = dbContext;
             _logger = logger;
             _queryingService = queryingServices;
+            _loggingSVC = loginSVC;
         }
 
         [HttpGet]
@@ -89,9 +92,8 @@ namespace EPlatform_API.Controllers.Identity
             });
         }
 
-
         [HttpPost("create")]
-        public async Task<IActionResult> CreateUser(CreateUserRequestModel createUserModel){
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestModel createUserModel){
             if (!ModelState.IsValid){
                 return BadRequest();
             }
@@ -136,6 +138,10 @@ namespace EPlatform_API.Controllers.Identity
                 }
 
                 transaction.Commit();
+
+                await _loggingSVC.WriteAccountLog(@$"admin---create-user---account:{createUserModel.Username}---time:{DateTime.Now}");
+
+
                 return StatusCode(201, new ApiResponseStandard<string>{
                     Status = 201,
                     Message = "Create Successful",
@@ -173,6 +179,8 @@ namespace EPlatform_API.Controllers.Identity
                     Message = "This service is occurred some error, please try again"
                 }));
             }
+
+            await _loggingSVC.WriteAccountLog(@$"admin---lock-user---account:{user.UserName}---id:{user.Id}---time:{DateTime.Now}");
             
             return Ok(new ApiResponseStandard<bool>{
                 Status = 200,
@@ -209,6 +217,8 @@ namespace EPlatform_API.Controllers.Identity
             _context.UserRoles.RemoveRange(removeListObject);
             await _context.UserRoles.AddRangeAsync(addListObject);
             await _context.SaveChangesAsync();
+
+            await _loggingSVC.WriteAccountLog(@$"admin---setting-role-for-user---id:{id}---time:{DateTime.Now}");
 
             return Ok(new ApiResponseStandard<object>{
                 Status = 200,

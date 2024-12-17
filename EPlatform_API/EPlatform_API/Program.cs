@@ -77,6 +77,7 @@ services.AddSingleton<ISendMailService,SendMailService>();
 services.AddScoped<ISeedDataService,SeedDataService>();
 services.AddScoped<IQueryingServices,QueryingServices>();
 services.AddScoped<IRedisServices, RedisServices>();
+services.AddSingleton<ILoggingService, LoggingService>();
 
 var app = builder.Build();
 
