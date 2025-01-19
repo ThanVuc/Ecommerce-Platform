@@ -18,6 +18,8 @@ import { UserComponent } from './components/admin/users/user.component';
 import { UserDetailComponent } from './components/admin/user-detail/user-detail.component';
 import { NotFoundError } from 'rxjs';
 import { NotFoundPageComponent } from './shares/reusable/not-found-page/not-found-page.component';
+import { ProductsComponent } from './components/shopowner/products/products.component';
+import { AddProductComponent } from './components/shopowner/add-product/add-product.component';
 
 export const routes: Routes = [
     {
@@ -88,9 +90,18 @@ export const routes: Routes = [
         ]
     },
     {
-        path: 'shop-owner',
+        path: 'shop-owner/:shop_id',
         component: ShopownerlayoutComponent,
-        canActivate: [AuthGuard]
+        loadChildren: () => [
+            {
+                path: "products",
+                component: ProductsComponent
+            },
+            {
+                path: "add-product",
+                component: AddProductComponent
+            }
+        ]
     },
     {
         path: '**',

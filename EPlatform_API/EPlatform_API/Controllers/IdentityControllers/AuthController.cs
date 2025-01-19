@@ -23,7 +23,7 @@ using StackExchange.Redis;
 
 namespace EPlatform_API.Controllers.Identity
 {
-    [Route("/api/auth")]
+    [Route("/api/v1/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {

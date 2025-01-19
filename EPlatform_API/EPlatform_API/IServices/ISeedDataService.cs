@@ -8,5 +8,10 @@ namespace EPlatform_API.IServices
     public interface ISeedDataService
     {
         public Task SeedUserData();
+        public Task SeedShopData();
+
+        Task SeedRoleData();
+        Task SeedVietnameseLocationData();
+        Task SeedDatabase();
     }
 }

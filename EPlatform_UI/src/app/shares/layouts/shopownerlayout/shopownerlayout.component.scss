@@ -1,0 +1,195 @@
+@import url(../../../icon.component.scss);
+
+$background-color: #0C0C0F;
+$text-color: #ece8e8;
+
+@media screen and (max-width: 800px) {
+    .sidebar {
+        display: none;
+        z-index: 10;
+    }
+
+    .content {
+        width: 95vw !important;
+        z-index: 1;
+    }
+
+    .black-curtain {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: $background-color;
+        opacity: 0.7;
+        z-index: 5;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .sidebar-toggle {
+        display: none;
+    }
+
+    .content {
+        margin-left: 12.5rem;
+    }
+}
+
+@media screen and (max-height: 25rem) {
+    .sidebar {
+        overflow-y: scroll;
+        z-index: 100000;
+    }
+}
+
+.show-sidebar {
+    display: block;
+}
+
+.container-fruid {
+    background-color: $background-color;
+    color: $text-color;
+    font-size: inherit;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+
+    .row {
+        background-color: $background-color;
+        margin: 0;
+    }
+
+    .sidebar {
+        margin-top: 1vh;
+        width: 12.5rem;
+        height: 96vh;
+        position: fixed;
+        box-shadow: 4px 2px 6px 2px #424242;
+        background-color: $background-color;
+        border-radius: 10px;
+
+        .sidebar-toggle-collapse {
+            position: relative;
+            top: 2.2rem;
+            background-color: #0C0C0F;
+            padding-top: 0.5rem;
+            border: none;
+            // overflow: hidden;
+
+            .quill--hamburger-sidebar {
+                width: 1.5rem;
+                height: 1.5rem;
+                background-color: white;
+            }
+        }
+
+        .sidebar-toggle-collapse:hover {
+            cursor: pointer;
+            background-color: #5a5a6e;
+            border-radius: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: xx-large;
+            font-family: 'Courier New', Courier, monospace;
+            padding-top: 10px;
+
+            img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .logo-name {
+                margin-left: 5px;
+                margin-top: 1rem;
+            }
+
+        }
+
+        .seperator {
+            display: flex;
+            justify-content: center;
+
+            .seperate {
+                width: 80%;
+                height: 1px;
+                border: solid 1px #ece8e8;
+            }
+        }
+
+        .dropdown-list {
+            margin-top: 15%;
+
+            .dropdown-button {
+                background-color: $background-color;
+                width: 100%;
+                border: none;
+                color: $text-color;
+                padding: 0;
+                margin-bottom: 4%;
+                display: flex;
+                font-size: large;
+                font-weight: bold;
+
+                .name {
+                    width: 100%;
+                    text-align: center;
+                    // background-color: rgb(102, 108, 108);
+                }
+
+                .mingcute--down-line {
+                    color: $text-color;
+                }
+            }
+
+            .dropdown-item {
+                text-align: center;
+                margin-bottom: 3%;
+                font-size: medium;
+                display: none;
+            }
+
+            .show-item {
+                display: block;
+            }
+
+            .active {
+                color: #CE23CC;
+            }
+        }
+    }
+
+
+    .content {
+        // flex-grow: 1;
+        width: 80vw;
+        min-height: 100vh;
+
+        .sidebar-toggle {
+            position: relative;
+            top: 2.2rem;
+            background-color: #0C0C0F;
+            padding-top: 0.5rem;
+            border: none;
+
+            .quill--hamburger-sidebar {
+                width: 1.5rem;
+                height: 1.5rem;
+                background-color: white;
+            }
+        }
+
+        .sidebar-toggle:hover {
+            cursor: pointer;
+            background-color: #5a5a6e;
+            border-radius: 1rem;
+        }
+
+
+    }
+}

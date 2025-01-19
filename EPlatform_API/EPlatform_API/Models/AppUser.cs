@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlatform_API.Models.ShopOwners;
 using Microsoft.AspNetCore.Identity;
 
 namespace EPlatform_API.Models
@@ -19,5 +20,7 @@ namespace EPlatform_API.Models
         [Range(minimum:0, maximum: 150)]
         public int Age {get; set;}
         public bool Gender {get; set;}
+        public Shop? Shop {get; set;}
+        public ICollection<Order>? Orders {get; set;}
     }
 }

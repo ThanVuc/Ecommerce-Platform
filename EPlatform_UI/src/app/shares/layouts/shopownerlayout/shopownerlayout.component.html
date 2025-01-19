@@ -1,1 +1,60 @@
-<p>shopownerlayout works!</p>
+<div class="container-fruid">
+    <div class="row">
+        <div class="black-curtain" (click)="hideSidebar()" ></div>
+        <div class="sidebar">
+            <div class="logo">
+                <img src="/assets/img/shopping_logo.jpg" alt="not-found">
+                <p class="logo-name" >YSHOP</p>
+            </div>
+
+            <div class="seperator">
+                <div class="seperate"></div>
+            </div>
+
+            <div id="orders" class="dropdown-list">
+                <button class="dropdown-button" (click)="dropDown($event)" >
+                    <div class="name">Orders</div>
+                    <span class="mingcute--down-line"></span>
+                </button>
+
+                <a routerLink="/shop-owner/{{shop_id}}/orders" routerLinkActive="active" class="dropdown-item">All Orders</a>
+            </div>
+
+            <div id="products" class="dropdown-list">
+                <button class="dropdown-button" (click)="dropDown($event)">
+                    <div class="name">Products</div>
+                    <span class="mingcute--down-line"></span>
+                </button>
+
+                <a routerLink="/shop-owner/{{shop_id}}/products" routerLinkActive="active" class="dropdown-item">All Products</a>
+                <a routerLink="/shop-owner/{{shop_id}}/add-product" routerLinkActive="active" class="dropdown-item">Add Product</a>
+            </div>
+
+            <div id="analysic" class="dropdown-list">
+                <button class="dropdown-button" (click)="dropDown($event)">
+                    <div class="name">Analysic & Statistic</div>
+                    <span class="mingcute--down-line"></span>
+                </button>
+
+                <a routerLink="/shop-owner/{{shop_id}}/statistic-revanues" routerLinkActive="active" class="dropdown-item">Revenues</a>
+            </div>
+
+            <div class="seperator mt-4">
+                <div class="seperate"></div>
+            </div>
+
+            <div id="setting" class="dropdown-list">
+                <button class="dropdown-button" (click)="dropDown($event)">
+                    <div class="name">Shop Setting</div>
+                    <span class="mingcute--down-line"></span>
+                </button>
+
+                <a routerLink="/shop-owner/{{shop_id}}/shop-setting" routerLinkActive="active" class="dropdown-item">Edit Shop Profile</a>
+            </div>
+        </div>
+        <div class="content">
+            <button class="sidebar-toggle" (click)="showSideBar($event)" ><span class="quill--hamburger-sidebar"></span></button>
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

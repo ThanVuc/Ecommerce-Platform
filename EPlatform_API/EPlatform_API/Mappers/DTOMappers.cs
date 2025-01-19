@@ -5,7 +5,11 @@ using System.Threading.Tasks;
 using EPlatform_API.DTOs.AdminDTOs;
 using EPlatform_API.DTOs.AdminDTOs.Users;
 using EPlatform_API.DTOs.AuthDTOs;
+using EPlatform_API.DTOs.ProductDTOs;
+using EPlatform_API.DTOs.ShopDTOs;
+using EPlatform_API.ExtensionMethods;
 using EPlatform_API.Models;
+using EPlatform_API.Models.ShopOwners;
 using Microsoft.AspNetCore.Identity;
 
 namespace EPlatform_API.Mappers
@@ -65,6 +69,38 @@ namespace EPlatform_API.Mappers
                 PhoneNumber = user.PhoneNumber,
                 Username = user.UserName,
                 Gender = user.Gender
+            };
+        }
+    
+        public static Shop ToShop(this CreateShopRequest createShopRequest){
+            return new Shop(){
+                ShopId = createShopRequest.ShopId,
+                Name = createShopRequest.Name,
+                CreatedAt = createShopRequest.CreatedAt,
+                UpdatedAt = createShopRequest.UpdatedAt,
+                Slug = UtilityServices.GenerateSlug(createShopRequest.Name),
+                PickUpAddress = createShopRequest.PickUpAddress,
+                ShopAddress = createShopRequest.ShopAddress,
+                Phone = createShopRequest.Phone,
+                Email = createShopRequest.Email,
+                InvoiceEmail = createShopRequest.InvoiceEmail,
+                TaxesCode = createShopRequest.TaxesCode,
+                IdentificationNumber = createShopRequest.IdentificationNumber
+            };
+        } 
+    
+        public static Product ToProduct(this AddProductRequest addProductRequest){
+            return new Product(){
+                ShopId = addProductRequest.ShopId,
+                Name = addProductRequest.Name,
+                Description = addProductRequest.Description,
+                Price = addProductRequest.Price,
+                IsPublic = addProductRequest.IsPublic,
+                CategoryId = addProductRequest.CategoryId,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                Code = addProductRequest.Code,
+                Slug = UtilityServices.GenerateSlug(addProductRequest.Name)
             };
         }
     }

@@ -17,6 +17,12 @@ namespace EPlatform_API.Services
         public async Task IncreaseSearchTermCount(string searchTerm)
         {
             var db = RedisManager.Connection.GetDatabase();
+
+            if (!await db.KeyExistsAsync($"search_count:{searchTerm}"))
+            {
+                await db.StringSetAsync($"search_count:{searchTerm}", 0, TimeSpan.FromDays(2));
+            }
+            
             await db.StringIncrementAsync($"search_count:{searchTerm}");
         }
     }

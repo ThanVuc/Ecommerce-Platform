@@ -19,7 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace EPlatform_API.Controllers.Identity
 {
-    [Route("api/users")]
+    [Route("api/v1/users")]
     [ApiController]
     [Authorize(Policy = "UserManagePolicy")]
     public class UserController : ControllerBase

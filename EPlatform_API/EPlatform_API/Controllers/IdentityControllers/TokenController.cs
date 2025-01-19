@@ -15,7 +15,7 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace EPlatform_API.Controllers.Identity
 {
-    [Route("api/token")]
+    [Route("api/v1/token")]
     public class TokenController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;

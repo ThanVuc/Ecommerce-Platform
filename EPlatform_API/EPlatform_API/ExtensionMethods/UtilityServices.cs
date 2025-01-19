@@ -1,0 +1,30 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace EPlatform_API.ExtensionMethods
+{
+    public static class UtilityServices
+    {
+        public static DateTime ConvertUTCToVietNam(DateTime utcNow)
+        {
+            var vietNamOffSet = TimeSpan.FromHours(7);
+            var vietnamTime = utcNow + vietNamOffSet;
+            return vietnamTime;
+        }
+
+
+        public static string GenerateSlug(string phrase)
+        {
+            // Only limited the duplicate slug, not 100% unique
+            string str = phrase.ToLower();
+            str = System.Text.RegularExpressions.Regex.Replace(str, @"[^a-z0-9\s-]", ""); // invalid chars
+            str = System.Text.RegularExpressions.Regex.Replace(str, @"\s+", " ").Trim(); // convert multiple spaces into one space
+            str = System.Text.RegularExpressions.Regex.Replace(str, @"\s", "-"); // replace spaces
+            string uniqueIdentifier = Guid.NewGuid().ToString("N").Substring(0, 8); // generate a unique identifier
+            str = $"{str}-{uniqueIdentifier}"; // append the unique identifier to the slug
+            return str;
+        }
+    }
+}

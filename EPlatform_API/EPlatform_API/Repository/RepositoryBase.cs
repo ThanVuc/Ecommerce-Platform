@@ -4,7 +4,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlatform_API.Data;
+using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IRepository;
+using EPlatform_API.IServices;
+using EPlatform_API.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPlatform_API.Repository
@@ -13,14 +16,19 @@ namespace EPlatform_API.Repository
     {
         private readonly AppDbContext _context;
         private readonly DbSet<TEntity> _dbSet;
+        protected IBlobServices _blobServices;
+        private AppDbContext context;
 
-        public RepositoryBase(AppDbContext context)
+        public RepositoryBase(
+            AppDbContext context,
+            IConfiguration configuration
+        )
         {
             _context = context;
             _dbSet = context.Set<TEntity>();
         }
 
-        public TEntity? Add(TEntity e)
+        public virtual TEntity? Add(TEntity e)
         {
             if (e == null){
                 return null;
@@ -35,7 +43,7 @@ namespace EPlatform_API.Repository
             return e;
         }
 
-        public async Task<TEntity?> AddAsync(TEntity e)
+        public virtual async Task<TEntity?> AddAsync(TEntity e)
         {
             if (e == null){
                 return null;
@@ -49,7 +57,7 @@ namespace EPlatform_API.Repository
             return e;
         }
 
-        public IEnumerable<TEntity>? AddRange(IEnumerable<TEntity> es)
+        public virtual IEnumerable<TEntity>? AddRange(IEnumerable<TEntity> es)
         {
             if (es == null){
                 return null;
@@ -63,7 +71,7 @@ namespace EPlatform_API.Repository
             return es;
         }
 
-        public async Task<IEnumerable<TEntity>?> AddRangeAsync(IEnumerable<TEntity> es)
+        public virtual async Task<IEnumerable<TEntity>?> AddRangeAsync(IEnumerable<TEntity> es)
         {
             if (es == null){
                 return null;
@@ -77,7 +85,7 @@ namespace EPlatform_API.Repository
             return es;
         }
 
-        public bool Delete(TEntity e)
+        public virtual bool Delete(TEntity e)
         {
             if (e == null){
                 return false;
@@ -91,7 +99,7 @@ namespace EPlatform_API.Repository
             return true;
         }
 
-        public bool DeleteRange(IEnumerable<TEntity> es)
+        public virtual bool DeleteRange(IEnumerable<TEntity> es)
         {
             if (es == null){
                 return false;
@@ -105,17 +113,17 @@ namespace EPlatform_API.Repository
             return true;
         }
 
-        public TEntity? Find(Func<TEntity, bool> predicate)
+        public virtual TEntity? Find(Func<TEntity, bool> predicate)
         {
             return _dbSet.FirstOrDefault(predicate);
         }
 
-        public async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual async Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await _dbSet.FirstOrDefaultAsync(predicate);
         }
 
-        public IEnumerable<TEntity>? GetAll(Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, string[]? includeProperties = null)
+        public virtual IEnumerable<TEntity>? GetAll(Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, string[]? includeProperties = null)
         {
             IQueryable<TEntity> query = _dbSet;
 
@@ -136,7 +144,7 @@ namespace EPlatform_API.Repository
             return query.ToList();
         }
 
-        public async Task<IEnumerable<TEntity>?> GetAllAsync(Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, string[]? includeProperties = null)
+        public virtual async Task<IEnumerable<TEntity>?> GetAllAsync(Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, string[]? includeProperties = null)
         {
             IQueryable<TEntity> query = _dbSet;
 
@@ -157,29 +165,28 @@ namespace EPlatform_API.Repository
             return await query.ToListAsync();
         }
 
-        public IQueryable<TEntity> GetAllDataSet()
+        public virtual IQueryable<TEntity> GetAllDataSet()
         {
             return _dbSet.AsQueryable<TEntity>();
         }
 
-        public TEntity? GetById(int id)
+        public virtual TEntity? GetById(int id)
         {
             return _dbSet.Find(id);
         }
 
-        public async Task<TEntity?> GetByIdAsync(int id)
+        public virtual async Task<TEntity?> GetByIdAsync(int id)
         {
             return await _dbSet.FindAsync(id);
         }
 
-        public bool Update(TEntity e)
+        public virtual bool Update(TEntity e)
         {
             if (e == null){
                 return false;
             }
             try{
-                _dbSet.Attach(e);
-                _context.Entry(e).State = EntityState.Modified;
+                _dbSet.Update(e);
             } catch (Exception ex){
                 Console.WriteLine(ex.Message);
                 return false;

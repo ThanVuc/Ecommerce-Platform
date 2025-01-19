@@ -19,7 +19,7 @@ using Newtonsoft.Json;
 
 namespace EPlatform_API.Controllers.Identity
 {
-    [Route("api/admin")]
+    [Route("api/v1/admin")]
     [ApiController]
     [Authorize(Policy = "RoleManagePolicy")]
     public class RoleController : ControllerBase

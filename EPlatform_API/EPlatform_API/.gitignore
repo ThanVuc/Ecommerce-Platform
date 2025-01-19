@@ -17,7 +17,6 @@
 
 # Ignore *.user files
 *.user
-**/Migrations
 # JetBrains Rider
 .idea/ *.sln.iml
 # Exclude appsettings files

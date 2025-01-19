@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 
 namespace EPlatform_API.ExtensionMethods
@@ -22,6 +23,10 @@ namespace EPlatform_API.ExtensionMethods
         public static void AddSqlDBContext(this IServiceCollection services, IConfiguration configuration){
             services.AddDbContext<AppDbContext>(options => {
                 options.UseSqlServer(configuration.GetConnectionString("Default"));
+            });
+
+            services.AddDbContext<VietnameseLocationContext>(options => {
+                options.UseSqlServer(configuration.GetConnectionString("VietNamDB"));
             });
         }
 
@@ -107,9 +112,9 @@ namespace EPlatform_API.ExtensionMethods
             });
         }
 
-        public static void ConfigRedisCatching(this IServiceCollection services){
+        public static void ConfigRedisCatching(this IServiceCollection services, IConfiguration configuration){
             services.AddStackExchangeRedisCache(options => {
-                options.Configuration = "localhost";
+                options.Configuration = configuration.GetConnectionString("RedisDBLocal");
                 options.ConfigurationOptions = new StackExchange.Redis.ConfigurationOptions(){
                     AbortOnConnectFail = true,
                     EndPoints = {options.Configuration}
@@ -127,7 +132,26 @@ namespace EPlatform_API.ExtensionMethods
                 });
             });
         }
-    }
-
     
+        public static void ConfigureMongoDB(this IServiceCollection services, IConfiguration configuration){
+            Console.WriteLine(configuration.GetConnectionString("MongoDBLocal"));
+            services.AddSingleton<IMongoClient,MongoClient>(sp => {
+                return new MongoClient(configuration.GetConnectionString("MongoDBLocal"));
+            });
+
+            services.AddSingleton(sp => {
+                var client = sp.GetRequiredService<IMongoClient>();
+                return client.GetDatabase(configuration["MongoDB:Database"]);
+            });
+        }
+
+        public static void ApplyMigrations(this IApplicationBuilder app){
+            using (var scope = app.ApplicationServices.CreateScope()){
+                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var context_vietnam = scope.ServiceProvider.GetRequiredService<VietnameseLocationContext>();
+                context.Database.Migrate();
+                context_vietnam.Database.Migrate();
+            }
+        }
+    }
 }

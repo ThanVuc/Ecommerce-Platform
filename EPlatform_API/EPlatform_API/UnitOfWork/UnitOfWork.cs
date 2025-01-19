@@ -12,12 +12,35 @@ namespace EPlatform_API.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _context;
+        private ShopRepository _shopRepo;
+        private ProductRepository _productRepo;
+        private readonly IConfiguration _configuration;
+        public ShopRepository ShopRepo {
+            get{
+                if (_shopRepo == null){
+                    _shopRepo = new ShopRepository(_context, _configuration);
+                }
+
+                return _shopRepo;
+            }
+        }
+
+        public ProductRepository ProductRepo{
+            get{
+                if (_productRepo == null){
+                    _productRepo = new ProductRepository(_context,_configuration);
+                }
+                return _productRepo;
+            }
+        }
 
         public UnitOfWork(
-            AppDbContext context
+            AppDbContext context,
+            IConfiguration configuration
         )
         {
             _context = context;
+            _configuration = configuration;
         }
 
         private bool disposed = false;
@@ -48,6 +71,22 @@ namespace EPlatform_API.UnitOfWork
         public async Task<int> SaveAsync()
         {
             return await _context.SaveChangesAsync();
+        }
+
+        public async Task BeginTransaction()
+        {
+            // if (_context.Database.cu)
+            await _context.Database.BeginTransactionAsync();
+        }
+
+        public async Task CommitTransaction()
+        {
+            await _context.Database.CommitTransactionAsync();
+        }
+
+        public async Task RollBackTransaction()
+        {
+            await _context.Database.RollbackTransactionAsync();
         }
     }
 }

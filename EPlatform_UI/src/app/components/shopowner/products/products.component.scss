@@ -1,0 +1,129 @@
+@import url(./../../../icon.component.scss);
+$background-color: #0d0d0d;
+
+.iconamoon--search-light{
+    color: white;
+}
+
+.header{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    
+    .title{
+        text-align: center;
+        font-size: xx-large;
+        font-weight: bold;
+        background-image: linear-gradient(to right,#1509FF 20%,#F813F8 80%);
+        background-clip: text;
+        color: transparent;
+    }
+
+    .search-bar{
+        width: 35%;
+        height: 3rem;
+        padding: 0.5rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border: 1px solid #E4D016;
+        border-radius: 0.4rem;
+        margin-bottom: 2%;
+        
+    
+        span{
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: 0.2rem;
+            color: #E4D016;
+        }
+    
+        input{
+            width: 90%;
+            background-color: $background-color;
+            border: none;
+            -webkit-text-fill-color: white;
+            -webkit-box-shadow: 0 0 0px 1000px #000 inset;
+            outline-color: red;
+        }
+    
+        input:focus{
+            border: none;
+            outline: none;
+            border-bottom: 1px #696864 solid;
+        }
+    }
+}
+
+.body{
+    height: 58vh;
+    width: 100%;
+    overflow-y: scroll;
+    margin-bottom: 12px;
+    border: 1px solid #969696;
+    border-radius: 10px;
+    box-shadow: 4px 2px 6px 2px #424242;
+    
+    
+
+    table{
+        margin: 0;
+
+        tbody{
+            td{
+                input[type="checkbox"]{
+                    margin-left: 0.8rem;
+                    width: 1rem;
+                    height: 1rem;
+                }
+            }
+
+            .inventory-field{
+                padding-left: 0.5rem;
+            }
+
+            .product-show{
+                display: flex;
+
+                
+
+                img{
+                    width: 2.5rem;
+                    height: 2.5rem;
+                    margin-right: 0.5rem;
+                }
+
+                p{
+                    width: 12rem;
+                    line-height: 1.3rem;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                }
+            }
+
+            .action{
+                border: none;
+                border-radius: 0.6rem;
+                margin-right: 0.3rem;
+                
+            }
+        
+            .edit{
+                background-color: rgb(223, 223, 62);
+            }
+        
+            .delete{
+                background-color: rgb(244, 115, 115);
+            }
+        }
+    }
+}
+
+.pagination{
+
+    app-pagination{
+        width: 100%;
+    }
+}
+
