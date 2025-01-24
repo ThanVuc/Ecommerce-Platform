@@ -323,6 +323,18 @@ namespace EPlatform_API.Services
             }
         }
 
+        public async Task SeedCategoryData()
+        {
+            try{
+                var categoriesSqlScript = System.IO.File.ReadAllText("Sqls/category.sql");
+                var subCategorySqlScript = System.IO.File.ReadAllText("Sqls/sub-category.sql");
+                await _context.Database.ExecuteSqlRawAsync(categoriesSqlScript);
+                await _context.Database.ExecuteSqlRawAsync(subCategorySqlScript);
+            } catch(Exception e){
+                Console.WriteLine("SeedDataServices, SeedVietnameseLocationData: ", e.Message);
+            }
+        }
+
         public async Task SeedDatabase()
         {
             await _context.Database.MigrateAsync();

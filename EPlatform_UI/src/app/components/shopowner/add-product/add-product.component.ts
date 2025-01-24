@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { HtmlParser } from '@angular/compiler';
 import { UpperCasePipe } from '@angular/common';
 import e from 'express';
+import { SelectCategoryComponent } from "./select-category/select-category.component";
 
 @Component({
   selector: 'app-add-product',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, SelectCategoryComponent],
   templateUrl: './add-product.component.html',
   styleUrl: './add-product.component.scss'
 })

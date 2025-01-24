@@ -1,0 +1,148 @@
+@import url(./../../../../icon.component.scss);
+$background-color: #0d0d0d;
+$border-color: #D9D9D9;
+$input-color-1: #30373C;
+$input-color-2: #526471;
+$input-color-3: #637887;
+
+.iconamoon--search-light{
+    color: white;
+}
+
+.button-category {
+    width: 100%;
+    height: 2.4rem;
+    background-color: $input-color-1;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    color: rgb(201, 200, 200);
+    border: 1px solid $border-color;
+    border-radius: 5px;
+    padding-top: 5px;
+}
+
+#category_board{
+    // display: none;
+}
+
+.category_board{
+    position: absolute;
+    background-color: $input-color-1;
+    border: $border-color 1px solid;
+    border-radius: 10px;
+    top: 50%;
+    right: 40%;
+    transform: translate(50%, -50%);
+    width: 70%;
+    height: 90%;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .category-header{
+        font-size: larger;
+        font-family: 'acme', sans-serif;
+        margin-bottom: 0.5rem;
+    }
+
+    .category-search{
+        width: 35%;
+        height: 3rem;
+        padding: 0.5rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border: 1px solid #E4D016;
+        border-radius: 2rem;
+        margin-bottom: 2%;
+        background-color: $input-color-1;
+        
+    
+        span{
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: 0.2rem;
+            color: #E4D016;
+        }
+        
+        input{
+            width: 90%;
+            border: none;
+            -webkit-text-fill-color: white;
+            -webkit-box-shadow: 0 0 0px 1000px $input-color-1 inset;
+            background-color: $input-color-1;
+            outline-color: red;
+        }
+    
+        input:focus{
+            border: none;
+            outline: none;
+            padding: 0;
+            border-bottom: 1px #696864 solid;
+        }
+    }
+
+    .category-body{
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* Creates 4 equal columns */
+        gap: 10px; /* Optional: Adds space between columns */
+        padding: 10px; /* Optional: Adds padding inside the container */
+        width: 100%;
+        height: 100%;
+
+        .category-group{
+            height: auto;
+            display: flex;
+
+            .active {
+                display: block;
+            }
+            
+            .category-item-list{
+                display: flex;
+                width: 100%;
+                flex-direction: column;
+                align-items: center;
+                margin-left: 0.5rem;
+                display: none;
+            
+                .category-item{
+                    display: flex;
+                    width: 95%;
+                    background-color: #696864;
+                    justify-content: space-between;
+                    padding: 0.3rem;
+                    margin-bottom: 0.3rem;
+                    border-radius: 10px;
+                    align-items: center;
+
+                    .category-item-name{
+                        width: 80%;
+                        overflow-x: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    span{
+
+                    }
+
+                }
+            }
+
+
+
+        }
+
+        .separator{
+            width: 0;
+            height: 100%;
+            border: 1px solid $border-color;
+        }
+    }
+    
+
+
+}
+
