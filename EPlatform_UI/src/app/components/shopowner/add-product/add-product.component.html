@@ -12,7 +12,7 @@
           <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
         </div>
 
-        <app-select-category></app-select-category>
+        <app-select-category (categorySelected)="saveCategory($event)" ></app-select-category>
 
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Description Product</label>

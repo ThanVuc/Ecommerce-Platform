@@ -103,5 +103,13 @@ namespace EPlatform_API.Mappers
                 Slug = UtilityServices.GenerateSlug(addProductRequest.Name)
             };
         }
+
+        public static GetCategoriesResponse ToCategoriesResponse(this Category category){
+            return new GetCategoriesResponse(){
+                CategoryId = category.CategoryId,
+                Name = category.Name,
+                isNext = category.SubCategories.Count > 0 ? true : false
+            };
+        }
     }
 }

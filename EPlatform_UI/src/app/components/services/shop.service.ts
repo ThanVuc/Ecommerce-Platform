@@ -4,6 +4,7 @@ import { ApiResModel } from '../models/api-res-model';
 import { ProductModel } from '../shopowner/models/product-model';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
+import { CategoryModel } from '../shopowner/models/category-model';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,11 @@ export class ShopService {
 
   publicOrHideProduct(shopId: string ,productId: number, isPublic: boolean): Observable<ApiResModel<object>> {
     return this.http.put<ApiResModel<object>>(environment.Shop+`${shopId}/products/public-or-hide-product`, {productId: productId, isPublic: isPublic});
+  }
+
+  getCategories(parentCategoryId: number | null): Observable<ApiResModel<CategoryModel[]>> {
+    let queryString = parentCategoryId == null ? "" : `?parentCategoryId=${parentCategoryId}`;
+    return this.http.get<ApiResModel<CategoryModel[]>>(environment.Categories + queryString);
   }
     
 }

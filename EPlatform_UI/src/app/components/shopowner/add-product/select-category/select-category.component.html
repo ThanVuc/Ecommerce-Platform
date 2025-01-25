@@ -10,39 +10,73 @@
     <div class="category-header">Categories</div>
     <div class="category-search">
         <span class="iconamoon--search-light"></span>
-        <input id="search-input" type="text" (keydown.enter)="loadCategories()" [(ngModel)]="searchString"
+        <input id="search-input" type="text" (keydown.enter)="showCategories()" [(ngModel)]="searchString"
             name="searchString" placeholder="Search Here!">
     </div>
     <div class="category-body">
-        <div class="category-group">
-            <div class="category-item-list">
-                <div class="category-item">
-                    <div class="category-item-name" >Category</div>
-                    <span class="weui--arrow-outlined"></span>
+        <div class="category-list">
+            <div class="category-group" id="group-1">
+                <div class="category-item-list">
+                    @for (category of categoryMap.get(1); track $index) {
+                        @if (category.isNext){
+                            <div class="category-item button" (click)="loadSubCategories($event,category,2)">
+                                <div class="category-item-name" >{{ category.name }}</div>
+                                <span class="weui--arrow-outlined"></span>
+                            </div>
+                        } @else {
+                            <div class="category-item" (click)="setCurrentCategory($event,category,1)" >
+                                <div class="category-item-name">{{ category.name }}</div>
+                            </div>
+                        }
+                    }
                 </div>
-                <div class="category-item">
-                    <div class="category-item-name">Category</div>
-                    <span class="weui--arrow-outlined"></span>
+            </div>
+            <div class="category-group" id="group-2">
+                <div class="separator"></div>
+                <div class="category-item-list">
+                    @for (category of categoryMap.get(2); track $index) {
+                        @if (category.isNext){
+                            <div class="category-item button" (click)="loadSubCategories($event,category,3)">
+                                <div class="category-item-name" >{{ category.name }}</div>
+                                <span class="weui--arrow-outlined"></span>
+                            </div>
+                        } @else {
+                            <div class="category-item" (click)="setCurrentCategory($event,category,2)">
+                                <div class="category-item-name">{{ category.name }}</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="category-group" id="group-3">
+                <div class="separator"></div>
+                <div class="category-item-list">
+                    @for (category of categoryMap.get(3); track $index) {
+                        @if (category.isNext){
+                            <div class="category-item button" (click)="loadSubCategories($event, category,4)">
+                                <div class="category-item-name" >{{ category.name }}</div>
+                                <span class="weui--arrow-outlined"></span>
+                            </div>
+                        } @else {
+                            <div class="category-item" (click)="setCurrentCategory($event,category,3)">
+                                <div class="category-item-name">{{ category.name }}</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="category-group" id="group-4">
+                <div class="separator"></div>
+                <div class="category-item-list">
+                    @for (category of categoryMap.get(4); track $index) {
+                        <div class="category-item" (click)="setCurrentCategory($event,category,4)">
+                            <div class="category-item-name">{{ category.name }}</div>
+                        </div>   
+                    }
                 </div>
             </div>
         </div>
-        <div class="category-group">
-            <div class="separator"></div>
-            <div class="category-item-list">
-                <div class="category-item">
-                    <div class="category-item-name" >Category</div>
-                    <span class="weui--arrow-outlined"></span>
-                </div>
-                <div class="category-item">
-                    <div class="category-item-name">Category</div>
-                </div>
-            </div>
-        </div>
-        <div class="category-group">
-            <div class="separator"></div>
-        </div>
-        <div class="category-group">
-            <div class="separator"></div>
-        </div>
+        <button class="save-category" (click)="saveCategory()">Save</button>
+        
     </div>
 </div>

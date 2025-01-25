@@ -12,5 +12,7 @@ namespace EPlatform_API.Models.ShopOwners
         public string? Key { get; set; }
         [BsonRequired]
         public object? Value { get; set; }
+        public int Inventory { get; set; }
+        public string? ImgUrl { get; set; } 
     }
 }

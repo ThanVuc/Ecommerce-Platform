@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlatform_API.Data;
+using EPlatform_API.DTOs.ShopDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IRepository;
+using EPlatform_API.Mappers;
 using EPlatform_API.Models.ShopOwners;
 using EPlatform_API.Services;
 using Microsoft.EntityFrameworkCore;
@@ -56,6 +58,25 @@ namespace EPlatform_API.Repository
                  tasks.Add(DeleteProductImage(imageId));
             }
             await Task.WhenAll(tasks);
+        }
+
+        public async Task<List<GetCategoriesResponse>?> GetCategoriesAsync(int? parentCategoryId = null)
+        {
+            IQueryable<Category> categoryQueryable;
+            if (parentCategoryId == null)
+            {
+                categoryQueryable = _context.Categories
+                .Where(c => c.CategoryParentId == parentCategoryId);
+            } else {
+                categoryQueryable = _context.Categories
+                .Where(c => c.CategoryParentId == parentCategoryId);
+            }
+
+            var categories = await categoryQueryable
+            .Include(c => c.SubCategories)
+            .Select(c => c.ToCategoriesResponse())
+            .ToListAsync();
+            return categories;
         }
 
         public async Task<Product?> GetProductByIdAsync(int productId)

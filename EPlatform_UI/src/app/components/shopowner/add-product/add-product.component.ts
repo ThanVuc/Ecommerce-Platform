@@ -5,6 +5,7 @@ import { HtmlParser } from '@angular/compiler';
 import { UpperCasePipe } from '@angular/common';
 import e from 'express';
 import { SelectCategoryComponent } from "./select-category/select-category.component";
+import { CategoryModel } from '../models/category-model';
 
 @Component({
   selector: 'app-add-product',
@@ -26,6 +27,16 @@ export class AddProductComponent implements OnInit {
   }
 
   specList: SpecAttribute[] = [];
+  category: CategoryModel = {
+    categoryId: null,
+    name: "temp",
+    isNext: false
+  }
+
+  saveCategory(category: CategoryModel){
+    this.category = category;
+    console.log(this.category);
+  }
 
   findCurrentSpec(event: Event){
     const targetElement = event.target as HTMLElement;
