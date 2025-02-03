@@ -1,3 +1,5 @@
+<div class="curtain" id="curtain"></div>
+
 <div class="form-group category">
     <label for="exampleInputPassword1">Category Product</label>
     <button class="button-category" (click)="showCategories()">
@@ -7,12 +9,11 @@
 </div>
 
 <div id="category_board" class="category_board">
-    <div class="category-header">Categories</div>
-    <div class="category-search">
-        <span class="iconamoon--search-light"></span>
-        <input id="search-input" type="text" (keydown.enter)="showCategories()" [(ngModel)]="searchString"
-            name="searchString" placeholder="Search Here!">
+    <div class="category-header">
+        <span class="material-symbols--close" (click)="hideCategories()"></span>
+        <div >Categories</div>
     </div>
+
     <div class="category-body">
         <div class="category-list">
             <div class="category-group" id="group-1">

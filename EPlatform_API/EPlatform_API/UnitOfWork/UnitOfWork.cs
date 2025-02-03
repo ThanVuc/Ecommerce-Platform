@@ -11,7 +11,7 @@ namespace EPlatform_API.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly AppDbContext _context;
+        public readonly AppDbContext _context;
         private ShopRepository _shopRepo;
         private ProductRepository _productRepo;
         private readonly IConfiguration _configuration;

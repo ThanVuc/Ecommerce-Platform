@@ -154,5 +154,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 Message = "Shop deleted"
             });
         }
+    
+        
     }
 }

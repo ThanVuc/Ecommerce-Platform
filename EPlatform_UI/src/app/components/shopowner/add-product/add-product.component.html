@@ -1,3 +1,5 @@
+<div class="curtain" id="curtain"></div>
+
 <div class="container">
   <div class="header">
     <p class="title">Add Products</p>
@@ -5,56 +7,119 @@
 
   <div class="body">
     <form #form="ngForm">
-      <div class="general-info">
+      <div class="product-create-info">
+        <div class="general-info">
 
-        <div class="form-group">
-          <label for="exampleInputEmail1">Name Product</label>
-          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-        </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">Name Product</label>
+            <input type="text" [(ngModel)]="productModel.name" name="name" class="form-control product-input" id="exampleInputEmail1" aria-describedby="emailHelp">
+          </div>
 
-        <app-select-category (categorySelected)="saveCategory($event)" ></app-select-category>
+          <app-select-category (categorySelected)="saveCategory($event)"></app-select-category>
 
-        <div class="form-group">
-          <label for="exampleFormControlTextarea1">Description Product</label>
-          <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-        </div>
+          <div class="form-group">
+            <label for="exampleFormControlTextarea1">Description Product</label>
+            <textarea class="form-control" name="description" [(ngModel)]="productModel.description" id="exampleFormControlTextarea1" rows="3"></textarea>
+          </div>
 
-        <div class="form-group">
-          <label for="classify-product">Classify Product</label>
-          <div class="classify-product" id="classify-product-group">
-            @for (spec of specList; track $index) {
+          <div class="form-group">
+            <label for="classify-product">Classify Product</label>
+            <div class="classify-product" id="classify-product-group">
+              <p class="text-end note">*The first special attribute of product is primary</p>
+              @for (spec of productModel.specAttributes; track $index) {
               <div class="product-spec">
-                <span class="material-symbols--close spec-remove" (click)="removeSpec(spec.specName)" ></span>
-                <input type="text" class="name wrap" (keydown.enter)="saveSpecName($event,spec.specName)" value="{{spec.specName}}" name="" id="">
-                @for (value of spec.specValues; track $index) {
-                  <label class="label-spec wrap">
-                    <p>{{value}}</p>
-                    <span class="material-symbols--close" (click)="removeSpecValue(spec.specName,value)" ></span>
-                  </label>
+                <span class="material-symbols--close spec-remove" (click)="removeSpec(spec.specName)"></span>
+                <input type="text" class="name wrap" (keydown.enter)="saveSpecName($event,spec.specName)"
+                  value="{{spec.specName}}" name="" id="">
+                @for (specItem of spec.specItems; track $index) {
+                <label class="label-spec wrap">
+                  <p>{{specItem.specValue}}</p>
+                  <span class="material-symbols--close" (click)="removeSpecValue(spec.specName,specItem.specValue)"></span>
+                </label>
                 }
-                <input type="text" class="value wrap hide" (keydown.enter)="saveSpec($event)" name="" placeholder="Value">
-                <span class="basil--add-outline add-spec-value show" (click)="showSpecValue($event)" ></span>
+                <input type="text" class="value wrap hide" (keydown.enter)="saveSpec($event)" name=""
+                  placeholder="Value">
+                <span class="basil--add-outline add-spec-value show" (click)="showSpecValue($event)"></span>
               </div>
-            }
-            <div class="product-spec-add" (click)="addSpec($event)">
-              <span class="basil--add-outline"></span>
+              }
+              @if(productModel.specAttributes.length < 2){
+                <div class="product-spec-add" (click)="addSpec($event)">
+                  <span class="basil--add-outline"></span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="end-group">
+            <div class="price-product">
+              <label class="sr-only" for="inlineFormInputGroup">Price Product</label>
+              <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">$</div>
+                </div>
+                <input type="number" [(ngModel)]="productModel.price" name="public" min="0" class="form-control" id="inlineFormInputGroup" placeholder="Price">
+              </div>
+
+            </div>
+            <div class="public-product">
+              <label for="public-product-group">Public</label>
+              <div class="form-check-group" id="public-product-group">
+                @if (productModel.isPublic){
+                  <div class="form-check">
+                    <input class="form-check-input" (click)="setPublic(true)" name="public" type="radio" name="public" id="flexRadioDefault1" checked>
+                    <label class="form-check-label" for="flexRadioDefault1">
+                      Public
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" (click)="setPublic(false)" type="radio" name="hide" id="public-radio-2">
+                    <label class="form-check-label" for="public-radio-2">
+                      Hide
+                    </label>
+                  </div>
+                } @else {
+                  <div class="form-check">
+                    <input class="form-check-input" (click)="setPublic(true)" name="public" type="radio" name="public" id="flexRadioDefault1">
+                    <label class="form-check-label" for="flexRadioDefault1">
+                      Public
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" (click)="setPublic(false)" type="radio" name="hide" id="public-radio-2" checked>
+                    <label class="form-check-label" for="public-radio-2">
+                      Hide
+                    </label>
+                  </div>
+                }
+                
+              </div>
+
             </div>
           </div>
         </div>
-        
-        <div class="end-group">
-          <div class="price-product"></div>
-          <div class="public-product"></div>
+
+        <div class="right">
+
+          <div class="images-info" id="images-info">
+            <app-upload-images (upload)="saveUploadImagesAndInventories($event)" [productModel]="productModel" ></app-upload-images>
+          </div>
+          <div class="inventory-info">
+            <div class="form-group">
+              <label for="Inventory">Inventory</label>
+              <input type="number" name="totalInventory" [(ngModel)]="productModel.totalInventory" class="form-control disabled" [defaultValue]="0" disabled id="Inventory"
+                aria-describedby="inventory">
+            </div>
+
+            <div class="warehouse-select">
+              <app-select-tag [items]="warehouseItems" (select)="getWarehouse($event)" ></app-select-tag>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="right">
-        <div class="images-info">
 
-        </div>
-        <div class="inventory-info">
-
-        </div>
+      <div class="create-product">
+        <button type="submit" class="btn btn-outline-light">Create Product</button>
       </div>
     </form>
 

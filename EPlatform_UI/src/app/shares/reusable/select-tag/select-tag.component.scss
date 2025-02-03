@@ -1,0 +1,72 @@
+@import url('./../../../icon.component.scss');
+$background-color: #0d0d0d;
+$border-color: #D9D9D9;
+$input-color-1: #30373C;
+$input-color-2: #526471;
+$input-color-3: #637887;
+$error-effect-color: #b00202;
+
+
+
+.select-tag{
+    position: relative;
+
+    .active{
+        display: block !important;
+    }
+
+    .select-button{
+        display: flex;
+        color: white;
+        background-color: $input-color-1;
+        height: 2.4rem;
+        border: #D9D9D9 1px solid;
+        border-radius: 10px;
+        cursor: pointer;
+    
+        .icon-park-outline--down{
+            width: 2rem;
+            height: 2rem;
+            margin-top: 0.2rem;
+        }
+    
+        input{
+            border: none;
+            pointer-events: none;
+            color: white;
+            width: 80%;
+            background-color: $input-color-1;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    
+        input::placeholder{
+            color: white;
+        }
+    }
+
+    .dropdown-board{
+        list-style-type: none;
+        position: absolute;
+        width: 100%;
+        max-height: 14rem;
+        // bottom: 34%;
+        padding: 10px;
+        background-color: $input-color-1;
+        border-radius: 10px;
+        border: #D9D9D9 1px solid;
+        overflow-y: auto;
+        display: none;
+
+        li{
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        li:hover{
+            background-color: $input-color-2;
+        }
+    }
+}
+

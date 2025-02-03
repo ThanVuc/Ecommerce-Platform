@@ -235,8 +235,8 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         }
     
         [HttpGet("/api/v1/categories")]
-        public async Task<IActionResult> GetCategories([FromQuery] int? parentCategoryId = null){
-            var categories = await _productRepo.GetCategoriesAsync(parentCategoryId);
+        public async Task<IActionResult> GetCategories([FromQuery] int? parentCategoryId = null, [FromQuery] string? searchString = null){
+            var categories = await _productRepo.GetCategoriesAsync(parentCategoryId, searchString);
             return Ok(new ApiResponseStandard<object>
             {
                 Status = 200,

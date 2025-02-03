@@ -1,0 +1,175 @@
+@import url(./../../../../icon.component.scss);
+$background-color: #0d0d0d;
+$border-color: #D9D9D9;
+$input-color-1: #30373C;
+$input-color-2: #526471;
+$input-color-3: #637887;
+$error-effect-color: #b00202;
+
+.curtain{
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: $background-color;
+    opacity: 0.7;
+    z-index: 5;
+}
+
+.show{
+    display: block !important;
+}
+
+.hide{
+    display: none !important;
+}
+
+.images-info {
+    width: 100%;
+    height: auto;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-block: 2rem;
+    padding-inline: 1rem;
+
+    .upload-images{
+        width: 90%;
+        aspect-ratio: 6/5;
+
+        span{
+            width: 100%;
+            height: 100%;
+        }
+    }
+    
+}
+
+.upload-file-board{
+    position: absolute;
+    background-color: $input-color-1;
+    border: $border-color 1px solid;
+    border-radius: 10px;
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    width: 70%;
+    height: 90%;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 6;
+    display: none;
+
+    .material-symbols--close{
+        color: red;
+        font-size: 1.7rem;
+        position: absolute;
+        right: 0;
+    }
+
+    .material-symbols--close:hover{
+        cursor: pointer;
+        transform: scale(1.1);
+    }
+
+    .content{
+        width: 100%;
+        height: 100%;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .header{
+            font-size: larger;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .body{
+            overflow-y: scroll;
+            height: 80%;
+            width: 100%;
+
+            .upload-table{
+                width: 100%;
+                height: auto;
+
+                .add-image{
+                    width: 50%;
+                    border: 1px solid $border-color;
+                    border-radius: 10px;
+                    height: auto;
+                    overflow: hidden;
+
+                    label{
+                        width: 100%;
+
+                        .image-preview{
+                            width: 100%;
+                            aspect-ratio: 1/1;
+                            object-fit: contain;
+                            display: none;
+                        }
+
+                        span{
+                            width: 100%;
+                            aspect-ratio: 1/1;
+                            height: auto;
+                        }
+                    }
+
+
+
+                    input[type="file"]{
+                        display: none;
+                    }
+                }
+
+                .add-image:hover{
+                    cursor: pointer;
+                    transform: scale(0.97);
+                }
+
+                .spec-arg{
+                    margin-bottom: 0.6rem;
+
+                    .spec-name{
+                        width: 20%;
+                    }
+
+                    .inventory-input{
+                        background-color: $input-color-3;
+                        border: 1px solid $border-color;
+                        border-radius: 10px;
+                        color: white;
+                        padding: 2px;
+                        padding-inline: 5px;
+                    }
+                    
+                    .inventory-input:focus{
+                        outline: 1px solid rgb(0, 98, 218);
+                    }
+
+                }
+            }
+        }
+        .save-category{
+            border-radius: 10px;
+            width: 4rem;
+            height: 2rem;
+            padding-inline: 1rem;
+            padding-block: 0.2rem;
+            margin-top: 0.6rem;
+            background-color: rgb(121, 176, 40);
+            border: none;
+            box-shadow: 0 0 10px rgb(89, 114, 50);
+        }
+    }
+}

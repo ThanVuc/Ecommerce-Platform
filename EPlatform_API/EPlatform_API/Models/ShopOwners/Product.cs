@@ -18,7 +18,6 @@ namespace EPlatform_API.Models.ShopOwners
 
         [Required]
         [ForeignKey("Shop")]
-        // [StringLength(10)]
         public string? ShopId { get; set; }
 
         [Required]

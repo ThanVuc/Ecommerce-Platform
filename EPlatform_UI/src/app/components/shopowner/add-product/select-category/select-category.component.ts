@@ -2,6 +2,7 @@ import { Component, EventEmitter, inject, OnInit, Output, output } from '@angula
 import { FormsModule } from '@angular/forms';
 import { CategoryModel } from '../../models/category-model';
 import { ShopService } from '../../../services/shop.service';
+import { UtilitiesServiceService } from '../../../services/utilities-service.service';
 
 @Component({
   selector: 'app-select-category',
@@ -12,40 +13,41 @@ import { ShopService } from '../../../services/shop.service';
 })
 export class SelectCategoryComponent implements OnInit {
   ngOnInit(): void {
-    let categoryModel: CategoryModel = {
-      categoryId: null,
-      name: "temp",
-      isNext: false
-    };
-    this.loadCategories(categoryModel, this.rootOrder);
+    this.loadCategories(this.currentCategory, this.rootOrder);
   }
 
   @Output() categorySelected = new EventEmitter<CategoryModel>();
 
   rootOrder: number = 1;
-  searchString: string = "";
+  searchString: string | null = null;
   categoryMap: Map<number | null, CategoryModel[]> = new Map<number, CategoryModel[]>();
-  shopSVC = inject(ShopService);
-  currentCategory: CategoryModel | null = null;
+  Utilities = inject(UtilitiesServiceService);
+  currentCategory: CategoryModel = {
+    categoryId: null,
+    name: "Select Category",
+    isNext: false
+  };
 
-  showCategories(){
+  showCategories() {
     let category_board = document.getElementById("category_board");
-    if (category_board){
+    let curtain = document.getElementById("curtain");
+    if (category_board && curtain) {
       category_board.style.display = "flex";
+      curtain.style.display = "block";
     }
   }
 
-  loadSubCategories(event:Event, parentCategory: CategoryModel, order: number){
+  loadSubCategories(event: Event, parentCategory: CategoryModel, order: number) {
     this.loadCategories(parentCategory, order);
-    this.setCurrentCategory(event, parentCategory, order-1);
+    this.setCurrentCategory(event, parentCategory, order - 1);
   }
 
-  setCurrentCategory(event:Event, category: CategoryModel, currentOrder: number){
+  setCurrentCategory(event: Event, category: CategoryModel, currentOrder: number) {
     const eventElement = event.target as HTMLElement;
     const btnElement = eventElement.parentElement as HTMLElement;
     this.currentCategory = category;
     const groupTarget = document.getElementById(`group-${currentOrder}`);
-    if (btnElement){
+    if (btnElement) {
       groupTarget?.querySelectorAll(".category-item").forEach((element) => {
         element.classList.remove("active");
       });
@@ -53,41 +55,51 @@ export class SelectCategoryComponent implements OnInit {
     }
   }
 
-  hideCategories(){
+  hideCategories() {
     let category_board = document.getElementById("category_board");
-    if (category_board){
+    let curtain = document.getElementById("curtain");
+
+    if (category_board && curtain) {
       category_board.style.display = "none";
+      curtain.style.display = "none";
     }
   }
 
-  saveCategory(){
+  saveCategory() {
     this.passCategory();
+    let mainBtnElement = document.querySelector(".button-category");
+    if (mainBtnElement) {
+      let p = mainBtnElement.querySelector("p");
+      if (p && this.currentCategory) {
+        p.textContent = this.currentCategory?.name;
+      }
+    }
   }
 
-  passCategory(){
-    if (this.currentCategory){
+  passCategory() {
+    if (this.currentCategory) {
       this.categorySelected.emit(this.currentCategory);
     }
     this.hideCategories();
   }
 
-  loadCategories(parentCategory: CategoryModel | null, order: number){
-    if (this.categoryMap.has(order)){
-      console.log("order: "+order);
+
+  loadCategories(parentCategory: CategoryModel, order: number) {
+    if (this.categoryMap.has(order)) {
+      console.log("order: " + order);
       let totalCategoryLayers = 4;
-      for (let i = order; i <= totalCategoryLayers; i++){
+      for (let i = order; i <= totalCategoryLayers; i++) {
         this.categoryMap.delete(i);
       }
     }
-    if (parentCategory){
-      this.shopSVC.getCategories(parentCategory.categoryId).subscribe({
-        next: (res) => {
-          this.categoryMap.set(order, res.data);
-        },
-        error: (err) => {
-          console.log(err);
-        }
-      });
-    }
+
+    this.Utilities.getCategories(parentCategory.categoryId).subscribe({
+      next: (res) => {
+        this.categoryMap.set(order, res.data);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
   }
 }

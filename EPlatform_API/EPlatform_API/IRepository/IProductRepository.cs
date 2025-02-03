@@ -14,6 +14,6 @@ namespace EPlatform_API.IRepository
         Task DeleteProductImage(List<string> imageIds);
         Task AddInventoryAsync(Inventory inventory);
         Task<Product?> GetProductByIdAsync(int productId);
-        Task<List<GetCategoriesResponse>?> GetCategoriesAsync(int? parentCategoryId = null);
+        Task<List<GetCategoriesResponse>?> GetCategoriesAsync(int? parentCategoryId = null, string? searchString = null);
     }
 }

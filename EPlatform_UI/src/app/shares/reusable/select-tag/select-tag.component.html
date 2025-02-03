@@ -1,0 +1,15 @@
+
+<div class="select-tag">
+    <label for="">Select Warehouse</label>
+    <div class="select-button" (click)="showSelectBoard($event)" >
+        <input type="text" [(ngModel)]="selectValue" placeholder="Select Warehouse">
+        <span class="icon-park-outline--down"></span>
+    </div>
+    <ul class="dropdown-board">
+        @for (item of items; track $index) {
+            <li (click)="setValue($event,item)">{{item.name}}</li>
+        }
+    </ul>
+</div>
+
+

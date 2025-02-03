@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlatform_API.Data;
+using EPlatform_API.DTOs.ApiStandard;
+using EPlatform_API.DTOs.UtilitiesDTOs;
 using EPlatform_API.IRepository;
 using EPlatform_API.IServices;
 using EPlatform_API.Models;
@@ -69,6 +71,32 @@ namespace EPlatform_API.Controllers.IdentityControllers
         public async Task<IActionResult> SeedVietnameseLocationData(){
             await _seedDataService.SeedVietnameseLocationData();
             return Ok("Seed Data Successful!");
+        }
+
+        [HttpPost("seed-warehouse")]
+        public async Task<IActionResult> AddWarehouse( [FromBody] AddWarehouseRequest warehouseRequest){
+            if (warehouseRequest == null){
+                return StatusCode(400, new ApiResponseStandard<object>{
+                    Status = 400,
+                    Message = "Invalid request"
+                });
+            }
+
+            _context.Warehouses.Add(new WareHouse{
+                Name = warehouseRequest.Name,
+                Capability = warehouseRequest.Capability,
+                Phone = warehouseRequest.Phone,
+                Email = warehouseRequest.Email,
+                Location = warehouseRequest.Location
+            });
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new ApiResponseStandard<object>{
+                Status = 200,
+                Message = "Warehouse added",
+                Data = warehouseRequest
+            });
         }
     }
 }

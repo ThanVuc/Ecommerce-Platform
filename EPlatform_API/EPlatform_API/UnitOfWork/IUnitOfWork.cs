@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlatform_API.Data;
 using EPlatform_API.IRepository;
 using EPlatform_API.Models;
 using EPlatform_API.Repository;

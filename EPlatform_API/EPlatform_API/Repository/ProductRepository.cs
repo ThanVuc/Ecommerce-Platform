@@ -29,7 +29,8 @@ namespace EPlatform_API.Repository
 
         public async Task AddInventoryAsync(Inventory inventory)
         {
-            if (inventory == null){
+            if (inventory == null)
+            {
                 throw new Exception("Inventory is null");
             }
 
@@ -53,23 +54,24 @@ namespace EPlatform_API.Repository
         public async Task DeleteProductImage(List<string> imageIds)
         {
             var tasks = new List<Task>();
-            foreach(var imageId in imageIds)
+            foreach (var imageId in imageIds)
             {
-                 tasks.Add(DeleteProductImage(imageId));
+                tasks.Add(DeleteProductImage(imageId));
             }
             await Task.WhenAll(tasks);
         }
 
-        public async Task<List<GetCategoriesResponse>?> GetCategoriesAsync(int? parentCategoryId = null)
+        public async Task<List<GetCategoriesResponse>?> GetCategoriesAsync(int? parentCategoryId = null, string? searchString = null)
         {
-            IQueryable<Category> categoryQueryable;
-            if (parentCategoryId == null)
+            IQueryable<Category> categoryQueryable = _context.Categories.AsQueryable();
+            
+            categoryQueryable = _context.Categories
+            .Where(c => c.CategoryParentId == parentCategoryId);
+
+            if (searchString != null)
             {
-                categoryQueryable = _context.Categories
-                .Where(c => c.CategoryParentId == parentCategoryId);
-            } else {
-                categoryQueryable = _context.Categories
-                .Where(c => c.CategoryParentId == parentCategoryId);
+                categoryQueryable = categoryQueryable
+                .Where(c => c.Name.Contains(searchString));
             }
 
             var categories = await categoryQueryable
@@ -82,12 +84,12 @@ namespace EPlatform_API.Repository
         public async Task<Product?> GetProductByIdAsync(int productId)
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
-            
+
             if (product == null)
             {
                 return null;
             }
-            
+
             return product;
         }
 
@@ -95,13 +97,15 @@ namespace EPlatform_API.Repository
         {
             var products = _context.Products
             .Where(p => p.ShopId == shopId)
-            .Select(p => new Product {
+            .Select(p => new Product
+            {
                 ProductId = p.ProductId,
                 AvtImgUrl = p.AvtImgUrl,
                 Price = p.Price,
                 IsPublic = p.IsPublic,
                 Name = p.Name,
-                Inventory = new Inventory {
+                Inventory = new Inventory
+                {
                     AvailableQuantity = p.Inventory.AvailableQuantity,
                     IsAvailable = p.Inventory.IsAvailable
                 },

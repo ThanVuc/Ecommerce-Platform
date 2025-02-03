@@ -15,7 +15,7 @@ namespace EPlatform_API.ExtensionMethods
         }
 
 
-        public static string GenerateSlug(string phrase)
+        public static string GenerateSlug(string phrase, string? id = null)
         {
             // Only limited the duplicate slug, not 100% unique
             string str = phrase.ToLower();
@@ -23,7 +23,7 @@ namespace EPlatform_API.ExtensionMethods
             str = System.Text.RegularExpressions.Regex.Replace(str, @"\s+", " ").Trim(); // convert multiple spaces into one space
             str = System.Text.RegularExpressions.Regex.Replace(str, @"\s", "-"); // replace spaces
             string uniqueIdentifier = Guid.NewGuid().ToString("N").Substring(0, 8); // generate a unique identifier
-            str = $"{str}-{uniqueIdentifier}"; // append the unique identifier to the slug
+            str = $"{str}-{uniqueIdentifier}--{id}"; // append the unique identifier to the slug
             return str;
         }
     }
