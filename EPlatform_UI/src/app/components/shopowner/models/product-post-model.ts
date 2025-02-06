@@ -1,32 +1,33 @@
 import { selectModel } from "../../../shares/reusable/common-model/select-model";
 
 export interface ProductPostModel {
-    name: string;
-    categoryId: number;
-    description: string;
-    price: number;
-    isPublic: boolean;
-    specAttributes: SpecAttribute[];
-    specInventories: SpecInventory[];
-    warehouseId: number;
-    totalInventory: number;
+    Name: string;
+    CategoryId: number;
+    Description: string;
+    Price: number;
+    IsPublic: boolean;
+    SpecAttributes: SpecAttribute[];
+    SpecInventories: SpecInventory[];
+    WarehouseId: number;
+    TotalInventory: number;
+    CoverImage: File | null;
 }
 
 export interface SpecAttribute {
-    specName: string;
-    isPrimary: boolean;
-    specItems: SpecItem[];
+    SpecName: string;
+    IsPrimary: boolean;
+    SpecItems: SpecItem[];
 }
 
 export interface SpecItem{
-    specValue: string;
-    specImage: File | null;
+    SpecValue: string;
+    SpecImage: File | null;
 }
 
 export interface SpecInventory{
-    primarySpecValueName: string;
-    subSpecValueName: string;
-    inventory: number;
+    PrimarySpecValueName: string;
+    SubSpecValueName: string;
+    Inventory: number;
 }
 
 export interface WarehouseItem extends selectModel {

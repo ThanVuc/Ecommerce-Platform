@@ -26,8 +26,6 @@ namespace EPlatform_API.Models.ShopOwners
 
         [Required]
         public string? Slug { get; set; }
-        [Required]
-        public string? Code { get; set; }
 
         public string? AvtImgUrl { get; set; }
 
@@ -48,7 +46,7 @@ namespace EPlatform_API.Models.ShopOwners
 
         public Category? Category { get; set; }
         public Shop? Shop { get; set; }
-        public Inventory? Inventory { get; set; }
+        public Inventory? Inventory { get; set;}
         public ICollection<ProductDiscount>? ProductDiscounts { get; set; }
         public ICollection<ProductImage>? ProductImages { get; set; }
     }

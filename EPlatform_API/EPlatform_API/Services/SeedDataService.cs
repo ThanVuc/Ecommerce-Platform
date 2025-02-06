@@ -38,7 +38,6 @@ namespace EPlatform_API.Services
         {
             _context.Shops.RemoveRange(_context.Shops.Where(shop => shop.Name.Contains("@fake-data")));
             _context.Products.RemoveRange(_context.Products.Where(p => p.Name.Contains("@fake-data")));
-            _context.Categories.RemoveRange(_context.Categories.Where(c => c.Name.Contains("@fake-data")));
 
             _context.SaveChanges();
 
@@ -118,7 +117,8 @@ namespace EPlatform_API.Services
                     Description = faker.Commerce.Department(),
                     CreatedAt = faker.Date.Past(),
                     UpdatedAt = faker.Date.Recent(),
-                    Slug = UtilityServices.GenerateSlug(name)
+                    Slug = UtilityServices.GenerateSlug(name),
+                    Code = faker.Random.String2(10, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
                 };
                 categories.Add(category);
             }
@@ -143,7 +143,6 @@ namespace EPlatform_API.Services
                     Description = faker.Commerce.ProductDescription(),
                     Price = faker.Random.Decimal(1, 1000),
                     Slug = UtilityServices.GenerateSlug(name),
-                    Code = cate.Name.Substring(0,3).ToUpper(),
                     AvtImgUrl = "https://sinhnguyen417.blob.core.windows.net/public-images/600x400.png",
                     IsPublic = faker.Random.Bool(),
                     CreatedAt = faker.Date.Past(),
@@ -160,7 +159,7 @@ namespace EPlatform_API.Services
                 };
                 products.Add(product);
             }
-
+            
             // My products
 
             for (int i = 90; i < 100; i++)
@@ -178,7 +177,6 @@ namespace EPlatform_API.Services
                     Price = faker.Random.Decimal(1, 1000),
                     Slug = UtilityServices.GenerateSlug(name),
                     AvtImgUrl = "https://sinhnguyen417.blob.core.windows.net/public-images/600x400.png",
-                    Code = cate.Name.Substring(0,3).ToUpper(),
                     IsPublic = faker.Random.Bool(),
                     CreatedAt = faker.Date.Past(),
                     UpdatedAt = faker.Date.Recent(),

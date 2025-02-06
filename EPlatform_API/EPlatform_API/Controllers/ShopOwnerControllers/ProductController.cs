@@ -122,7 +122,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         }
 
         [HttpPost("add-product")]
-        public async Task<IActionResult> AddProduct([FromRoute] string shopId, [FromBody] AddProductRequest addProductRequest)
+        public async Task<IActionResult> AddProduct([FromRoute] string shopId, [FromForm] AddProductRequest addProductRequest)
         {
             if (addProductRequest == null)
             {
@@ -133,43 +133,13 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
 
-            addProductRequest.ShopId = shopId;
-            var add_product = addProductRequest.ToProduct();
-
-            var product = await _productRepo.AddAsync(add_product);
+            var product = addProductRequest.ToProduct();
+            product.ShopId = shopId;
+            var productId = await _productRepo.AddProductAsync(product);
             await _unitOfWork.SaveAsync();
 
-            if (product == null)
-            {
-                return StatusCode(500, new ApiResponseStandard<object>
-                {
-                    Message = "Unexpected Errors Occur! Please try again later or",
-                    Status = 500
-                });
-            }
-            var inventory = new Inventory
-            {
-                ProductId = product.ProductId,
-                Quantity = addProductRequest.Quantity,
-                AvailableQuantity = addProductRequest.Quantity,
-                SoldQuantity = 0,
-                IsAvailable = true,
-                UpdatedAt = DateTime.Now,
-                WareHouseId = addProductRequest.WarehouseId
-            };
-
-            await _productRepo.AddInventoryAsync(inventory);
-            await _unitOfWork.SaveAsync();
-            return Ok(new ApiResponseStandard<object>
-            {
-                Status = 201,
-                Message = "Add product success",
-                Data = new
-                {
-                    ProductId = product.ProductId,
-                    Name = product.Name
-                }
-            });
+            
+            return Ok(productId);
         }
 
         [HttpPost("upload-image-stream")]

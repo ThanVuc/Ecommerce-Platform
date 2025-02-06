@@ -92,6 +92,50 @@ $error-effect-color: #b00202;
             text-align: center;
         }
 
+        .cover-image{
+            align-self: flex-start;
+            margin-block: 10px;
+            width: 30%;
+            height: auto;
+            display: flex;
+            align-items: center;
+
+
+            .add-image{
+                width: 30%;
+                border: 1px solid $border-color;
+                border-radius: 10px;
+                height: auto;
+                margin-left: 10px;
+                overflow: hidden;
+
+                label{
+                    width: 100%;
+
+                    .image-preview{
+                        width: 100%;
+                        aspect-ratio: 1/1;
+                        object-fit: contain;
+                        display: none;
+                    }
+
+                    span{
+                        width: 100%;
+                        aspect-ratio: 1/1;
+                        height: auto;
+                    }
+                }
+
+                input[type="file"]{
+                    display: none;
+                }
+            }
+            .add-image:hover{
+                cursor: pointer;
+                transform: scale(0.97);
+            }
+        }
+
         .body{
             overflow-y: scroll;
             height: 80%;

@@ -37,6 +37,17 @@ namespace EPlatform_API.Repository
             await _context.Inventories.AddAsync(inventory);
         }
 
+        public async Task<int> AddProductAsync(Product product)
+        {
+            if (product == null)
+            {
+                throw new Exception("Product is null");
+            }
+
+            var rs = await _context.Products.AddAsync(product);
+            return rs.Entity.ProductId;
+        }
+
         public async Task DeleteProductImage(string imageId)
         {
             var img = _context.ProductImages.FirstOrDefault(i => i.ImageId == imageId);

@@ -4,6 +4,7 @@ using EPlatform_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlatform_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250206113350_resetProductInventoryContraint1")]
+    partial class resetProductInventoryContraint1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -213,14 +216,20 @@ namespace EPlatform_API.Migrations
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Inventory", b =>
                 {
-                    b.Property<int>("ProductId")
+                    b.Property<int>("InventoryId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InventoryId"));
 
                     b.Property<int?>("AvailableQuantity")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("Quantity")
                         .HasColumnType("int");
@@ -234,7 +243,11 @@ namespace EPlatform_API.Migrations
                     b.Property<int>("WareHouseId")
                         .HasColumnType("int");
 
-                    b.HasKey("ProductId");
+                    b.HasKey("InventoryId");
+
+                    b.HasIndex("ProductId")
+                        .IsUnique()
+                        .HasFilter("[ProductId] IS NOT NULL");
 
                     b.HasIndex("WareHouseId");
 
@@ -780,8 +793,7 @@ namespace EPlatform_API.Migrations
                 {
                     b.HasOne("EPlatform_API.Models.ShopOwners.Category", "ParentCategory")
                         .WithMany("SubCategories")
-                        .HasForeignKey("CategoryParentId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("CategoryParentId");
 
                     b.Navigation("ParentCategory");
                 });
@@ -791,8 +803,7 @@ namespace EPlatform_API.Migrations
                     b.HasOne("EPlatform_API.Models.ShopOwners.Product", "Product")
                         .WithOne("Inventory")
                         .HasForeignKey("EPlatform_API.Models.ShopOwners.Inventory", "ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("EPlatform_API.Models.ShopOwners.WareHouse", "WareHouse")
                         .WithMany("Inventory")

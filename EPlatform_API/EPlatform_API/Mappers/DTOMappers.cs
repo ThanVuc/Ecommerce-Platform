@@ -91,7 +91,6 @@ namespace EPlatform_API.Mappers
     
         public static Product ToProduct(this AddProductRequest addProductRequest){
             return new Product(){
-                ShopId = addProductRequest.ShopId,
                 Name = addProductRequest.Name,
                 Description = addProductRequest.Description,
                 Price = addProductRequest.Price,
@@ -99,8 +98,8 @@ namespace EPlatform_API.Mappers
                 CategoryId = addProductRequest.CategoryId,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                Code = addProductRequest.Code,
-                Slug = UtilityServices.GenerateSlug(addProductRequest.Name)
+                Slug = UtilityServices.GenerateSlug(addProductRequest.Name),
+                AvtImgUrl = @"https://sinhnguyen417.blob.core.windows.net/public-images/600x400.png"
             };
         }
 

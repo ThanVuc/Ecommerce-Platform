@@ -12,29 +12,30 @@
 
           <div class="form-group">
             <label for="exampleInputEmail1">Name Product</label>
-            <input type="text" [(ngModel)]="productModel.name" name="name" class="form-control product-input" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <input focus type="text" [(ngModel)]="productModel.Name" name="name" class="form-control product-input" id="exampleInputEmail1" aria-describedby="emailHelp">
           </div>
 
           <app-select-category (categorySelected)="saveCategory($event)"></app-select-category>
 
           <div class="form-group">
             <label for="exampleFormControlTextarea1">Description Product</label>
-            <textarea class="form-control" name="description" [(ngModel)]="productModel.description" id="exampleFormControlTextarea1" rows="3"></textarea>
+            <textarea class="form-control" name="description" [(ngModel)]="productModel.Description" id="exampleFormControlTextarea1" rows="3"></textarea>
           </div>
 
           <div class="form-group">
             <label for="classify-product">Classify Product</label>
             <div class="classify-product" id="classify-product-group">
               <p class="text-end note">*The first special attribute of product is primary</p>
-              @for (spec of productModel.specAttributes; track $index) {
+              <p class="text-end note">*Press enter to save attribute</p>
+              @for (spec of productModel.SpecAttributes; track $index) {
               <div class="product-spec">
-                <span class="material-symbols--close spec-remove" (click)="removeSpec(spec.specName)"></span>
-                <input type="text" class="name wrap" (keydown.enter)="saveSpecName($event,spec.specName)"
-                  value="{{spec.specName}}" name="" id="">
-                @for (specItem of spec.specItems; track $index) {
+                <span class="material-symbols--close spec-remove" (click)="removeSpec(spec.SpecName)"></span>
+                <input type="text" class="name wrap" (keydown.enter)="saveSpecName($event,spec.SpecName)" 
+                  value="{{spec.SpecName}}" name="" id="">
+                @for (specItem of spec.SpecItems; track $index) {
                 <label class="label-spec wrap">
-                  <p>{{specItem.specValue}}</p>
-                  <span class="material-symbols--close" (click)="removeSpecValue(spec.specName,specItem.specValue)"></span>
+                  <p>{{specItem.SpecValue}}</p>
+                  <span class="material-symbols--close" (click)="removeSpecValue(spec.SpecName,specItem.SpecValue)"></span>
                 </label>
                 }
                 <input type="text" class="value wrap hide" (keydown.enter)="saveSpec($event)" name=""
@@ -42,7 +43,7 @@
                 <span class="basil--add-outline add-spec-value show" (click)="showSpecValue($event)"></span>
               </div>
               }
-              @if(productModel.specAttributes.length < 2){
+              @if(productModel.SpecAttributes.length < 2){
                 <div class="product-spec-add" (click)="addSpec($event)">
                   <span class="basil--add-outline"></span>
                 </div>
@@ -57,14 +58,14 @@
                 <div class="input-group-prepend">
                   <div class="input-group-text">$</div>
                 </div>
-                <input type="number" [(ngModel)]="productModel.price" name="public" min="0" class="form-control" id="inlineFormInputGroup" placeholder="Price">
+                <input type="number" [(ngModel)]="productModel.Price" name="public" min="0" class="form-control" id="inlineFormInputGroup" placeholder="Price">
               </div>
 
             </div>
             <div class="public-product">
               <label for="public-product-group">Public</label>
               <div class="form-check-group" id="public-product-group">
-                @if (productModel.isPublic){
+                @if (productModel.IsPublic){
                   <div class="form-check">
                     <input class="form-check-input" (click)="setPublic(true)" name="public" type="radio" name="public" id="flexRadioDefault1" checked>
                     <label class="form-check-label" for="flexRadioDefault1">
@@ -106,7 +107,7 @@
           <div class="inventory-info">
             <div class="form-group">
               <label for="Inventory">Inventory</label>
-              <input type="number" name="totalInventory" [(ngModel)]="productModel.totalInventory" class="form-control disabled" [defaultValue]="0" disabled id="Inventory"
+              <input type="number" name="totalInventory" [(ngModel)]="productModel.TotalInventory" class="form-control disabled" [defaultValue]="0" disabled id="Inventory"
                 aria-describedby="inventory">
             </div>
 
@@ -119,7 +120,7 @@
 
 
       <div class="create-product">
-        <button type="submit" class="btn btn-outline-light">Create Product</button>
+        <button type="submit" (click)="createNewProduct()" class="btn btn-outline-light">Create Product</button>
       </div>
     </form>
 

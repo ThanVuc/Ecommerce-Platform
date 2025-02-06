@@ -24,15 +24,16 @@ export class UploadImagesComponent {
   @Output() upload = new EventEmitter<ProductPostModel>();
 
   @Input() productModel: ProductPostModel = {
-    name: '',
-    description: '',
-    price: 0,
-    categoryId: 0,
-    isPublic: true,
-    specAttributes: [],
-    specInventories: [],
-    warehouseId: 0,
-    totalInventory: 0
+    Name: '',
+    Description: '',
+    Price: 0,
+    CategoryId: 0,
+    IsPublic: true,
+    SpecAttributes: [],
+    SpecInventories: [],
+    WarehouseId: 0,
+    TotalInventory: 0,
+    CoverImage: null
   }
 
   showBoard() {
@@ -49,7 +50,7 @@ export class UploadImagesComponent {
     this.hideBoard();
   }
 
-  showPreview(ele: HTMLElement, specName: string) {
+  showPreview(ele: HTMLElement) {
     let targetElement = ele.querySelector('label') as HTMLElement;
     const img = targetElement.querySelector('img') as HTMLImageElement;
     const span = targetElement.querySelector('span') as HTMLSpanElement;
@@ -74,20 +75,20 @@ export class UploadImagesComponent {
     }
   }
 
-  onFileChange(event: Event, specValue: string) {
-    {
-      const input = event.target as HTMLInputElement;
-      if (input.files && input.files.length > 0) {
-        this.currentFile = input.files[0];
-        let item = this.productModel.specAttributes[0].specItems.find(item => item.specValue == specValue);
-        if (item) {
-          item.specImage = this.currentFile;
-        }
-      }
+  saveFile(event: Event){
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.currentFile = input.files[0];
+      this.productModel.CoverImage = this.currentFile;
+    }
+  }
 
-      if (input.parentElement) {
-        this.showPreview(input.parentElement, specValue);
-      }
+  onFileChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.saveFile(event);
+
+    if (input.parentElement) {
+      this.showPreview(input.parentElement);
     }
   }
 }

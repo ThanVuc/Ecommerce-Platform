@@ -13,5 +13,6 @@ namespace EPlatform_API.IServices
         Task SeedRoleData();
         Task SeedVietnameseLocationData();
         Task SeedDatabase();
+        Task SeedCategoryData();
     }
 }

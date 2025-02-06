@@ -38,6 +38,11 @@ namespace EPlatform_API.Data
             builder.Entity<ProductDiscount>().HasKey(pd => new { pd.ProductId, pd.DiscountId });
             builder.Entity<OrderProduct>().HasKey(op => new { op.OrderId, op.ProductId });
 
+            builder.Entity<Category>()
+            .HasMany(c => c.Products)
+            .WithOne(p => p.Category)
+            .OnDelete(DeleteBehavior.NoAction);
+
             builder.Entity<AppUser>()
             .HasOne(u => u.Shop)
             .WithOne(s => s.ShopOwner)

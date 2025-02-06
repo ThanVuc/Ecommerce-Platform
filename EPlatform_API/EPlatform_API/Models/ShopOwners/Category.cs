@@ -32,6 +32,8 @@ namespace EPlatform_API.Models.ShopOwners
 
         [Required]
         public DateTime UpdatedAt { get; set; }
+        [Required]
+        public string? Code { get; set; }
 
         public Category? ParentCategory { get; set; }
         public ICollection<Product>? Products { get; set; }

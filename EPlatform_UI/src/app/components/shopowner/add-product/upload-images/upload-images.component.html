@@ -12,6 +12,16 @@
     <span class="material-symbols--close" (click)="hideBoard()"></span>
     <div class="content">
       <div class="header">Images & Inventories</div>
+      <div class="cover-image">
+        <p>Upload Cover Image:</p>
+        <div class="add-image">
+          <label for="file-input-cover-image" >
+            <span class="material-symbols-light--upload-rounded"></span>
+            <img class="image-preview" src="" alt="Error">
+          </label>
+          <input (change)="onFileChange($event)" type="file" name="" id="file-input-cover-image">
+        </div>
+      </div>
       <div class="body">
         <table class="table table-striped table-dark upload-table">
           <thead>
@@ -22,35 +32,35 @@
             </tr>
           </thead>
           <tbody>
-            @if (productModel.specAttributes.length > 0){
-              @for (specItem of productModel.specAttributes[0].specItems; track $index) {
+            @if (productModel.SpecAttributes.length > 0){
+              @for (specItem of productModel.SpecAttributes[0].SpecItems; track $index) {
                 <tr>
                   <td>
                     <div class="add-image">
-                      <label for="file-input-{{specItem.specValue}}" >
+                      <label for="file-input-{{specItem.SpecValue}}" >
                         <span class="material-symbols-light--upload-rounded"></span>
                         <img class="image-preview" src="" alt="Error">
                       </label>
-                      <input (change)="onFileChange($event, specItem.specValue)" type="file" name="" id="file-input-{{specItem.specValue}}">
+                      <input (change)="onFileChange($event)" type="file" name="" id="file-input-{{specItem.SpecValue}}">
                     </div>
                   </td>
-                  <td>{{specItem.specValue}}</td>
+                  <td>{{specItem.SpecValue}}</td>
                   <td>
                       <ul style="list-style-type: none;">
-                        @for (inventory of productModel.specInventories; track $index) {
-                          @if (inventory.primarySpecValueName == specItem.specValue){
-                            @if (inventory.subSpecValueName){
+                        @for (inventory of productModel.SpecInventories; track $index) {
+                          @if (inventory.PrimarySpecValueName == specItem.SpecValue){
+                            @if (inventory.SubSpecValueName){
                               <li>
                                 <div class="spec-arg">
-                                  <label class="spec-name">{{inventory.subSpecValueName}}</label>
-                                  <input type="number" [(ngModel)]="inventory.inventory" class="inventory-input" aria-describedby="inventory">
+                                  <label class="spec-name">{{inventory.SubSpecValueName}}</label>
+                                  <input type="number" [(ngModel)]="inventory.Inventory" class="inventory-input" aria-describedby="inventory">
                                 </div>
                               </li>
                             } @else {
                               <li>
                                 <div class="spec-arg">
-                                  <label class="spec-name">{{inventory.primarySpecValueName}}</label>
-                                  <input type="number" [(ngModel)]="inventory.inventory" class="inventory-input" aria-describedby="inventory">
+                                  <label class="spec-name">{{inventory.PrimarySpecValueName}}</label>
+                                  <input type="number" [(ngModel)]="inventory.Inventory" class="inventory-input" aria-describedby="inventory">
                                 </div>
                               </li>
                             }

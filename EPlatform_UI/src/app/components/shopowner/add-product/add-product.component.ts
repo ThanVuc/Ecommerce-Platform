@@ -11,6 +11,8 @@ import { SelectTagComponent } from "../../../shares/reusable/select-tag/select-t
 import { spec } from 'node:test/reporters';
 import { selectModel } from '../../../shares/reusable/common-model/select-model';
 import { UtilitiesServiceService } from '../../services/utilities-service.service';
+import { ShopService } from '../../services/shop.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-add-product',
@@ -25,6 +27,9 @@ export class AddProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.getWarehousesForSelect();
+    this.activatedRoute.parent?.params.subscribe(params => { 
+      this.shopId = params['shop_id'];
+    });
   }
 
   warehouseItems: WarehouseItem[] = [{
@@ -43,18 +48,22 @@ export class AddProductComponent implements OnInit {
     isNext: false
   };
   productModel: ProductPostModel = {
-    name: '',
-    description: '',
-    price: 0,
-    categoryId: 0,
-    isPublic: true,
-    specAttributes: [],
-    specInventories: [],
-    warehouseId: 0,
-    totalInventory: 0
+    Name: '',
+    Description: '',
+    Price: 0,
+    CategoryId: 0,
+    IsPublic: true,
+    SpecAttributes: [],
+    SpecInventories: [],
+    WarehouseId: 0,
+    TotalInventory: 0,
+    CoverImage: null
   }
+  shopId: string = '';
 
   utilitiesSVC = inject(UtilitiesServiceService);
+  shopSVC = inject(ShopService);
+  activatedRoute = inject(ActivatedRoute);
 
   getWarehousesForSelect() {
     this.utilitiesSVC.getWarehouses().subscribe({
@@ -68,11 +77,14 @@ export class AddProductComponent implements OnInit {
   }
 
   setPublic(isPublic: boolean) {
-    this.productModel.isPublic = isPublic;
+    this.productModel.IsPublic = isPublic;
   }
 
   saveCategory(category: CategoryModel) {
     this.category = category;
+    if (category.categoryId){
+      this.productModel.CategoryId = category.categoryId;
+    }
   }
 
   findCurrentSpec(event: Event) {
@@ -80,7 +92,7 @@ export class AddProductComponent implements OnInit {
     const parentElement = targetElement.parentElement;
     const specNameElement = parentElement?.querySelector('.name') as HTMLInputElement;
 
-    if (this.productModel.specAttributes.find(spec => spec.specName === specNameElement.value) === undefined) {
+    if (this.productModel.SpecAttributes.find(spec => spec.SpecName === specNameElement.value) === undefined) {
       return '';
     }
 
@@ -98,15 +110,15 @@ export class AddProductComponent implements OnInit {
     event.preventDefault();
     const valueInputElement = event.target as HTMLInputElement;
     const currentSpec = this.findCurrentSpec(event);
-    let specItems = this.productModel.specAttributes
-      .find(spec => spec.specName === currentSpec)
-      ?.specItems;
+    let specItems = this.productModel.SpecAttributes
+      .find(spec => spec.SpecName === currentSpec)
+      ?.SpecItems;
 
     if (!specItems) {
       this.triggerError(valueInputElement);
       return;
     }
-    let currentItem = specItems.find(specItem => specItem.specValue === valueInputElement.value);
+    let currentItem = specItems.find(specItem => specItem.SpecValue === valueInputElement.value);
 
     if (currentItem) {
       this.triggerError(valueInputElement);
@@ -114,28 +126,28 @@ export class AddProductComponent implements OnInit {
     }
 
     specItems.push({
-      specValue: valueInputElement.value,
-      specImage: null
+      SpecValue: valueInputElement.value,
+      SpecImage: null
     });
 
-    switch (this.productModel.specAttributes.length) {
+    switch (this.productModel.SpecAttributes.length) {
       case 1:
-        this.productModel.specInventories.push({
-          primarySpecValueName: valueInputElement.value,
-          subSpecValueName: '',
-          inventory: 0,
+        this.productModel.SpecInventories.push({
+          PrimarySpecValueName: valueInputElement.value,
+          SubSpecValueName: '',
+          Inventory: 0,
         });
         break;
       case 2:
         if (this.isSingleSpec){
           this.isSingleSpec = false;
-          this.productModel.specInventories = [];
+          this.productModel.SpecInventories = [];
         }
-        this.productModel.specAttributes[0].specItems.forEach(specItem => {
-          this.productModel.specInventories.push({
-            primarySpecValueName: specItem.specValue,
-            subSpecValueName: valueInputElement.value,
-            inventory: 0
+        this.productModel.SpecAttributes[0].SpecItems.forEach(specItem => {
+          this.productModel.SpecInventories.push({
+            PrimarySpecValueName: specItem.SpecValue,
+            SubSpecValueName: valueInputElement.value,
+            Inventory: 0
           });
         });
 
@@ -154,7 +166,7 @@ export class AddProductComponent implements OnInit {
   }
 
   addSpec(event: Event) {
-    if (this.productModel.specAttributes.find(spec => spec.specName === '') !== undefined) {
+    if (this.productModel.SpecAttributes.find(spec => spec.SpecName === '') !== undefined) {
       alert("Can't add empty spec continiously");
       const targetElement = event.target as HTMLInputElement;
       this.triggerError(targetElement);
@@ -163,51 +175,55 @@ export class AddProductComponent implements OnInit {
 
     let isPrimary: boolean = false;
 
-    if (this.productModel.specAttributes.length === 0) {
+    if (this.productModel.SpecAttributes.length === 0) {
       isPrimary = true;
     }
 
-    this.productModel.specAttributes.push({
-      specName: '',
-      specItems: [],
-      isPrimary: isPrimary
+    this.productModel.SpecAttributes.push({
+      SpecName: '',
+      SpecItems: [],
+      IsPrimary: isPrimary
     });
   }
 
   saveSpecName(event: Event, name: string) {
     event.preventDefault();
     const targetElement = event.target as HTMLInputElement;
-    let specObject = this.productModel.specAttributes.find(spec => spec.specName === name);
+    let specObject = this.productModel.SpecAttributes.find(spec => spec.SpecName === name);
     if (specObject) {
-      specObject.specName = targetElement.value;
+      specObject.SpecName = targetElement.value;
     }
     targetElement.blur();
   }
 
   removeSpecValue(name: string, value: string) {
-    let specItems = this.productModel.specAttributes.find(spec => spec.specName === name)?.specItems;
+    let specItems = this.productModel.SpecAttributes.find(spec => spec.SpecName === name)?.SpecItems;
+    //delete the spec inventory for me by condition: spec.PrimarySpecValueName === value || spec.SubSpecValueName === value
+    this.productModel.SpecInventories = this.productModel.SpecInventories.filter(spec => 
+      spec.PrimarySpecValueName !== value && spec.SubSpecValueName !== value
+    );
 
+    
     if (specItems) {
       for (let i = 0; i < specItems.length; i++) {
-        if (specItems[i].specValue === value) {
+        if (specItems[i].SpecValue === value) {
           specItems.splice(i, 1);
           break;
         }
       }
     }
-
   }
 
   removeSpec(specName: string) {
-    const specIndex = this.productModel.specAttributes.findIndex(spec => spec.specName === specName);
+    const specIndex = this.productModel.SpecAttributes.findIndex(spec => spec.SpecName === specName);
     if (specIndex !== -1) {
-      this.productModel.specAttributes.splice(specIndex, 1);
-      if (this.productModel.specAttributes.length == 1) {
-        this.productModel.specAttributes[0].isPrimary = true;
+      this.productModel.SpecAttributes.splice(specIndex, 1);
+      if (this.productModel.SpecAttributes.length == 1) {
+        this.productModel.SpecAttributes[0].IsPrimary = true;
       }
       this.uploadImages.productModel = this.productModel;
     }
-    console.log(this.productModel.specAttributes);
+    console.log(this.productModel.SpecAttributes);
   }
 
   showSpecValue(event: Event) {
@@ -220,16 +236,26 @@ export class AddProductComponent implements OnInit {
   }
 
   getWarehouse(warehouseItem: WarehouseItem) {
-    this.productModel.warehouseId = parseInt(warehouseItem.id);
+    this.productModel.WarehouseId = parseInt(warehouseItem.id);
   }
 
   saveUploadImagesAndInventories(productModel: ProductPostModel) {
     this.productModel = productModel;
     let sum:number = 0;
-    for(let i = 0; i < this.productModel.specInventories.length; i++){
-      sum += this.productModel.specInventories[i].inventory;
+    for(let i = 0; i < this.productModel.SpecInventories.length; i++){
+      sum += this.productModel.SpecInventories[i].Inventory;
     }
-    this.productModel.totalInventory = sum;
-    console.log(this.productModel.totalInventory);
+    this.productModel.TotalInventory = sum;
+  }
+
+  createNewProduct(){
+    this.shopSVC.addProduct(this.shopId,this.productModel).subscribe({
+      next: (res) => {
+        console.log(res.data);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
   }
 }

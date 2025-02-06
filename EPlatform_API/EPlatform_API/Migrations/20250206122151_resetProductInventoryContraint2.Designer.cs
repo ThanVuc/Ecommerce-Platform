@@ -4,6 +4,7 @@ using EPlatform_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlatform_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250206122151_resetProductInventoryContraint2")]
+    partial class resetProductInventoryContraint2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -213,14 +216,20 @@ namespace EPlatform_API.Migrations
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Inventory", b =>
                 {
-                    b.Property<int>("ProductId")
+                    b.Property<int>("InventoryId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InventoryId"));
 
                     b.Property<int?>("AvailableQuantity")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("Quantity")
                         .HasColumnType("int");
@@ -234,7 +243,7 @@ namespace EPlatform_API.Migrations
                     b.Property<int>("WareHouseId")
                         .HasColumnType("int");
 
-                    b.HasKey("ProductId");
+                    b.HasKey("InventoryId");
 
                     b.HasIndex("WareHouseId");
 
@@ -367,6 +376,9 @@ namespace EPlatform_API.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("InventoryId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsPublic")
                         .HasColumnType("bit");
 
@@ -398,6 +410,10 @@ namespace EPlatform_API.Migrations
                     b.HasKey("ProductId");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("InventoryId")
+                        .IsUnique()
+                        .HasFilter("[InventoryId] IS NOT NULL");
 
                     b.HasIndex("ShopId");
 
@@ -780,27 +796,18 @@ namespace EPlatform_API.Migrations
                 {
                     b.HasOne("EPlatform_API.Models.ShopOwners.Category", "ParentCategory")
                         .WithMany("SubCategories")
-                        .HasForeignKey("CategoryParentId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("CategoryParentId");
 
                     b.Navigation("ParentCategory");
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Inventory", b =>
                 {
-                    b.HasOne("EPlatform_API.Models.ShopOwners.Product", "Product")
-                        .WithOne("Inventory")
-                        .HasForeignKey("EPlatform_API.Models.ShopOwners.Inventory", "ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EPlatform_API.Models.ShopOwners.WareHouse", "WareHouse")
                         .WithMany("Inventory")
                         .HasForeignKey("WareHouseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Product");
 
                     b.Navigation("WareHouse");
                 });
@@ -851,6 +858,11 @@ namespace EPlatform_API.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("EPlatform_API.Models.ShopOwners.Inventory", "Inventory")
+                        .WithOne("Product")
+                        .HasForeignKey("EPlatform_API.Models.ShopOwners.Product", "InventoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("EPlatform_API.Models.ShopOwners.Shop", "Shop")
                         .WithMany("Products")
                         .HasForeignKey("ShopId")
@@ -858,6 +870,8 @@ namespace EPlatform_API.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+
+                    b.Navigation("Inventory");
 
                     b.Navigation("Shop");
                 });
@@ -990,6 +1004,11 @@ namespace EPlatform_API.Migrations
                     b.Navigation("ProductDiscounts");
                 });
 
+            modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Inventory", b =>
+                {
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Order", b =>
                 {
                     b.Navigation("OrderProducts");
@@ -999,8 +1018,6 @@ namespace EPlatform_API.Migrations
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Product", b =>
                 {
-                    b.Navigation("Inventory");
-
                     b.Navigation("ProductDiscounts");
 
                     b.Navigation("ProductImages");

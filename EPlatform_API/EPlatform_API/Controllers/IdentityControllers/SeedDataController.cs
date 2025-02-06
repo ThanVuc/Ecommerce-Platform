@@ -61,10 +61,10 @@ namespace EPlatform_API.Controllers.IdentityControllers
             return Ok("Seed Data Successful!");
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> Test(){
-            var shops = await _shopRepo.GetAllAsync();
-            return Ok(shops);
+        [HttpGet("seed-categories-data")]
+        public async Task<IActionResult> SeedCategoriesData(){
+            await _seedDataService.SeedCategoryData();
+            return Ok("Seed Data Successful!");
         }
 
         [HttpGet("seed-vietnamese-location")]

@@ -29,6 +29,34 @@ namespace EPlatform_API.Services
             );
         }
 
+        public FileStreamModel ConvertToFileStreamModel(string fileName, Stream stream)
+        {
+            return new FileStreamModel
+            {
+                Name = fileName,
+                Stream = stream
+            };
+        }
+
+        public FileStreamModel ConvertToFileStreamModel(string fileName, byte[] byteStream)
+        {
+            var stream = new MemoryStream(byteStream);
+            return new FileStreamModel
+            {
+                Name = fileName,
+                Stream = stream
+            };
+        }
+
+        public FileStreamModel ConvertToFileStreamModel(string fileName, IFormFile file)
+        {
+            return new FileStreamModel
+            {
+                Name = fileName,
+                Stream = file.OpenReadStream()
+            };
+        }
+
         public async Task DeleteFilePermanentAsync(string name)
         {
             var blobClient = _publicImageContainerClient.GetBlobClient(name);

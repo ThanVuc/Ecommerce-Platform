@@ -4,6 +4,7 @@ using EPlatform_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlatform_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250206112957_resetProductInventoryContraint")]
+    partial class resetProductInventoryContraint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -780,8 +783,7 @@ namespace EPlatform_API.Migrations
                 {
                     b.HasOne("EPlatform_API.Models.ShopOwners.Category", "ParentCategory")
                         .WithMany("SubCategories")
-                        .HasForeignKey("CategoryParentId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("CategoryParentId");
 
                     b.Navigation("ParentCategory");
                 });
@@ -791,7 +793,7 @@ namespace EPlatform_API.Migrations
                     b.HasOne("EPlatform_API.Models.ShopOwners.Product", "Product")
                         .WithOne("Inventory")
                         .HasForeignKey("EPlatform_API.Models.ShopOwners.Inventory", "ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("EPlatform_API.Models.ShopOwners.WareHouse", "WareHouse")

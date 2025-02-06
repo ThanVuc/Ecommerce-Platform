@@ -43,5 +43,17 @@ namespace EPlatform_API.Controllers.UtilitiesController
                 Data = warehouses
             });
         }
+    
+        [HttpDelete("categories-clear")]
+        public async Task<IActionResult> ClearCategories()
+        {
+            _context.Categories.RemoveRange(_context.Categories);
+            await _context.SaveChangesAsync();
+            return Ok(new ApiResponseStandard<object>
+            {
+                Status = 200,
+                Message = "Categories cleared"
+            });
+        }
     }
 }

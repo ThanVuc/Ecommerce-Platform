@@ -12,6 +12,7 @@ namespace EPlatform_API.Models.ShopOwners
         [Key]
         [ForeignKey("Product")]
         public int ProductId { get; set; }
+
         [ForeignKey("WareHouse")]
         public int WareHouseId {get; set;}
         public int? Quantity { get; set; }
