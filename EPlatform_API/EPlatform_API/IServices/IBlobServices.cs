@@ -8,8 +8,11 @@ namespace EPlatform_API.IServices
 {
     public interface IBlobServices
     {
-        Task UpdloadImageAsync(string name, string filePath, string contentType);
-        Task UpdloadImageAsync(FileStreamModel file);
+        public FileStreamModel ConvertToFileStreamModel(string fileName, Stream stream);
+        public FileStreamModel ConvertToFileStreamModel(string fileName, byte[] byteStream);
+        public FileStreamModel ConvertToFileStreamModel(string fileName, IFormFile file);
+        Task<string> UpdloadImageAsync(string name, string filePath, string contentType);
+        Task<string> UpdloadImageAsync(FileStreamModel file);
         Task UpdloadImagesAsync(List<FileStreamModel> files);
         Task<Stream> DownloadFileAsync(string name);
         Task DeleteFilePermanentAsync(string name);

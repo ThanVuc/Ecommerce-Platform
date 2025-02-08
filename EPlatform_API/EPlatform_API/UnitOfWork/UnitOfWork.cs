@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPlatform_API.Data;
 using EPlatform_API.IRepository;
+using EPlatform_API.IServices;
 using EPlatform_API.Models;
 using EPlatform_API.Repository;
+using EPlatform_API.Services;
 
 namespace EPlatform_API.UnitOfWork
 {
@@ -14,11 +16,12 @@ namespace EPlatform_API.UnitOfWork
         public readonly AppDbContext _context;
         private ShopRepository _shopRepo;
         private ProductRepository _productRepo;
+        private readonly ILoggingService _loggingService;
         private readonly IConfiguration _configuration;
         public ShopRepository ShopRepo {
             get{
                 if (_shopRepo == null){
-                    _shopRepo = new ShopRepository(_context, _configuration);
+                    _shopRepo = new ShopRepository(_context, _configuration, _loggingService);
                 }
 
                 return _shopRepo;
@@ -28,7 +31,7 @@ namespace EPlatform_API.UnitOfWork
         public ProductRepository ProductRepo{
             get{
                 if (_productRepo == null){
-                    _productRepo = new ProductRepository(_context,_configuration);
+                    _productRepo = new ProductRepository(_context,_configuration,_loggingService);
                 }
                 return _productRepo;
             }
@@ -36,11 +39,13 @@ namespace EPlatform_API.UnitOfWork
 
         public UnitOfWork(
             AppDbContext context,
-            IConfiguration configuration
+            IConfiguration configuration,
+            ILoggingService loggingService
         )
         {
             _context = context;
             _configuration = configuration;
+            _loggingService = loggingService;
         }
 
         private bool disposed = false;

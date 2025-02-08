@@ -6,6 +6,7 @@ using EPlatform_API.Data;
 using EPlatform_API.DTOs.ShopDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IRepository;
+using EPlatform_API.IServices;
 using EPlatform_API.Mappers;
 using EPlatform_API.Models.ShopOwners;
 using EPlatform_API.Services;
@@ -20,7 +21,7 @@ namespace EPlatform_API.Repository
         private readonly AppDbContext _context;
         private readonly IDatabase _redis;
 
-        public ProductRepository(AppDbContext context, IConfiguration configuration) : base(context, configuration)
+        public ProductRepository(AppDbContext context, IConfiguration configuration, ILoggingService loggingService) : base(context, configuration, loggingService)
         {
             _blobServices = new BlobServices(configuration, BlogStorage.PublicImages);
             _context = context;
@@ -34,18 +35,26 @@ namespace EPlatform_API.Repository
                 throw new Exception("Inventory is null");
             }
 
-            await _context.Inventories.AddAsync(inventory);
+            
+            try {
+                await _context.Inventories.AddAsync(inventory);
+            } catch (Exception e) {
+                throw new Exception(e.Message);
+            }
         }
 
-        public async Task<int> AddProductAsync(Product product)
+        public async Task AddProductAsync(Product product)
         {
             if (product == null)
             {
                 throw new Exception("Product is null");
             }
 
-            var rs = await _context.Products.AddAsync(product);
-            return rs.Entity.ProductId;
+            try {
+                await _context.Products.AddAsync(product);
+            } catch (Exception e) {
+                throw new Exception(e.Message);
+            }
         }
 
         public async Task DeleteProductImage(string imageId)
@@ -117,8 +126,8 @@ namespace EPlatform_API.Repository
                 Name = p.Name,
                 Inventory = new Inventory
                 {
-                    AvailableQuantity = p.Inventory.AvailableQuantity,
-                    IsAvailable = p.Inventory.IsAvailable
+                    AvailableQuantity = p.Inventory == null ? 0 : p.Inventory.AvailableQuantity,
+                    IsAvailable = p.Inventory == null ? false : p.Inventory.IsAvailable
                 },
                 Slug = p.Slug
             })
@@ -126,6 +135,41 @@ namespace EPlatform_API.Repository
             .AsQueryable();
 
             return products;
+        }
+    
+        public async Task AddProductImagesAsync(int productId, Dictionary<string,string> productImgDict)
+        {
+            // Add cover image
+            await _context.ProductImages.AddAsync(new ProductImage
+            {
+                ProductId = productId,
+                ImgType = "WebP",
+                ImgUrl = productImgDict["coverImage"],
+                IsPrimary = true,
+                DeletedAt = null,
+                IsDeleted = false,
+                UploadAt = DateTime.Now
+            });
+
+            // add other images
+            foreach (var img in productImgDict)
+            {
+                if (img.Key == "coverImage")
+                {
+                    continue;
+                }
+
+                await _context.ProductImages.AddAsync(new ProductImage
+                {
+                    ProductId = productId,
+                    ImgType = "WebP",
+                    ImgUrl = img.Value,
+                    IsPrimary = false,
+                    DeletedAt = null,
+                    IsDeleted = false,
+                    UploadAt = DateTime.Now
+                });
+            }
         }
     }
 }

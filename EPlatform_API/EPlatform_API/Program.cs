@@ -87,6 +87,7 @@ services.AddSingleton<ILoggingService, LoggingService>();
 services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
 services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
 services.AddScoped<IVietnameseLocationRepository,VietnameseLocationRepository>();
+services.AddScoped<ProductInfoMongoRepository,ProductInfoMongoRepository>();
 
 var app = builder.Build();
 
@@ -105,6 +106,10 @@ app.UseCors("AllowAllCORS");
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+// app.MapGet("/gender-random-string", () => {
+//     return UtilityServices.GenerateRandomString(10);
+// });
 
 app.MapControllers();
 

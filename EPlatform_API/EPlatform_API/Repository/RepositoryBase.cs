@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using DnsClient;
 using EPlatform_API.Data;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IRepository;
@@ -17,15 +18,18 @@ namespace EPlatform_API.Repository
         private readonly AppDbContext _context;
         private readonly DbSet<TEntity> _dbSet;
         protected IBlobServices _blobServices;
+        protected ILoggingService _loggingService;
         private AppDbContext context;
 
         public RepositoryBase(
             AppDbContext context,
-            IConfiguration configuration
+            IConfiguration configuration,
+            ILoggingService loggingService
         )
         {
             _context = context;
             _dbSet = context.Set<TEntity>();
+            _loggingService = loggingService;
         }
 
         public virtual TEntity? Add(TEntity e)

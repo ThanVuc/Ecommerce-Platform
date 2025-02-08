@@ -50,6 +50,7 @@ export class ShopService {
 
       specAttribute.SpecItems.forEach((specItem, itemIndex) => {
         formData.append(`SpecAttributes[${index}].SpecItems[${itemIndex}].SpecValue`, specItem.SpecValue);
+        console.log(specItem.SpecImage);
         if (specItem.SpecImage) {
           formData.append(`SpecAttributes[${index}].SpecItems[${itemIndex}].SpecImage`, specItem.SpecImage);
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlatform_API.IRepository;
+using EPlatform_API.IServices;
 using MongoDB.Driver;
 
 namespace EPlatform_API.Repository
@@ -10,10 +11,12 @@ namespace EPlatform_API.Repository
     public class MongoRepository<T> : IMongoRepository<T> where T : class
     {
         private readonly IMongoCollection<T> _collection;
+        protected readonly ILoggingService loggingService;
 
-        public MongoRepository(IMongoDatabase database)
+        public MongoRepository(IMongoDatabase database, ILoggingService loggingService)
         {
             _collection = database.GetCollection<T>(typeof(T).Name);
+            this.loggingService = loggingService;
         }
 
         public virtual async Task CreateAsync(T document)

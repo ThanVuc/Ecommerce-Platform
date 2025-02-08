@@ -26,5 +26,19 @@ namespace EPlatform_API.ExtensionMethods
             str = $"{str}-{uniqueIdentifier}--{id}"; // append the unique identifier to the slug
             return str;
         }
+
+        public static string GenerateRandomString(int length)
+        {
+            var random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            int charsLength = chars.Length;
+            char[] randomString = new char[length];
+            var ramdom = new Random();
+            for(int i=0; i<length; i++)
+            {
+                randomString[i] = chars[ramdom.Next(charsLength)];
+            }
+            return new string(randomString);
+        }
     }
 }

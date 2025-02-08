@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace EPlatform_API.Models.ShopOwners
 {
-    public class FAQ_Chat
+    public class FAQChat
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

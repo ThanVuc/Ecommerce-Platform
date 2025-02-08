@@ -32,9 +32,7 @@ namespace EPlatform_API.Helper
             {
                 CurrentPage = 1;
             }
-
-            Console.WriteLine("Current Page: " + CurrentPage);
-
+            
             AddRange(items);
         }
 

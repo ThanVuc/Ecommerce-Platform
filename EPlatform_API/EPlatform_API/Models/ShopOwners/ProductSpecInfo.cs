@@ -9,7 +9,7 @@ namespace EPlatform_API.Models.ShopOwners
     public class ProductSpecInfo
     {
         [BsonRequired]
-        public string? ProductId { get; set; }
+        public int ProductId { get; set; }
         
         [BsonRequired]
         public List<Spec> SpecInfos { get; set; } = new List<Spec>();

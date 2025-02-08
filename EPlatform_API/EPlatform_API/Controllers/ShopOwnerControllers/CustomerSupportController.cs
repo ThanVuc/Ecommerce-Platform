@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlatform_API.IRepository;
+using EPlatform_API.IServices;
 using EPlatform_API.Models.ShopOwners;
 using EPlatform_API.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,16 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
     public class CustomerSupportController : ControllerBase
     {
         private readonly ChatRepository _chatRepo;
+        private readonly ILoggingService _loggingService;
 
-        public CustomerSupportController(IMongoDatabase mongoDatabase)
+
+        public CustomerSupportController(
+            IMongoDatabase mongoDatabase,
+            ILoggingService loggingService
+        )
         {
-            _chatRepo = new ChatRepository(mongoDatabase);
+            _loggingService = loggingService;
+            _chatRepo = new ChatRepository(mongoDatabase, loggingService);
         }
 
         [HttpGet("/api/chat/get-char-in-today-of-user")]

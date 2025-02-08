@@ -9,5 +9,6 @@ namespace EPlatform_API.IServices
     {
         Task WriteAccountLog(string message);
         Task WriteRoleLog(string message);
+        Task WriteProductLog(string message);
     }
 }

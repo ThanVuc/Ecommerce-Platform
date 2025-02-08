@@ -101,7 +101,11 @@ namespace EPlatform_API.Services
 
         public Stream ConvertToWebP(Stream file)
         {
-
+            /***
+                * 1. Decode file to bitmap
+                * 2. Encode bitmap to webp
+                * 3. Return stream
+            ***/
             using (var bitmap = SKBitmap.Decode(file))
             {
                 var imageFormat = SKEncodedImageFormat.Webp;
@@ -114,16 +118,26 @@ namespace EPlatform_API.Services
             }
         }
 
-        public async Task UpdloadImageAsync(string name, string filePath, string contentType)
+        public async Task<string> UpdloadImageAsync(string name, string filePath, string contentType)
         {
+            /***
+                * 1. Get blob client
+                * 2. Open file stream
+                * 3. Convert to webp
+                * 4. Upload to blob
+                * 5. Set content type
+                * 6. Return url
+            ***/
             var blobClient = _publicImageContainerClient.GetBlobClient(name);
             var stream = (Stream)File.OpenRead(filePath);
             stream = ConvertToWebP(stream);
             stream.Position = 0;
             await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = "image/webp" });
+            var url = blobClient.Uri.AbsoluteUri;
+            return url;
         }
 
-        public async Task UpdloadImageAsync(FileStreamModel file)
+        public async Task<string> UpdloadImageAsync(FileStreamModel file)
         {
             if (file.Stream == null)
             {
@@ -136,6 +150,8 @@ namespace EPlatform_API.Services
             file.Stream.Position = 0;
             // save image-uri to blob file system
             await blobClient.UploadAsync(file.Stream, new BlobHttpHeaders { ContentType = "image/webp" });
+                        var url = blobClient.Uri.AbsoluteUri;
+            return url;
         }
 
         public async Task UpdloadImagesAsync(List<FileStreamModel> files)

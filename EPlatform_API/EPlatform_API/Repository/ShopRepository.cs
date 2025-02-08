@@ -6,8 +6,10 @@ using EPlatform_API.Data;
 using EPlatform_API.DTOs.ShopDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IRepository;
+using EPlatform_API.IServices;
 using EPlatform_API.Models;
 using EPlatform_API.Models.ShopOwners;
+using EPlatform_API.Services;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using StackExchange.Redis;
@@ -20,7 +22,7 @@ namespace EPlatform_API.Repository
         private readonly DbSet<AppUser> _userTable;
         private readonly IDatabase _redisDb;
 
-        public ShopRepository(AppDbContext context, IConfiguration configuration) : base(context, configuration)
+        public ShopRepository(AppDbContext context, IConfiguration configuration, ILoggingService loggingService) : base(context, configuration, loggingService)
         {
             _shopTable = context.Shops;
             _userTable = context.Users;

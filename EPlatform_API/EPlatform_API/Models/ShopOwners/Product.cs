@@ -49,5 +49,7 @@ namespace EPlatform_API.Models.ShopOwners
         public Inventory? Inventory { get; set;}
         public ICollection<ProductDiscount>? ProductDiscounts { get; set; }
         public ICollection<ProductImage>? ProductImages { get; set; }
+        public DateTime DeletedAt { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

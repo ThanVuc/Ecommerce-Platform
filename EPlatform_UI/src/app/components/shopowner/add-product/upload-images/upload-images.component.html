@@ -41,7 +41,7 @@
                         <span class="material-symbols-light--upload-rounded"></span>
                         <img class="image-preview" src="" alt="Error">
                       </label>
-                      <input (change)="onFileChange($event)" type="file" name="" id="file-input-{{specItem.SpecValue}}">
+                      <input (change)="onFileChange($event,false,specItem.SpecValue)" type="file" name="" id="file-input-{{specItem.SpecValue}}">
                     </div>
                   </td>
                   <td>{{specItem.SpecValue}}</td>

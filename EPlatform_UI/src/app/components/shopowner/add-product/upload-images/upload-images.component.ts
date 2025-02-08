@@ -46,6 +46,7 @@ export class UploadImagesComponent {
   }
 
   saveCategory(){
+    console.log(this.productModel);
     this.upload.emit(this.productModel);
     this.hideBoard();
   }
@@ -79,13 +80,26 @@ export class UploadImagesComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.currentFile = input.files[0];
-      this.productModel.CoverImage = this.currentFile;
     }
   }
 
-  onFileChange(event: Event) {
+  onFileChange(event: Event, isCover: boolean = true, specValue: string = '') {
     const input = event.target as HTMLInputElement;
     this.saveFile(event);
+
+    if (isCover){
+      this.productModel.CoverImage = this.currentFile;
+    } else {
+      this.productModel.SpecAttributes.forEach(specAttribute => {
+        if (specAttribute.IsPrimary){
+          specAttribute.SpecItems.forEach(specItem => {
+            if (specItem.SpecValue === specValue){
+              specItem.SpecImage = this.currentFile;
+            }
+          });
+        }
+      });
+    }
 
     if (input.parentElement) {
       this.showPreview(input.parentElement);

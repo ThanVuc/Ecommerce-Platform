@@ -9,6 +9,7 @@ using EPlatform_API.DTOs.FileDTOs;
 using EPlatform_API.DTOs.ProductDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.Helper;
+using EPlatform_API.IRepository;
 using EPlatform_API.IServices;
 using EPlatform_API.Mappers;
 using EPlatform_API.Models;
@@ -17,6 +18,8 @@ using EPlatform_API.Repository;
 using EPlatform_API.Services;
 using EPlatform_API.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EPlatform_API.Controllers.ShopOwnerControllers
 {
@@ -28,17 +31,24 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         private readonly ProductRepository _productRepo;
         private readonly IBlobServices _imagesBlobServices;
         private readonly ILogger<ProductController> _logger;
+        private readonly ProductInfoMongoRepository _productInfoMongoRepo;
+
+        private readonly ILoggingService _loggingService;
 
         public ProductController(
             IUnitOfWork unitOfWork,
             IConfiguration configuration,
-            ILogger<ProductController> logger
+            ILogger<ProductController> logger,
+            ILoggingService loggingService,
+            ProductInfoMongoRepository productInfoMongoRepository
         )
         {
             _unitOfWork = unitOfWork;
             _productRepo = unitOfWork.ProductRepo;
             _imagesBlobServices = new BlobServices(configuration, BlogStorage.PublicImages);
             _logger = logger;
+            _loggingService = loggingService;
+            _productInfoMongoRepo = productInfoMongoRepository;
         }
 
         [HttpGet]
@@ -133,13 +143,42 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
 
+            if (shopId == null)
+            {
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "The shop is empty"
+                });
+            }
+
+            // upload image
+            var imagesNameDict = await UploadProductImageAsync(addProductRequest);
+
+            // add product core to sql server
             var product = addProductRequest.ToProduct();
             product.ShopId = shopId;
-            var productId = await _productRepo.AddProductAsync(product);
+            product.AvtImgUrl = imagesNameDict["coverImage"];
+            product.Inventory = new Inventory {
+                Quantity = addProductRequest.TotalInventory,
+                IsAvailable = true,
+                AvailableQuantity = addProductRequest.TotalInventory,
+                UpdatedAt = DateTime.Now,
+                SoldQuantity = 0,
+                WareHouseId = addProductRequest.WarehouseId,
+            };
+            await _productRepo.AddProductAsync(product);
             await _unitOfWork.SaveAsync();
 
+            // save product info spec to mongodb
+            var productSpecInfo = addProductRequest.ToProductSpecInfo(product.ProductId, imagesNameDict);
+            await _productInfoMongoRepo.CreateAsync(productSpecInfo);
             
-            return Ok(productId);
+            // save all file to sql db
+            await _productRepo.AddProductImagesAsync(product.ProductId,imagesNameDict);
+            await _unitOfWork.SaveAsync();
+
+            return Ok(product);
         }
 
         [HttpPost("upload-image-stream")]
@@ -203,9 +242,10 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
 
             return Ok();
         }
-    
+
         [HttpGet("/api/v1/categories")]
-        public async Task<IActionResult> GetCategories([FromQuery] int? parentCategoryId = null, [FromQuery] string? searchString = null){
+        public async Task<IActionResult> GetCategories([FromQuery] int? parentCategoryId = null, [FromQuery] string? searchString = null)
+        {
             var categories = await _productRepo.GetCategoriesAsync(parentCategoryId, searchString);
             return Ok(new ApiResponseStandard<object>
             {
@@ -213,6 +253,39 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 Message = "Get categories success",
                 Data = categories
             });
+        }
+    
+        private async Task<Dictionary<string,string>> UploadProductImageAsync(AddProductRequest addProductRequest)
+        {
+            var lengthOfSpecItems = addProductRequest.SpecAttributes.FirstOrDefault(s => s.IsPrimary).SpecItems.Count;
+            Dictionary<string,string> imagesNameDict = new Dictionary<string, string>(); // first index is cover image
+
+            // upload cover image
+            var timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var coverImageName = UtilityServices.GenerateRandomString(6) + timeStamp;
+            coverImageName = await _imagesBlobServices.UpdloadImageAsync(
+                _imagesBlobServices.ConvertToFileStreamModel(coverImageName, addProductRequest.CoverImage)
+            );
+            imagesNameDict.Add("coverImage", coverImageName);
+
+            // upload special info images
+            if (addProductRequest.SpecAttributes.Count > 0)
+            {
+                for (int i = 0; i < lengthOfSpecItems; i++)
+                {
+                    var specialImageName = UtilityServices.GenerateRandomString(6) + timeStamp;
+                    var specItem = addProductRequest.SpecAttributes.FirstOrDefault(s => s.IsPrimary).SpecItems[i];
+                    if (specItem == null){
+                        continue;
+                    }
+                    var url = await _imagesBlobServices.UpdloadImageAsync(
+                        _imagesBlobServices.ConvertToFileStreamModel(specialImageName, specItem.SpecImage)
+                    );
+                    imagesNameDict.Add(specItem.SpecValue, url);
+                }
+            }
+
+            return imagesNameDict;
         }
     }
 }

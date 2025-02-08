@@ -17,6 +17,14 @@ namespace EPlatform_API.Services
             await WriteLogToFile(path, message);
         }
 
+        public async Task WriteProductLog(string message)
+        {
+            Directory.CreateDirectory("LogFolder");
+            var path = @$"LogFolder/product-log.txt";
+            message = $"{DateTime.Now} - {message}";
+            await WriteLogToFile(path, message);
+        }
+
         public async Task WriteRoleLog(string message)
         {
             Directory.CreateDirectory("LogFolder");

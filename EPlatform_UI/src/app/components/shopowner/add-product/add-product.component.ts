@@ -249,9 +249,10 @@ export class AddProductComponent implements OnInit {
   }
 
   createNewProduct(){
+    console.log(this.productModel.SpecAttributes);
     this.shopSVC.addProduct(this.shopId,this.productModel).subscribe({
       next: (res) => {
-        console.log(res.data);
+        console.log(res);
       },
       error: (err) => {
         console.log(err);
