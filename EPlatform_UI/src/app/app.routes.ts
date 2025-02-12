@@ -100,6 +100,10 @@ export const routes: Routes = [
             {
                 path: "add-product",
                 component: AddProductComponent
+            },
+            {
+                path: 'products/:product_id/update',
+                component: AddProductComponent
             }
         ]
     },

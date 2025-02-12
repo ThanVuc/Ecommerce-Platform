@@ -69,4 +69,8 @@ export class SelectTagComponent {
     let boardElement = targetElement.parentElement as HTMLElement;
     boardElement.classList.remove('active');
   }
+
+  setValueFromParent(value: selectModel){
+    this.selectValue = value.name;
+  }
 }

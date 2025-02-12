@@ -2,7 +2,11 @@
 
 <div class="container">
   <div class="header">
-    <p class="title">Add Products</p>
+    @if (productId){
+      <p class="title">Update Products</p>
+    } @else {
+      <p class="title">Add Products</p>
+    }
   </div>
 
   <div class="body">
@@ -12,10 +16,18 @@
 
           <div class="form-group">
             <label for="exampleInputEmail1">Name Product</label>
-            <input focus type="text" [(ngModel)]="productModel.Name" name="name" class="form-control product-input" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <input focus type="text" required maxlength="256" #name="ngModel" [(ngModel)]="productModel.Name" name="name" class="form-control product-input" id="exampleInputEmail1" aria-describedby="emailHelp">
+            @if (name.invalid) {
+              @if (name.errors?.["required"]) {
+                <p class="text-center extra-err text-danger">Name is Required</p>
+              }
+            }
           </div>
 
           <app-select-category (categorySelected)="saveCategory($event)"></app-select-category>
+          @if (productModel.CategoryId == 0) {
+            <p class="text-center extra-err text-danger">Please, select category for product</p>
+          }
 
           <div class="form-group">
             <label for="exampleFormControlTextarea1">Description Product</label>
@@ -26,11 +38,11 @@
             <label for="classify-product">Classify Product</label>
             <div class="classify-product" id="classify-product-group">
               <p class="text-end note">*The first special attribute of product is primary</p>
-              <p class="text-end note">*Press enter to save attribute</p>
+              <p class="text-end note">*Press enter to save attribute value</p>
               @for (spec of productModel.SpecAttributes; track $index) {
               <div class="product-spec">
                 <span class="material-symbols--close spec-remove" (click)="removeSpec(spec.SpecName)"></span>
-                <input type="text" class="name wrap" (keydown.enter)="saveSpecName($event,spec.SpecName)" 
+                <input type="text" class="name wrap" (blur)="saveSpecName($event,spec.SpecName)" 
                   value="{{spec.SpecName}}" name="" id="">
                 @for (specItem of spec.SpecItems; track $index) {
                 <label class="label-spec wrap">
@@ -48,6 +60,9 @@
                   <span class="basil--add-outline"></span>
                 </div>
               }
+              @if (productModel.SpecAttributes.length < 1) {
+                <p class="text-center extra-err text-danger">At least 1 special attribute</p>
+              }
             </div>
           </div>
 
@@ -58,9 +73,12 @@
                 <div class="input-group-prepend">
                   <div class="input-group-text">$</div>
                 </div>
-                <input type="number" [(ngModel)]="productModel.Price" name="public" min="0" class="form-control" id="inlineFormInputGroup" placeholder="Price">
+                <input type="number" required="" #price="ngModel" [(ngModel)]="productModel.Price" name="public" min="0" class="form-control" id="inlineFormInputGroup" placeholder="Price">
+        
               </div>
-
+              @if (productModel.Price <= 0) {
+                <p class="text-center extra-err text-danger">Price must be greater than 0</p>
+              }
             </div>
             <div class="public-product">
               <label for="public-product-group">Public</label>
@@ -103,6 +121,13 @@
 
           <div class="images-info" id="images-info">
             <app-upload-images (upload)="saveUploadImagesAndInventories($event)" [productModel]="productModel" ></app-upload-images>
+            @if (productModel.TotalInventory <= 0) {
+              <p class="text-center extra-err text-danger">Please, type inventory for product</p>
+            }
+            @if (productModel.CoverImage == null) {
+              <p class="text-center extra-err text-danger">Please, upload cover image for product</p>
+            }
+            
           </div>
           <div class="inventory-info">
             <div class="form-group">
@@ -113,6 +138,9 @@
 
             <div class="warehouse-select">
               <app-select-tag [items]="warehouseItems" (select)="getWarehouse($event)" ></app-select-tag>
+              @if (productModel.WarehouseId == 0) {
+                <p class="text-center extra-err text-danger">Please, select warehouse for product</p>
+              }
             </div>
           </div>
         </div>
@@ -127,3 +155,5 @@
 
   </div>
 </div>
+
+<app-message></app-message>

@@ -93,6 +93,8 @@ $text-color: #ece8e8;
 
         .logo {
             display: flex;
+            color: white;
+            text-decoration: none;
             justify-content: center;
             align-items: center;
             font-size: xx-large;
@@ -109,6 +111,11 @@ $text-color: #ece8e8;
                 margin-top: 1rem;
             }
 
+        }
+
+        .logo:hover {
+            cursor: pointer;
+            transform: scale(0.98);
         }
 
         .seperator {
@@ -147,11 +154,21 @@ $text-color: #ece8e8;
                 }
             }
 
+            .dropdown-button:hover{
+                cursor: pointer;
+                transform: scale(1.02);
+            }
+
             .dropdown-item {
                 text-align: center;
                 margin-bottom: 3%;
                 font-size: medium;
                 display: none;
+            }
+
+            .dropdown-item:hover{
+                cursor: pointer;
+                transform: scale(0.98);
             }
 
             .show-item {

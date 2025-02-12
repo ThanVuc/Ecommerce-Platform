@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ProductModel } from '../models/product-model';
 import { map } from 'rxjs';
 import { PaginationInfoModel } from '../../models/PaginationInfoModel';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-products',
@@ -17,6 +18,7 @@ import { PaginationInfoModel } from '../../models/PaginationInfoModel';
 })
 export class ProductsComponent implements OnInit {
   ngOnInit(): void {
+    this.titleSVC.setTitle("Products");
     this.activatedRoute.parent?.params.subscribe(params => { 
       this.shopId = params['shop_id'];
     });
@@ -33,6 +35,7 @@ export class ProductsComponent implements OnInit {
   shopId: string = "";
   products: ProductModel[] | undefined = [];
   timer: NodeJS.Timeout | null = null;
+  titleSVC = inject(Title);
 
   loadPage(pageModel: PageModel) {
     this.pageIndex = pageModel.pageIndex;

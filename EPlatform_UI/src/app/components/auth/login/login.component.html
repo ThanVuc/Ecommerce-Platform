@@ -112,7 +112,8 @@
         />
         @if (forgotFailErr){
         <p class="extra-err">{{ forgotFailErr }}</p>
-        } @if (forgotPassword.invalid && forgotPassword.touched){ @if
+        } @if (forgotPassword.invalid && forgotPassword.touched){ 
+          @if
         (forgotPassword.errors?.["required"]){
         <p class="extra-err">Email is Required</p>
         } @if (forgotPassword.errors?.["email"]){

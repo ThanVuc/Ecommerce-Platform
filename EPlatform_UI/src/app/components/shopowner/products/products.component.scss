@@ -106,7 +106,13 @@ $background-color: #0d0d0d;
                 border: none;
                 border-radius: 0.6rem;
                 margin-right: 0.3rem;
-                
+            }
+
+            a{
+                text-decoration: none;
+                color: black;
+                padding-inline: 6px;
+                padding-block: 2px;
             }
         
             .edit{

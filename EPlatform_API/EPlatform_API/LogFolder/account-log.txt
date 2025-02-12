@@ -16,3 +16,6 @@ admin---lock-user---account:sinhhahaha1@gmail.com---id:1111111111---time:1/14/20
 login---account:sinhhahaha1@gmail.com---id:1111111111---time:1/16/2025 9:26:06 PM
 login---account:sinhhahaha1@gmail.com---id:1111111111---time:1/31/2025 1:28:09 PM
 admin---lock-user---account:Isaias.Runolfsdottir@fake-data---id:1348dd32-3688-cbd5-53bb-30907c3be9f0---time:1/31/2025 1:30:05 PM
+login---account:sinhhahaha1@gmail.com---id:1111111111---time:2/12/2025 9:39:47 AM
+admin---setting-role-for-user---id:04aafb02-e0a4-9f62-019b-8b1074492260---time:2/12/2025 9:40:34 AM
+login---account:sinhhahaha1@gmail.com---id:1111111111---time:2/12/2025 7:42:26 PM

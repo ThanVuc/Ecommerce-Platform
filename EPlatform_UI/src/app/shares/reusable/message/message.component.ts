@@ -16,12 +16,11 @@ export class MessageComponent {
       status == "success" ? messageIcon.className = "ooui--success" : messageIcon.className = "icon-park-outline--doc-fail";
       messageBoxElement.className = "message-box " + status;
       messageText.innerText = message;
-      messageBoxElement.style.display = "flex";
-      messageBoxElement.style.animationPlayState = "running";
+      messageBoxElement.classList.add('show-message');
 
       setTimeout(() => {
-        messageBoxElement.style.display = 'none';  
-      }, 600);
+        messageBoxElement.classList.remove('show-message');
+      }, 2000);
     }
   }
 
@@ -30,7 +29,7 @@ export class MessageComponent {
     if (closeElement){
       let messageElement = document.getElementById("message-box");
       if (messageElement){
-        messageElement.style.display = "none";
+        messageElement.classList.remove('show-message');
       }
     }
   }

@@ -1,32 +1,35 @@
 @import url(../../../icon.component.scss);
 
+@keyframes showMessage {
+    0%{
+        opacity: 0;
+    }
+
+    30%{
+        opacity: 1;
+    }
+
+    70%{
+        opacity: 1;
+    }
+
+    100%{
+        opacity: 0;
+    }
+}
+
+.show-message{
+    display: flex !important;
+    animation: showMessage 2s ease-in-out forwards;
+}
+
+.hide-message{
+    display: none !important;
+}
+
 .message-box{
-
-    @keyframes showMessage {
-        0%{
-            opacity: 0;
-        }
-        100%{
-            opacity: 1;
-        }
-    }
-
-    @keyframes hideMessage {
-        0%{
-            opacity: 1;
-        }
-
-        80%{
-            opacity: 0;
-        }
-
-        100%{
-            display: none;
-        }
-    }
-
-    position: absolute;
-    top: 50%;
+    position: fixed;
+    top: 40%;
     left: 50%;
     transform: translateX(-50%);
     transform: translateY(-50%);
@@ -37,7 +40,6 @@
     border-radius: 0.5rem;
     display: none;
     z-index: 10000;
-    animation: showMessage 0.2s forwards;
 
     .message{
         display: flex;
@@ -75,6 +77,6 @@
 }
 
 .fail{
-    background-color: rgb(83, 1, 1);
-    color: rgb(200, 24, 24);
+    background-color: rgb(33, 5, 5);
+    color: rgb(255, 0, 0);
 }

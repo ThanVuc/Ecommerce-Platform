@@ -157,7 +157,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasIndex("CategoryParentId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Discount", b =>
@@ -208,7 +208,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasKey("DiscountId");
 
-                    b.ToTable("Discounts");
+                    b.ToTable("Discounts", (string)null);
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Inventory", b =>
@@ -238,7 +238,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasIndex("WareHouseId");
 
-                    b.ToTable("Inventories");
+                    b.ToTable("Inventories", (string)null);
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Order", b =>
@@ -300,7 +300,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasIndex("OrderStatusId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.OrderProduct", b =>
@@ -320,7 +320,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderProducts");
+                    b.ToTable("OrderProducts", (string)null);
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.OrderStatus", b =>
@@ -344,7 +344,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasKey("OrderStatusId");
 
-                    b.ToTable("OrderStatuses");
+                    b.ToTable("OrderStatuses", (string)null);
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Product", b =>
@@ -407,7 +407,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasIndex("ShopId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.ProductDiscount", b =>
@@ -424,7 +424,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasIndex("DiscountId");
 
-                    b.ToTable("ProductDiscounts");
+                    b.ToTable("ProductDiscounts", (string)null);
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.ProductImage", b =>
@@ -460,7 +460,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages");
+                    b.ToTable("ProductImages", (string)null);
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Shipment", b =>
@@ -515,7 +515,7 @@ namespace EPlatform_API.Migrations
                     b.HasIndex("OrderId")
                         .IsUnique();
 
-                    b.ToTable("Shipments");
+                    b.ToTable("Shipments", (string)null);
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.ShipmentCarrier", b =>
@@ -536,7 +536,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasKey("CarrierId");
 
-                    b.ToTable("ShipmentCarrier");
+                    b.ToTable("ShipmentCarrier", (string)null);
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Shop", b =>
@@ -609,7 +609,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasKey("ShopId");
 
-                    b.ToTable("Shops");
+                    b.ToTable("Shops", (string)null);
                 });
 
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.WareHouse", b =>
@@ -646,7 +646,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasKey("WarehouseId");
 
-                    b.ToTable("Warehouses");
+                    b.ToTable("Warehouses", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

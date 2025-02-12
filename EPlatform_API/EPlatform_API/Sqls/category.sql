@@ -16,6 +16,6 @@ VALUES
 (NULL, 'Toys and Hobbies', 'toys-hobbies', 'Toys and hobby items', NULL, 1, GETDATE(), GETDATE(), 'TOYS'),
 (NULL, 'Travel and Luggage', 'travel-luggage', 'Travel gear and bags', NULL, 1, GETDATE(), GETDATE(), 'TRAV'),
 (NULL, 'Tools and Hardware', 'tools-hardware', 'Tools and hardware items', NULL, 1, GETDATE(), GETDATE(), 'TOOL');
-
+(NULL, 'Another', 'another-class', 'Another classify', NULL, 1, GETDATE(), GETDATE(), 'ANOTHER');
 
 

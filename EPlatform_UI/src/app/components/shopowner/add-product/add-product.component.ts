@@ -13,25 +13,37 @@ import { selectModel } from '../../../shares/reusable/common-model/select-model'
 import { UtilitiesServiceService } from '../../services/utilities-service.service';
 import { ShopService } from '../../services/shop.service';
 import { ActivatedRoute } from '@angular/router';
+import { MessageComponent } from "../../../shares/reusable/message/message.component";
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-add-product',
   standalone: true,
-  imports: [FormsModule, SelectCategoryComponent, UploadImagesComponent, SelectTagComponent],
+  imports: [FormsModule, SelectCategoryComponent, UploadImagesComponent, SelectTagComponent, MessageComponent],
   templateUrl: './add-product.component.html',
   styleUrl: './add-product.component.scss'
 })
 
 export class AddProductComponent implements OnInit {
   @ViewChild(UploadImagesComponent) uploadImages!: UploadImagesComponent;
+  @ViewChild(MessageComponent) messager!: MessageComponent;
+  @ViewChild(SelectTagComponent) selectTag!: SelectTagComponent;
 
   ngOnInit(): void {
     this.getWarehousesForSelect();
     this.activatedRoute.parent?.params.subscribe(params => { 
       this.shopId = params['shop_id'];
     });
+    this.activatedRoute.params.subscribe(params => {
+      this.productId = params['product_id'];
+      if (this.productId){
+        this.titleSVC.setTitle("Update Product");
+      } else {
+        this.titleSVC.setTitle("Add Product");
+      }
+    });
   }
-
+  titleSVC: Title = inject(Title);
   warehouseItems: WarehouseItem[] = [{
     id: '1',
     name: "Warehouse 1"
@@ -64,6 +76,7 @@ export class AddProductComponent implements OnInit {
   utilitiesSVC = inject(UtilitiesServiceService);
   shopSVC = inject(ShopService);
   activatedRoute = inject(ActivatedRoute);
+  productId: string | null = null;
 
   getWarehousesForSelect() {
     this.utilitiesSVC.getWarehouses().subscribe({
@@ -193,7 +206,6 @@ export class AddProductComponent implements OnInit {
     if (specObject) {
       specObject.SpecName = targetElement.value;
     }
-    targetElement.blur();
   }
 
   removeSpecValue(name: string, value: string) {
@@ -249,12 +261,38 @@ export class AddProductComponent implements OnInit {
   }
 
   createNewProduct(){
-    console.log(this.productModel.SpecAttributes);
+    const errors = document.querySelectorAll(".extra-err");
+    if (errors.length > 0){
+      this.messager.showModal("fail","Please check again all the fields");
+      errors.forEach(err => {
+        err.classList.add("show");
+      });
+      return;
+    }
     this.shopSVC.addProduct(this.shopId,this.productModel).subscribe({
       next: (res) => {
-        console.log(res);
+        this.messager.showModal("success","Create Product Successful");
+        this.productModel = {
+          Name: '',
+          Description: '',
+          Price: 0,
+          CategoryId: 0,
+          IsPublic: true,
+          SpecAttributes: [],
+          SpecInventories: [],
+          WarehouseId: 0,
+          TotalInventory: 0,
+          CoverImage: null
+        };
+        this.category = {
+          categoryId: null,
+          name: "temp",
+          isNext: false
+        };
+        
       },
       error: (err) => {
+        this.messager.showModal("fail","Create Product Fail");
         console.log(err);
       }
     });

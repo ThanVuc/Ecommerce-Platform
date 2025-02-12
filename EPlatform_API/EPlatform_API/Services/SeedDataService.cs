@@ -106,26 +106,6 @@ namespace EPlatform_API.Services
             await _context.Shops.AddRangeAsync(shops);
             await _context.SaveChangesAsync();
 
-            // Fake Categories
-
-            for (int i = 0; i < 3; i++)
-            {
-                var name = faker.Commerce.Categories(1)[0] + "@fake-data";
-                var category = new Category
-                {
-                    Name = name,
-                    Description = faker.Commerce.Department(),
-                    CreatedAt = faker.Date.Past(),
-                    UpdatedAt = faker.Date.Recent(),
-                    Slug = UtilityServices.GenerateSlug(name),
-                    Code = faker.Random.String2(10, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-                };
-                categories.Add(category);
-            }
-
-            await _context.Categories.AddRangeAsync(categories);
-            await _context.SaveChangesAsync();
-
             // Fake products
             categories = await _context.Categories.ToListAsync();
 
@@ -327,6 +307,8 @@ namespace EPlatform_API.Services
                 var categoriesSqlScript = System.IO.File.ReadAllText("Sqls/category.sql");
                 var subCategorySqlScript = System.IO.File.ReadAllText("Sqls/sub-category.sql");
                 await _context.Database.ExecuteSqlRawAsync(categoriesSqlScript);
+                // Only true with the first time seed data when create datebase
+                // because the sub-category seed by id of category
                 await _context.Database.ExecuteSqlRawAsync(subCategorySqlScript);
             } catch(Exception e){
                 Console.WriteLine("SeedDataServices, SeedVietnameseLocationData: ", e.Message);
