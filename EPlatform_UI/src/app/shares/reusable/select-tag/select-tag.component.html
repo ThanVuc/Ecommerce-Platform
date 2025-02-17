@@ -5,9 +5,9 @@
         <input type="text" [(ngModel)]="selectValue" placeholder="Select Warehouse">
         <span class="icon-park-outline--down"></span>
     </div>
-    <ul class="dropdown-board">
+    <ul class="dropdown-board" id="dropdown-board" >
         @for (item of items; track $index) {
-            <li (click)="setValue($event,item)">{{item.name}}</li>
+            <li (click)="setValue(item)">{{item.name}}</li>
         }
     </ul>
 </div>

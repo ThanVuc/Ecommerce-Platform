@@ -1,7 +1,9 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProductPostModel, SpecAttribute } from '../../models/product-post-model';
 import { spec } from 'node:test/reporters';
+import { ProductCreateUpdateModel } from '../../models/product-create-update-model';
+import { DOCUMENT } from '@angular/common';
 
 export interface FileUpload {
   file: File;
@@ -17,13 +19,15 @@ export interface FileUpload {
 })
 
 export class UploadImagesComponent {
+  renderer = inject(Renderer2);
   
   files: FileUpload[] = [];
   currentFile: File | null = null;
+  document = inject(DOCUMENT);
   
-  @Output() upload = new EventEmitter<ProductPostModel>();
+  @Output() upload = new EventEmitter<ProductCreateUpdateModel>();
 
-  @Input() productModel: ProductPostModel = {
+  @Input() productModel: ProductCreateUpdateModel = {
     Name: '',
     Description: '',
     Price: 0,
@@ -33,7 +37,9 @@ export class UploadImagesComponent {
     SpecInventories: [],
     WarehouseId: 0,
     TotalInventory: 0,
-    CoverImage: null
+    CoverImage: null,
+    CoverImageUrl: null,
+    Slug: null
   }
 
   showBoard() {
@@ -43,6 +49,15 @@ export class UploadImagesComponent {
       boardElement.classList.add('show');
       curtain.classList.add('show');
     }
+
+    this.document.querySelectorAll(".image-preview").forEach((ele) => {
+      const span = ele.previousSibling as HTMLElement;
+      const img = ele as HTMLImageElement;
+      if (img.naturalWidth !== 0) {
+        this.renderer.addClass(span, 'hide');
+        this.renderer.addClass(img, 'show');
+      }
+    });
   }
 
   saveCategory(){

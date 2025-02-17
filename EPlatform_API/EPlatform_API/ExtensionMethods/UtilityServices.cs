@@ -22,7 +22,7 @@ namespace EPlatform_API.ExtensionMethods
             str = System.Text.RegularExpressions.Regex.Replace(str, @"[^a-z0-9\s-]", ""); // invalid chars
             str = System.Text.RegularExpressions.Regex.Replace(str, @"\s+", " ").Trim(); // convert multiple spaces into one space
             str = System.Text.RegularExpressions.Regex.Replace(str, @"\s", "-"); // replace spaces
-            string uniqueIdentifier = Guid.NewGuid().ToString("N").Substring(0, 8); // generate a unique identifier
+            string uniqueIdentifier = GenerateRandomString(5);
             str = $"{str}-{uniqueIdentifier}--{id}"; // append the unique identifier to the slug
             return str;
         }

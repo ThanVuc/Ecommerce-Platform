@@ -23,6 +23,14 @@
               }
             }
           </div>
+          
+          @if (productModel.Slug != null) {
+            <div class="form-group">
+              <label for="slug">Slug</label>
+              <input type="text" style="background-color: #526471;"  name="slug" id="slug" [(ngModel)]="productModel.Slug" class="form-control disabled" disabled
+              aria-describedby="inventory">
+            </div>
+          }
 
           <app-select-category (categorySelected)="saveCategory($event)"></app-select-category>
           @if (productModel.CategoryId == 0) {

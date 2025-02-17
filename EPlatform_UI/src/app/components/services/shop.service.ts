@@ -6,6 +6,8 @@ import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { CategoryModel } from '../shopowner/models/category-model';
 import { ProductPostModel } from '../shopowner/models/product-post-model';
+import { ProductCreateUpdateModel } from '../shopowner/models/product-create-update-model';
+import { ProductUpdateResponse } from '../shopowner/models/product-update-response';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +32,7 @@ export class ShopService {
     return this.http.put<ApiResModel<object>>(environment.Shop + `${shopId}/products/public-or-hide-product`, { productId: productId, isPublic: isPublic });
   }
 
-  addProduct(shopId: string, product: ProductPostModel): Observable<ApiResModel<object>> {
+  addProduct(shopId: string, product: ProductCreateUpdateModel): Observable<ApiResModel<object>> {
     const formData = new FormData();
 
     formData.append('Name', product.Name);
@@ -50,7 +52,7 @@ export class ShopService {
 
       specAttribute.SpecItems.forEach((specItem, itemIndex) => {
         formData.append(`SpecAttributes[${index}].SpecItems[${itemIndex}].SpecValue`, specItem.SpecValue);
-        console.log(specItem.SpecImage);
+
         if (specItem.SpecImage) {
           formData.append(`SpecAttributes[${index}].SpecItems[${itemIndex}].SpecImage`, specItem.SpecImage);
         }
@@ -64,6 +66,10 @@ export class ShopService {
     });
 
     return this.http.post<ApiResModel<object>>(environment.AddProduct + `${shopId}/products/add-product`, formData);
+  }
+
+  getUpdateProduct(productId: string): Observable<ApiResModel<ProductUpdateResponse>> {
+    return this.http.get<ApiResModel<ProductUpdateResponse>>(environment.UpdateProductResponse + `${productId}/update`);
   }
 
 }

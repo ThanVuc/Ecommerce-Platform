@@ -3,7 +3,7 @@ import { PaginationComponent } from '../../../shares/reusable/pagination/paginat
 import { FormsModule } from '@angular/forms';
 import { PageModel } from '../../models/PageModel';
 import { ShopService } from '../../services/shop.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductModel } from '../models/product-model';
 import { map } from 'rxjs';
 import { PaginationInfoModel } from '../../models/PaginationInfoModel';
@@ -12,7 +12,7 @@ import { Title } from '@angular/platform-browser';
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [FormsModule, PaginationComponent],
+  imports: [FormsModule, PaginationComponent, RouterLink],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss'
 })
@@ -33,6 +33,7 @@ export class ProductsComponent implements OnInit {
   totalItem: number = 10;
   shopOwnerSVC = inject(ShopService);
   shopId: string = "";
+  productId: number | null = null;
   products: ProductModel[] | undefined = [];
   timer: NodeJS.Timeout | null = null;
   titleSVC = inject(Title);

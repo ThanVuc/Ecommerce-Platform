@@ -124,7 +124,7 @@ namespace EPlatform_API.Mappers
             };
         }
 
-        public static ProductSpecInfo ToProductSpecInfo(this AddProductRequest addProductRequest, int productId, Dictionary<string, string> urlDict)
+        public static ProductSpecInfo ToProductSpecInfo(this AddProductRequest addProductRequest, int productId, Dictionary<string, ImageStoreModel> imgDic)
         {
             var specInfo = new List<Spec>();
             if (addProductRequest.SpecAttributes == null)
@@ -158,7 +158,8 @@ namespace EPlatform_API.Mappers
                         specItems.Add(new SpecItem()
                         {
                             SpecValue = specValue,
-                            SpecImageUrl = urlDict[specValue]
+                            SpecImageUrl =  imgDic.ContainsKey(specValue) ? imgDic[specValue].Url : null,
+                            SpecImageName = imgDic.ContainsKey(specValue) ? imgDic[specValue].Name : null
                         });
                     }
                     specInfo.Add(new Spec()
@@ -169,7 +170,6 @@ namespace EPlatform_API.Mappers
                     });
 
                 }
-
             }
             catch (Exception e)
             {

@@ -18,6 +18,9 @@ namespace EPlatform_API.Models.ShopOwners
         [Required]
         public string? ImgUrl { get; set; }
 
+        [Required]
+        public string? ImgName { get; set; }
+
         public bool IsPrimary { get; set; }
 
         [Required]

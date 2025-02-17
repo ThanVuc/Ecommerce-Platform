@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import e from 'express';
 import { selectModel } from '../common-model/select-model';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-select-tag',
@@ -15,6 +16,7 @@ export class SelectTagComponent {
   @Input() items: selectModel[] = [];
 
   selectValue: string = '';
+  document = inject(DOCUMENT);
 
   remToPx(rem: number): number {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -62,15 +64,17 @@ export class SelectTagComponent {
     return height;
 }
 
-  setValue(event: Event, value: selectModel) {
+  setValue(value: selectModel) {
     this.select.emit(value);
     this.selectValue = value.name;
-    let targetElement = event.target as HTMLElement;
-    let boardElement = targetElement.parentElement as HTMLElement;
+    const boardElement = this.document.getElementById("dropdown-board") as HTMLElement;
     boardElement.classList.remove('active');
   }
 
-  setValueFromParent(value: selectModel){
-    this.selectValue = value.name;
+  setValueFromParent(id: string){
+    const name = this.items.find(item => item.id == id)?.name;
+    if (name){
+      this.selectValue = name;
+    }
   }
 }

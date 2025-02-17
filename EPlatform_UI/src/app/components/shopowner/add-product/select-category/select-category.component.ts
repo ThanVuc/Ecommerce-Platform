@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CategoryModel } from '../../models/category-model';
 import { ShopService } from '../../../services/shop.service';
 import { UtilitiesServiceService } from '../../../services/utilities-service.service';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-select-category',
@@ -22,6 +23,7 @@ export class SelectCategoryComponent implements OnInit {
   searchString: string | null = null;
   categoryMap: Map<number | null, CategoryModel[]> = new Map<number, CategoryModel[]>();
   Utilities = inject(UtilitiesServiceService);
+  document = inject(DOCUMENT);
   currentCategory: CategoryModel = {
     categoryId: null,
     name: "Select Category",
@@ -55,19 +57,14 @@ export class SelectCategoryComponent implements OnInit {
     }
   }
 
-  hideCategories() {
-    let category_board = document.getElementById("category_board");
-    let curtain = document.getElementById("curtain");
-
-    if (category_board && curtain) {
-      category_board.style.display = "none";
-      curtain.style.display = "none";
-    }
+  setCategory(category: CategoryModel) {
+    this.currentCategory = category;
+    this.saveCategory();
   }
 
   saveCategory() {
     this.passCategory();
-    let mainBtnElement = document.querySelector(".button-category");
+    let mainBtnElement = this.document.querySelector(".button-category");
     if (mainBtnElement) {
       let p = mainBtnElement.querySelector("p");
       if (p && this.currentCategory) {
@@ -83,6 +80,15 @@ export class SelectCategoryComponent implements OnInit {
     this.hideCategories();
   }
 
+  hideCategories() {
+    let category_board = this.document.getElementById("category_board");
+    let curtain = this.document.getElementById("curtain");
+
+    if (category_board && curtain) {
+      category_board.style.display = "none";
+      curtain.style.display = "none";
+    }
+  }
 
   loadCategories(parentCategory: CategoryModel, order: number) {
     if (this.categoryMap.has(order)) {

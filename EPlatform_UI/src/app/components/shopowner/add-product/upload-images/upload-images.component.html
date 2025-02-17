@@ -17,7 +17,7 @@
         <div class="add-image">
           <label for="file-input-cover-image" >
             <span class="material-symbols-light--upload-rounded"></span>
-            <img class="image-preview" src="" alt="Error">
+            <img class="image-preview" src="{{productModel.CoverImageUrl}}" alt="Error">
           </label>
           <input (change)="onFileChange($event)" type="file" name="" id="file-input-cover-image">
         </div>
@@ -39,7 +39,7 @@
                     <div class="add-image">
                       <label for="file-input-{{specItem.SpecValue}}" >
                         <span class="material-symbols-light--upload-rounded"></span>
-                        <img class="image-preview" src="" alt="Error">
+                        <img class="image-preview" src="{{specItem.SpecImageUrl}}" alt="Error">
                       </label>
                       <input (change)="onFileChange($event,false,specItem.SpecValue)" type="file" name="" id="file-input-{{specItem.SpecValue}}">
                     </div>
@@ -49,13 +49,16 @@
                       <ul style="list-style-type: none;">
                         @for (inventory of productModel.SpecInventories; track $index) {
                           @if (inventory.PrimarySpecValueName == specItem.SpecValue){
-                            @if (inventory.SubSpecValueName){
-                              <li>
-                                <div class="spec-arg">
-                                  <label class="spec-name">{{inventory.SubSpecValueName}}</label>
-                                  <input type="number" [(ngModel)]="inventory.Inventory" class="inventory-input" aria-describedby="inventory">
-                                </div>
-                              </li>
+                            <!-- Without sub-spec, the items of primary == items of inventory -->
+                            @if (productModel.SpecInventories.length > productModel.SpecAttributes[0].SpecItems.length){ 
+                              @if (inventory.SubSpecValueName != "" && inventory.SubSpecValueName != null){
+                                <li>
+                                  <div class="spec-arg">
+                                    <label class="spec-name">{{inventory.SubSpecValueName}}</label>
+                                    <input type="number" [(ngModel)]="inventory.Inventory" class="inventory-input" aria-describedby="inventory">
+                                  </div>
+                                </li>
+                              }
                             } @else {
                               <li>
                                 <div class="spec-arg">

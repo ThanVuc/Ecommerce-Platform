@@ -8,6 +8,10 @@ namespace EPlatform_API.Models.ShopOwners
 {
     public class ProductSpecInfo
     {
+        [BsonId]
+        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+        public string? Id { get; set; }
+
         [BsonRequired]
         public int ProductId { get; set; }
         
@@ -29,6 +33,7 @@ public class SpecItem
 {
     public string? SpecValue { get; set; }
     public string? SpecImageUrl { get; set; }
+    public string? SpecImageName { get; set; }
 }
 
 // Store the inventory of each spec

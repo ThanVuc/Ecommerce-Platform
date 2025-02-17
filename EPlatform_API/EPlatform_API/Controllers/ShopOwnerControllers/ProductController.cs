@@ -20,6 +20,7 @@ using EPlatform_API.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Bson;
 
 namespace EPlatform_API.Controllers.ShopOwnerControllers
 {
@@ -32,7 +33,6 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         private readonly IBlobServices _imagesBlobServices;
         private readonly ILogger<ProductController> _logger;
         private readonly ProductInfoMongoRepository _productInfoMongoRepo;
-
         private readonly ILoggingService _loggingService;
 
         public ProductController(
@@ -158,8 +158,9 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             // add product core to sql server
             var product = addProductRequest.ToProduct();
             product.ShopId = shopId;
-            product.AvtImgUrl = imagesNameDict["coverImage"];
-            product.Inventory = new Inventory {
+            product.AvtImgUrl = imagesNameDict["coverImage"].Url;
+            product.Inventory = new Inventory
+            {
                 Quantity = addProductRequest.TotalInventory,
                 IsAvailable = true,
                 AvailableQuantity = addProductRequest.TotalInventory,
@@ -172,13 +173,14 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
 
             // save product info spec to mongodb
             var productSpecInfo = addProductRequest.ToProductSpecInfo(product.ProductId, imagesNameDict);
-            await _productInfoMongoRepo.CreateAsync(productSpecInfo);
             
+            await _productInfoMongoRepo.CreateAsync(productSpecInfo);
+
             // save all file to sql db
-            await _productRepo.AddProductImagesAsync(product.ProductId,imagesNameDict);
+            await _productRepo.AddProductImagesAsync(product.ProductId, imagesNameDict);
             await _unitOfWork.SaveAsync();
 
-            return Ok(product);
+            return Ok(productSpecInfo);
         }
 
         [HttpPost("upload-image-stream")]
@@ -254,19 +256,86 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 Data = categories
             });
         }
-    
-        private async Task<Dictionary<string,string>> UploadProductImageAsync(AddProductRequest addProductRequest)
+
+        [HttpGet("/api/v1/products/{productId}/update")]
+        public async Task<IActionResult> GetProductUpdateById([FromRoute] int productId)
+        {
+            var productResponse = new UpdateProductResponse();
+            try
+            {
+                var product = await _productRepo.GetProductUpdateByIdAsync(productId);
+                var productSpecInfo = await _productInfoMongoRepo.GetProductSpecInfoByProductIdAsync(productId);
+
+                if (product == null || productSpecInfo == null)
+                {
+                    return NotFound(new ApiResponseStandard<object>
+                    {
+                        Status = 404,
+                        Message = "Product not found"
+                    });
+                }
+
+                productResponse = new UpdateProductResponse
+                {
+                    Name = product.Name,
+                    CategoryId = product.CategoryId,
+                    CategoryName = product.Category.Name,
+                    Description = product.Description,
+                    Slug = product.Slug,
+                    Price = product.Price == null ? 0 : (decimal)product.Price,
+                    IsPublic = product.IsPublic,
+                    SpecAttributes = productSpecInfo.SpecInfos.Select(s => new SpecAttributeUpdate
+                    {
+                        SpecName = s.SpecName,
+                        IsPrimary = s.IsPrimary,
+                        SpecItems = s.SpecItems.Select(si => new SpecItemUpdate
+                        {
+                            SpecValue = si.SpecValue,
+                            SpecImageUrl = si.SpecImageUrl
+                        }).ToList()
+                    }).ToList(),
+                    SpecInventories = productSpecInfo.SpecInfoInventories.Select(si => new SpecInventoryUpdate
+                    {
+                        PrimarySpecValueName = si.PrimarySpecValueName,
+                        SubSpecValueName = si.SubSpecValueName,
+                        Inventory = si.Inventory
+                    }).ToList(),
+                    WarehouseId = product.Inventory.WareHouseId,
+                    TotalInventory = product.Inventory == null ? 0 : (int)product.Inventory.Quantity,
+                    CoverImageUrl = product.AvtImgUrl
+                };
+                
+                return Ok(new ApiResponseStandard<object>
+                {
+                    Status = 200,
+                    Message = "Get product success",
+                    Data = productResponse
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+        private async Task<Dictionary<string, ImageStoreModel>> UploadProductImageAsync(AddProductRequest addProductRequest)
         {
             var lengthOfSpecItems = addProductRequest.SpecAttributes.FirstOrDefault(s => s.IsPrimary).SpecItems.Count;
-            Dictionary<string,string> imagesNameDict = new Dictionary<string, string>(); // first index is cover image
+            Dictionary<string, ImageStoreModel> imagesNameDict = new Dictionary<string, ImageStoreModel>(); // first index is cover image
 
             // upload cover image
             var timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var coverImageName = UtilityServices.GenerateRandomString(6) + timeStamp;
-            coverImageName = await _imagesBlobServices.UpdloadImageAsync(
+            var coverImageUrl = await _imagesBlobServices.UpdloadImageAsync(
                 _imagesBlobServices.ConvertToFileStreamModel(coverImageName, addProductRequest.CoverImage)
             );
-            imagesNameDict.Add("coverImage", coverImageName);
+            imagesNameDict.Add("coverImage", new ImageStoreModel{
+                Name = coverImageName,
+                Url = coverImageUrl
+            });
 
             // upload special info images
             if (addProductRequest.SpecAttributes.Count > 0)
@@ -275,13 +344,17 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 {
                     var specialImageName = UtilityServices.GenerateRandomString(6) + timeStamp;
                     var specItem = addProductRequest.SpecAttributes.FirstOrDefault(s => s.IsPrimary).SpecItems[i];
-                    if (specItem == null){
+                    if (specItem == null)
+                    {
                         continue;
                     }
                     var url = await _imagesBlobServices.UpdloadImageAsync(
                         _imagesBlobServices.ConvertToFileStreamModel(specialImageName, specItem.SpecImage)
                     );
-                    imagesNameDict.Add(specItem.SpecValue, url);
+                    imagesNameDict.Add(specItem.SpecValue, new ImageStoreModel{
+                        Name = specialImageName,
+                        Url = url
+                    });
                 }
             }
 

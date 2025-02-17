@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ProductPostModel, SpecAttribute, WarehouseItem } from '../models/product-post-model';
 import { FormsModule } from '@angular/forms';
-import { HtmlParser } from '@angular/compiler';
+import { Expansion, HtmlParser } from '@angular/compiler';
 import { UpperCasePipe } from '@angular/common';
 import e from 'express';
 import { SelectCategoryComponent } from "./select-category/select-category.component";
@@ -15,6 +15,7 @@ import { ShopService } from '../../services/shop.service';
 import { ActivatedRoute } from '@angular/router';
 import { MessageComponent } from "../../../shares/reusable/message/message.component";
 import { Title } from '@angular/platform-browser';
+import { ProductCreateUpdateModel } from '../models/product-create-update-model';
 
 @Component({
   selector: 'app-add-product',
@@ -28,16 +29,64 @@ export class AddProductComponent implements OnInit {
   @ViewChild(UploadImagesComponent) uploadImages!: UploadImagesComponent;
   @ViewChild(MessageComponent) messager!: MessageComponent;
   @ViewChild(SelectTagComponent) selectTag!: SelectTagComponent;
+  @ViewChild(SelectCategoryComponent) selectCategory!: SelectCategoryComponent;
 
   ngOnInit(): void {
     this.getWarehousesForSelect();
-    this.activatedRoute.parent?.params.subscribe(params => { 
+    this.activatedRoute.parent?.params.subscribe(params => {
       this.shopId = params['shop_id'];
     });
+
     this.activatedRoute.params.subscribe(params => {
       this.productId = params['product_id'];
-      if (this.productId){
+      if (this.productId) {
         this.titleSVC.setTitle("Update Product");
+        this.shopSVC.getUpdateProduct(this.productId).subscribe({
+          next: (res) => {
+            this.productModel = {
+              Name: res.data.name,
+              Description: res.data.description,
+              Price: res.data.price,
+              CategoryId: res.data.categoryId,
+              IsPublic: res.data.isPublic,
+              SpecAttributes: res.data.specAttributes.map((spec) => {
+                return {
+                  SpecName: spec.specName,
+                  IsPrimary: spec.isPrimary,
+                  SpecItems: spec.specItems.map((specItem) => {
+                    return {
+                      SpecValue: specItem.specValue,
+                      SpecImage: null,
+                      SpecImageUrl: specItem.specImageUrl
+                    }
+                  })
+                }
+              }),
+              SpecInventories: res.data.specInventories.map((specInventory) => {
+                return {
+                  PrimarySpecValueName: specInventory.primarySpecValueName,
+                  SubSpecValueName: specInventory.subSpecValueName,
+                  Inventory: specInventory.inventory
+                }
+              }),
+              WarehouseId: res.data.warehouseId,
+              TotalInventory: res.data.totalInventory,
+              CoverImage: null,
+              CoverImageUrl: res.data.coverImageUrl,
+              Slug: res.data.slug
+            }
+            this.selectCategory.setCategory({
+              categoryId: res.data.categoryId,
+              name: res.data.categoryName,
+              isNext: false
+            });
+            this.selectTag.setValueFromParent(res.data.warehouseId.toString());
+          },
+          error: (err) => {
+            console.log(err);
+          }
+        });
+        
       } else {
         this.titleSVC.setTitle("Add Product");
       }
@@ -59,7 +108,7 @@ export class AddProductComponent implements OnInit {
     name: "temp",
     isNext: false
   };
-  productModel: ProductPostModel = {
+  productModel: ProductCreateUpdateModel = {
     Name: '',
     Description: '',
     Price: 0,
@@ -69,7 +118,9 @@ export class AddProductComponent implements OnInit {
     SpecInventories: [],
     WarehouseId: 0,
     TotalInventory: 0,
-    CoverImage: null
+    CoverImage: null,
+    CoverImageUrl: null,
+    Slug: null
   }
   shopId: string = '';
 
@@ -78,15 +129,8 @@ export class AddProductComponent implements OnInit {
   activatedRoute = inject(ActivatedRoute);
   productId: string | null = null;
 
-  getWarehousesForSelect() {
-    this.utilitiesSVC.getWarehouses().subscribe({
-      next: (res) => {
-        this.warehouseItems = res.data;
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    });
+  async getWarehousesForSelect() {
+    this.warehouseItems = (await this.utilitiesSVC.getWarehouses()).data;
   }
 
   setPublic(isPublic: boolean) {
@@ -95,7 +139,7 @@ export class AddProductComponent implements OnInit {
 
   saveCategory(category: CategoryModel) {
     this.category = category;
-    if (category.categoryId){
+    if (category.categoryId) {
       this.productModel.CategoryId = category.categoryId;
     }
   }
@@ -122,10 +166,16 @@ export class AddProductComponent implements OnInit {
   saveSpec(event: Event) {
     event.preventDefault();
     const valueInputElement = event.target as HTMLInputElement;
-    const currentSpec = this.findCurrentSpec(event);
-    let specItems = this.productModel.SpecAttributes
-      .find(spec => spec.SpecName === currentSpec)
-      ?.SpecItems;
+    const currentSpecName = this.findCurrentSpec(event);
+    let specAttribute = this.productModel.SpecAttributes
+      .find(spec => spec.SpecName === currentSpecName);
+
+    if (!specAttribute) {
+      this.triggerError(valueInputElement);
+      return;
+    }
+
+    let specItems = specAttribute.SpecItems;
 
     if (!specItems) {
       this.triggerError(valueInputElement);
@@ -138,36 +188,50 @@ export class AddProductComponent implements OnInit {
       return;
     }
 
+    const specValue = valueInputElement.value
     specItems.push({
-      SpecValue: valueInputElement.value,
-      SpecImage: null
+      SpecValue: specValue,
+      SpecImage: null,
+      SpecImageUrl: null
     });
 
-    switch (this.productModel.SpecAttributes.length) {
-      case 1:
+
+    let hasSubSpec = this.productModel.SpecAttributes.length > 1;
+    let isPrimary = specAttribute.IsPrimary;
+    console.log("primary: " + isPrimary);
+    console.log("subspec: " + hasSubSpec);
+    switch (isPrimary){
+      case true:
         this.productModel.SpecInventories.push({
-          PrimarySpecValueName: valueInputElement.value,
+          PrimarySpecValueName: specValue,
           SubSpecValueName: '',
-          Inventory: 0,
+          Inventory: 0
         });
-        break;
-      case 2:
-        if (this.isSingleSpec){
-          this.isSingleSpec = false;
-          this.productModel.SpecInventories = [];
+        if (hasSubSpec) {
+          this.productModel.SpecAttributes[1].SpecItems.forEach(subSpec => {
+            this.productModel.SpecInventories.push({
+              PrimarySpecValueName: specValue,
+              SubSpecValueName: subSpec.SpecValue,
+              Inventory: 0
+            });
+          });
         }
-        this.productModel.SpecAttributes[0].SpecItems.forEach(specItem => {
+        break;
+      case false:
+        this.productModel.SpecAttributes[0].SpecItems.forEach(primarySpec => {
           this.productModel.SpecInventories.push({
-            PrimarySpecValueName: specItem.SpecValue,
-            SubSpecValueName: valueInputElement.value,
+            PrimarySpecValueName: primarySpec.SpecValue,
+            SubSpecValueName: specValue,
             Inventory: 0
           });
         });
-
         break;
       default:
-        break      
+        this.triggerError(valueInputElement);
+        break;
     }
+    console.log(this.productModel.SpecInventories);
+
     const targetElement = event.target as HTMLElement;
     const productSpecElement = targetElement.parentElement;
 
@@ -211,11 +275,10 @@ export class AddProductComponent implements OnInit {
   removeSpecValue(name: string, value: string) {
     let specItems = this.productModel.SpecAttributes.find(spec => spec.SpecName === name)?.SpecItems;
     //delete the spec inventory for me by condition: spec.PrimarySpecValueName === value || spec.SubSpecValueName === value
-    this.productModel.SpecInventories = this.productModel.SpecInventories.filter(spec => 
+    this.productModel.SpecInventories = this.productModel.SpecInventories.filter(spec =>
       spec.PrimarySpecValueName !== value && spec.SubSpecValueName !== value
     );
 
-    
     if (specItems) {
       for (let i = 0; i < specItems.length; i++) {
         if (specItems[i].SpecValue === value) {
@@ -224,6 +287,8 @@ export class AddProductComponent implements OnInit {
         }
       }
     }
+    console.log(this.productModel);
+
   }
 
   removeSpec(specName: string) {
@@ -251,48 +316,51 @@ export class AddProductComponent implements OnInit {
     this.productModel.WarehouseId = parseInt(warehouseItem.id);
   }
 
-  saveUploadImagesAndInventories(productModel: ProductPostModel) {
+  saveUploadImagesAndInventories(productModel: ProductCreateUpdateModel) {
     this.productModel = productModel;
-    let sum:number = 0;
-    for(let i = 0; i < this.productModel.SpecInventories.length; i++){
+    let sum: number = 0;
+    for (let i = 0; i < this.productModel.SpecInventories.length; i++) {
       sum += this.productModel.SpecInventories[i].Inventory;
     }
     this.productModel.TotalInventory = sum;
   }
 
-  createNewProduct(){
+  createNewProduct() {
     const errors = document.querySelectorAll(".extra-err");
-    if (errors.length > 0){
-      this.messager.showModal("fail","Please check again all the fields");
+    if (errors.length > 0) {
+      this.messager.showModal("fail", "Please check again all the fields");
       errors.forEach(err => {
         err.classList.add("show");
       });
       return;
     }
-    this.shopSVC.addProduct(this.shopId,this.productModel).subscribe({
+    console.log(this.productModel);
+    this.shopSVC.addProduct(this.shopId, this.productModel).subscribe({
       next: (res) => {
-        this.messager.showModal("success","Create Product Successful");
-        this.productModel = {
-          Name: '',
-          Description: '',
-          Price: 0,
-          CategoryId: 0,
-          IsPublic: true,
-          SpecAttributes: [],
-          SpecInventories: [],
-          WarehouseId: 0,
-          TotalInventory: 0,
-          CoverImage: null
-        };
-        this.category = {
-          categoryId: null,
-          name: "temp",
-          isNext: false
-        };
-        
+        this.messager.showModal("success", "Create Product Successful");
+        // this.productModel = {
+        //   Name: '',
+        //   Description: '',
+        //   Price: 0,
+        //   CategoryId: 0,
+        //   IsPublic: true,
+        //   SpecAttributes: [],
+        //   SpecInventories: [],
+        //   WarehouseId: 0,
+        //   TotalInventory: 0,
+        //   CoverImage: null,
+        //   CoverImageUrl: null,
+        //   Slug: null
+        // };
+        // this.category = {
+        //   categoryId: null,
+        //   name: "temp",
+        //   isNext: false
+        // };
+
       },
       error: (err) => {
-        this.messager.showModal("fail","Create Product Fail");
+        this.messager.showModal("fail", "Create Product Fail");
         console.log(err);
       }
     });

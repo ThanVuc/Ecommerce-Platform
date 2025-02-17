@@ -8,6 +8,7 @@ using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IRepository;
 using EPlatform_API.IServices;
 using EPlatform_API.Mappers;
+using EPlatform_API.Models;
 using EPlatform_API.Models.ShopOwners;
 using EPlatform_API.Services;
 using Microsoft.EntityFrameworkCore;
@@ -35,10 +36,13 @@ namespace EPlatform_API.Repository
                 throw new Exception("Inventory is null");
             }
 
-            
-            try {
+
+            try
+            {
                 await _context.Inventories.AddAsync(inventory);
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -50,9 +54,12 @@ namespace EPlatform_API.Repository
                 throw new Exception("Product is null");
             }
 
-            try {
+            try
+            {
                 await _context.Products.AddAsync(product);
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -84,7 +91,7 @@ namespace EPlatform_API.Repository
         public async Task<List<GetCategoriesResponse>?> GetCategoriesAsync(int? parentCategoryId = null, string? searchString = null)
         {
             IQueryable<Category> categoryQueryable = _context.Categories.AsQueryable();
-            
+
             categoryQueryable = _context.Categories
             .Where(c => c.CategoryParentId == parentCategoryId);
 
@@ -103,7 +110,8 @@ namespace EPlatform_API.Repository
 
         public async Task<Product?> GetProductByIdAsync(int productId)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
+            var product = await _context.Products
+            .FirstOrDefaultAsync(p => p.ProductId == productId);
 
             if (product == null)
             {
@@ -113,6 +121,20 @@ namespace EPlatform_API.Repository
             return product;
         }
 
+        public async Task<Product?> GetProductUpdateByIdAsync(int productId)
+        {
+            var product = await _context.Products
+            .Include(p => p.Inventory)
+            .Include(p => p.Category)
+            .FirstOrDefaultAsync(p => p.ProductId == productId);
+
+            if (product == null)
+            {
+                return null;
+            }
+
+            return product;
+        }
         public IQueryable<Product> GetProductsByShopSummerize(string shopId)
         {
             var products = _context.Products
@@ -136,15 +158,16 @@ namespace EPlatform_API.Repository
 
             return products;
         }
-    
-        public async Task AddProductImagesAsync(int productId, Dictionary<string,string> productImgDict)
+
+        public async Task AddProductImagesAsync(int productId, Dictionary<string, ImageStoreModel> productImgDict)
         {
             // Add cover image
             await _context.ProductImages.AddAsync(new ProductImage
             {
                 ProductId = productId,
                 ImgType = "WebP",
-                ImgUrl = productImgDict["coverImage"],
+                ImgUrl = productImgDict["coverImage"].Url,
+                ImgName = productImgDict["coverImage"].Name,
                 IsPrimary = true,
                 DeletedAt = null,
                 IsDeleted = false,
@@ -163,7 +186,8 @@ namespace EPlatform_API.Repository
                 {
                     ProductId = productId,
                     ImgType = "WebP",
-                    ImgUrl = img.Value,
+                    ImgUrl = img.Value.Url,
+                    ImgName = img.Value.Name,
                     IsPrimary = false,
                     DeletedAt = null,
                     IsDeleted = false,

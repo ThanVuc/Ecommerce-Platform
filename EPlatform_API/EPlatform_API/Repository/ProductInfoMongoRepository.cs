@@ -18,6 +18,19 @@ namespace EPlatform_API.Repository
             _productSpecInfoCollection = database.GetCollection<ProductSpecInfo>(MongoDbCollections.ProductSpecInfo);
         }
 
+        public async Task<ProductSpecInfo> GetProductSpecInfoByProductIdAsync(int productId)
+        {
+            try
+            {
+                var productSpecInfo = await _productSpecInfoCollection.Find(p => p.ProductId == productId).FirstOrDefaultAsync();
+                return productSpecInfo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
 
     }
 }
