@@ -159,6 +159,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             var product = addProductRequest.ToProduct();
             product.ShopId = shopId;
             product.AvtImgUrl = imagesNameDict["coverImage"].Url;
+            product.AvtImgName = imagesNameDict["coverImage"].Name;
             product.Inventory = new Inventory
             {
                 Quantity = addProductRequest.TotalInventory,
@@ -173,76 +174,13 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
 
             // save product info spec to mongodb
             var productSpecInfo = addProductRequest.ToProductSpecInfo(product.ProductId, imagesNameDict);
-            
+
             await _productInfoMongoRepo.CreateAsync(productSpecInfo);
 
             // save all file to sql db
-            await _productRepo.AddProductImagesAsync(product.ProductId, imagesNameDict);
             await _unitOfWork.SaveAsync();
 
             return Ok(productSpecInfo);
-        }
-
-        [HttpPost("upload-image-stream")]
-        public async Task<IActionResult> UploadImageStream(IFormFile file)
-        {
-            var random = new Random();
-            string fileName = random.Next(0, 1000000).ToString();
-            await _imagesBlobServices.UpdloadImageAsync(new FileStreamModel
-            {
-                Name = file.FileName,
-                Stream = file.OpenReadStream()
-            });
-            return Ok();
-        }
-
-        [HttpPost("upload-multiple-image-stream")]
-        public async Task<IActionResult> UploadMultipleImageStream(List<IFormFile> file)
-        {
-            var random = new Random();
-            await _imagesBlobServices.UpdloadImagesAsync(file.Select(f => new FileStreamModel
-            {
-                Name = random.Next(0, 1000000).ToString(),
-                Stream = f.OpenReadStream()
-            }).ToList());
-
-            return Ok();
-        }
-
-        [HttpPost("download-image")]
-        public async Task<IActionResult> DownloadImage(string fileName)
-        {
-            var img = await _imagesBlobServices.DownloadFileAsync(fileName);
-            return File(img, "image/jpg+png");
-        }
-
-        [HttpDelete("delete-image")]
-        public async Task<IActionResult> DeleteImagePermanent(string fileName)
-        {
-            try
-            {
-                await _imagesBlobServices.DeleteFilePermanentAsync(fileName);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-            return Ok();
-        }
-
-        [HttpDelete("delete-image-list")]
-        public async Task<IActionResult> DeleteImageListPermanent(List<string> fileNames)
-        {
-            try
-            {
-                await _imagesBlobServices.DeleteFilePermanentAsync(fileNames);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-
-            return Ok();
         }
 
         [HttpGet("/api/v1/categories")]
@@ -279,7 +217,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 {
                     Name = product.Name,
                     CategoryId = product.CategoryId,
-                    CategoryName = product.Category.Name,
+                    CategoryName = product?.Category?.Name == null ? "" : product.Category.Name,
                     Description = product.Description,
                     Slug = product.Slug,
                     Price = product.Price == null ? 0 : (decimal)product.Price,
@@ -288,7 +226,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                     {
                         SpecName = s.SpecName,
                         IsPrimary = s.IsPrimary,
-                        SpecItems = s.SpecItems.Select(si => new SpecItemUpdate
+                        SpecItems = s.SpecItems?.Select(si => new SpecItemUpdate
                         {
                             SpecValue = si.SpecValue,
                             SpecImageUrl = si.SpecImageUrl
@@ -304,7 +242,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                     TotalInventory = product.Inventory == null ? 0 : (int)product.Inventory.Quantity,
                     CoverImageUrl = product.AvtImgUrl
                 };
-                
+
                 return Ok(new ApiResponseStandard<object>
                 {
                     Status = 200,
@@ -321,6 +259,39 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
         }
+
+        [HttpPut("/api/v1/products/{productId}/update")]
+        public async Task<IActionResult> UpdateProductById([FromRoute] int productId, [FromForm] AddProductRequest updateProductModel)
+        {
+            if (updateProductModel == null)
+            {
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "The request body is empty"
+                });
+            }
+
+            var imgDict = await UpdateProductImageAsync(productId, updateProductModel);
+
+            // update product core to sql server
+            ImageStoreModel? coverImageModel = imgDict.ContainsKey("coverImage") ? imgDict["coverImage"] : null;
+            await _productRepo.UpdateProduct(productId, updateProductModel, coverImageModel);
+            await _unitOfWork.SaveAsync();
+
+            // update product info spec to mongodb
+            var productInfo = updateProductModel.ToProductSpecInfoUpdate(productId, imgDict);
+            // Console.WriteLine("ProductInfo: " + productInfo.ToJson());
+            await _productInfoMongoRepo.UpdateProductInfo(productId, productInfo);
+
+            return Ok(new ApiResponseStandard<object>
+            {
+                Status = 200,
+                Message = "Update product success",
+                Data = productInfo
+            });
+        }
+
         private async Task<Dictionary<string, ImageStoreModel>> UploadProductImageAsync(AddProductRequest addProductRequest)
         {
             var lengthOfSpecItems = addProductRequest.SpecAttributes.FirstOrDefault(s => s.IsPrimary).SpecItems.Count;
@@ -329,10 +300,11 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             // upload cover image
             var timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var coverImageName = UtilityServices.GenerateRandomString(6) + timeStamp;
-            var coverImageUrl = await _imagesBlobServices.UpdloadImageAsync(
+            var coverImageUrl = await _imagesBlobServices.UploadImageAsync(
                 _imagesBlobServices.ConvertToFileStreamModel(coverImageName, addProductRequest.CoverImage)
             );
-            imagesNameDict.Add("coverImage", new ImageStoreModel{
+            imagesNameDict.Add("coverImage", new ImageStoreModel
+            {
                 Name = coverImageName,
                 Url = coverImageUrl
             });
@@ -348,10 +320,11 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                     {
                         continue;
                     }
-                    var url = await _imagesBlobServices.UpdloadImageAsync(
+                    var url = await _imagesBlobServices.UploadImageAsync(
                         _imagesBlobServices.ConvertToFileStreamModel(specialImageName, specItem.SpecImage)
                     );
-                    imagesNameDict.Add(specItem.SpecValue, new ImageStoreModel{
+                    imagesNameDict.Add(specItem.SpecValue, new ImageStoreModel
+                    {
                         Name = specialImageName,
                         Url = url
                     });
@@ -360,5 +333,128 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
 
             return imagesNameDict;
         }
+        private async Task<Dictionary<string, ImageStoreModel>> UpdateProductImageAsync(int productId, AddProductRequest updateProductModel)
+        {
+
+            Dictionary<string, ImageStoreModel> imagesNameDict = new Dictionary<string, ImageStoreModel>(); // first index is cover image
+            var productSpec = await _productInfoMongoRepo.GetProductSpecInfoByProductIdAsync(productId);
+            var product = await _productRepo.GetProductByIdAsync(productId);
+
+            // upload cover image
+            var timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+            if (updateProductModel.CoverImage != null)
+            {
+                var coverImageName = UtilityServices.GenerateRandomString(6) + timeStamp;
+                var coverImageUrl = await _imagesBlobServices.UpdateImageAsync(
+                    // If Upload but not update productImages of database, the data will be old
+                    product?.AvtImgName == null ? "" : product.AvtImgName,
+                    _imagesBlobServices.ConvertToFileStreamModel(coverImageName, updateProductModel.CoverImage)
+                );
+                // Can optimize
+                imagesNameDict.Add("coverImage", new ImageStoreModel
+                {
+                    Name = coverImageName,
+                    Url = coverImageUrl,
+                    isUpdating = true
+                });
+            }
+
+            // upload special info images
+            if (updateProductModel.SpecAttributes == null)
+            {
+                return imagesNameDict;
+            }
+
+            var lengthOfSpecItems = updateProductModel.SpecAttributes.FirstOrDefault(s => s.IsPrimary)?.SpecItems?.Count;
+            if (lengthOfSpecItems == null)
+            {
+                return imagesNameDict;
+            }
+
+            var updateSpecItem = new List<EPlatform_API.DTOs.ProductDTOs.SpecItem>();
+            for (int i = 0; i < lengthOfSpecItems; i++)
+            {
+                // item DTO
+                var specItem = updateProductModel.SpecAttributes[0].SpecItems?[i];
+                var specialImageName = UtilityServices.GenerateRandomString(6) + timeStamp;
+                if (specItem == null)
+                {
+                    continue;
+                }
+
+                if (productSpec.SpecInfos[0]?.SpecItems?.Count < lengthOfSpecItems)
+                {
+                    bool isStore = false;
+                    foreach (var oldItem in productSpec.SpecInfos[0]?.SpecItems)
+                    {
+                        if (oldItem.SpecValue == specItem.SpecValue)
+                        {
+                            isStore = true;
+                            break;
+                        }
+                    }
+                    if (isStore == false && specItem.SpecImage != null)
+                    {
+                        var newUrl = await _imagesBlobServices.UploadImageAsync(
+                            _imagesBlobServices.ConvertToFileStreamModel(specialImageName, specItem.SpecImage)
+                        );
+
+                        imagesNameDict.Add(specItem.SpecValue, new ImageStoreModel
+                        {
+                            Name = specialImageName,
+                            Url = newUrl
+                        });
+                        continue;
+                    }
+                }
+
+                // item in db
+                var specItemInDb = productSpec.SpecInfos[0]?.SpecItems?.FirstOrDefault(si => si.SpecValue == specItem.SpecValue);
+                var oldName = specItemInDb?.SpecImageName;
+                var oldUrl = specItemInDb?.SpecImageUrl;
+
+                if (specItem.SpecValue == null)
+                {
+                    continue;
+                }
+
+                // if client not send image update
+                if (updateProductModel.SpecAttributes[0].SpecItems?[i].SpecImage == null)
+                {
+                    imagesNameDict.Add(specItem.SpecValue, new ImageStoreModel
+                    {
+                        Name = oldName,
+                        Url = oldUrl
+                    });
+                    continue;
+                }
+
+                if (specItem.SpecImage == null)
+                {
+                    continue;
+                }
+
+                var url = await _imagesBlobServices.UpdateImageAsync(
+                    oldName,
+                    _imagesBlobServices.ConvertToFileStreamModel(specialImageName, specItem.SpecImage)
+                );
+
+                if (url == null)
+                {
+                    continue;
+                }
+
+                imagesNameDict.Add(specItem.SpecValue, new ImageStoreModel
+                {
+                    Name = specialImageName,
+                    Url = url,
+                    isUpdating = true
+                });
+            }
+
+            return imagesNameDict;
+        }
+
     }
 }

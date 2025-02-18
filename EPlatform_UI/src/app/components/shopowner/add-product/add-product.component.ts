@@ -16,6 +16,8 @@ import { ActivatedRoute } from '@angular/router';
 import { MessageComponent } from "../../../shares/reusable/message/message.component";
 import { Title } from '@angular/platform-browser';
 import { ProductCreateUpdateModel } from '../models/product-create-update-model';
+import { AdminService } from '../../services/admin.service';
+import { error } from 'console';
 
 @Component({
   selector: 'app-add-product',
@@ -40,7 +42,7 @@ export class AddProductComponent implements OnInit {
     this.activatedRoute.params.subscribe(params => {
       this.productId = params['product_id'];
       if (this.productId) {
-        this.titleSVC.setTitle("Update Product");
+        this.titleSVC.setTitle("Product For Shop Onwer");
         this.shopSVC.getUpdateProduct(this.productId).subscribe({
           next: (res) => {
             this.productModel = {
@@ -338,29 +340,56 @@ export class AddProductComponent implements OnInit {
     this.shopSVC.addProduct(this.shopId, this.productModel).subscribe({
       next: (res) => {
         this.messager.showModal("success", "Create Product Successful");
-        // this.productModel = {
-        //   Name: '',
-        //   Description: '',
-        //   Price: 0,
-        //   CategoryId: 0,
-        //   IsPublic: true,
-        //   SpecAttributes: [],
-        //   SpecInventories: [],
-        //   WarehouseId: 0,
-        //   TotalInventory: 0,
-        //   CoverImage: null,
-        //   CoverImageUrl: null,
-        //   Slug: null
-        // };
-        // this.category = {
-        //   categoryId: null,
-        //   name: "temp",
-        //   isNext: false
-        // };
+        this.productModel = {
+          Name: '',
+          Description: '',
+          Price: 0,
+          CategoryId: 0,
+          IsPublic: true,
+          SpecAttributes: [],
+          SpecInventories: [],
+          WarehouseId: 0,
+          TotalInventory: 0,
+          CoverImage: null,
+          CoverImageUrl: null,
+          Slug: null
+        };
+        this.category = {
+          categoryId: null,
+          name: "temp",
+          isNext: false
+        };
 
       },
       error: (err) => {
         this.messager.showModal("fail", "Create Product Fail");
+        console.log(err);
+      }
+    });
+  }
+
+  updateProduct(){
+    let productId = 0;
+    if (this.productId){
+      productId = parseInt(this.productId);
+    }
+    if (productId === 0){
+      throw new Error("Product is not found");
+    }
+    this.shopSVC.updateProductById(productId,this.productModel)
+    .subscribe({
+      next: (res) => {
+        this.productModel.SpecAttributes.forEach(spec => {
+          spec.SpecItems.forEach(specItem => {
+            if (specItem.SpecImage){
+              specItem.SpecImage = null;
+            }
+          });
+        });
+        this.messager.showModal("success", "Update Product Successful");
+      },
+      error: (err) => {
+        this.messager.showModal("fail", "Update Product Fail");
         console.log(err);
       }
     });

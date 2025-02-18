@@ -11,9 +11,9 @@ namespace EPlatform_API.IServices
         public FileStreamModel ConvertToFileStreamModel(string fileName, Stream stream);
         public FileStreamModel ConvertToFileStreamModel(string fileName, byte[] byteStream);
         public FileStreamModel ConvertToFileStreamModel(string fileName, IFormFile file);
-        Task<string> UpdloadImageAsync(string name, string filePath, string contentType);
-        Task<string> UpdloadImageAsync(FileStreamModel file);
-        Task UpdloadImagesAsync(List<FileStreamModel> files);
+        Task<string> UploadImageAsync(string name, string filePath, string contentType);
+        Task<string> UploadImageAsync(FileStreamModel file);
+        Task UploadImagesAsync(List<FileStreamModel> files);
         Task<Stream> DownloadFileAsync(string name);
         Task DeleteFilePermanentAsync(string name);
         Task DeleteFilePermanentAsync(List<string> name);
@@ -21,5 +21,7 @@ namespace EPlatform_API.IServices
         Task<List<string>> GetImageUriListOfProduct(List<string> productsId);
         Task<Stream> ResizeImageAsync(string name, int width, int height);
         Stream ConvertToWebP(Stream file);
+        Task<string?> UpdateImageAsync(string? oldFileName, FileStreamModel file);
+
     }
 }

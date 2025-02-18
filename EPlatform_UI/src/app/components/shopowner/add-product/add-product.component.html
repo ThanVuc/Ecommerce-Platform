@@ -3,7 +3,7 @@
 <div class="container">
   <div class="header">
     @if (productId){
-      <p class="title">Update Products</p>
+      <p class="title">{{ productModel.Name }}</p>
     } @else {
       <p class="title">Add Products</p>
     }
@@ -154,10 +154,16 @@
         </div>
       </div>
 
+      @if (productId){
+        <div class="submit-product">
+          <button type="submit" (click)="updateProduct()" class="btn btn-outline-light p-3">Update Product</button>
+        </div>
+      } @else {
+        <div class="submit-product">
+          <button type="submit" (click)="createNewProduct()" class="btn btn-outline-light p-3">Create Product</button>
+        </div>
+      }
 
-      <div class="create-product">
-        <button type="submit" (click)="createNewProduct()" class="btn btn-outline-light">Create Product</button>
-      </div>
     </form>
 
 

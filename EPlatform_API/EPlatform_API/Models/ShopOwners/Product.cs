@@ -28,6 +28,7 @@ namespace EPlatform_API.Models.ShopOwners
         public string? Slug { get; set; }
 
         public string? AvtImgUrl { get; set; }
+        public string? AvtImgName { get; set; }
 
         public string? Description { get; set; }
 
@@ -48,7 +49,6 @@ namespace EPlatform_API.Models.ShopOwners
         public Shop? Shop { get; set; }
         public Inventory? Inventory { get; set;}
         public ICollection<ProductDiscount>? ProductDiscounts { get; set; }
-        public ICollection<ProductImage>? ProductImages { get; set; }
         public DateTime DeletedAt { get; set; }
         public bool IsDeleted { get; set; }
     }

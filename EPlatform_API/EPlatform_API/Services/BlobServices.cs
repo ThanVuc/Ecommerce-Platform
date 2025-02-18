@@ -118,7 +118,7 @@ namespace EPlatform_API.Services
             }
         }
 
-        public async Task<string> UpdloadImageAsync(string name, string filePath, string contentType)
+        public async Task<string> UploadImageAsync(string name, string filePath, string contentType)
         {
             /***
                 * 1. Get blob client
@@ -137,7 +137,7 @@ namespace EPlatform_API.Services
             return url;
         }
 
-        public async Task<string> UpdloadImageAsync(FileStreamModel file)
+        public async Task<string> UploadImageAsync(FileStreamModel file)
         {
             if (file.Stream == null)
             {
@@ -150,20 +150,42 @@ namespace EPlatform_API.Services
             file.Stream.Position = 0;
             // save image-uri to blob file system
             await blobClient.UploadAsync(file.Stream, new BlobHttpHeaders { ContentType = "image/webp" });
-                        var url = blobClient.Uri.AbsoluteUri;
+            var url = blobClient.Uri.AbsoluteUri;
             return url;
         }
 
-        public async Task UpdloadImagesAsync(List<FileStreamModel> files)
+        public async Task UploadImagesAsync(List<FileStreamModel> files)
         {
             var task = new List<Task>();
 
             foreach (var file in files)
             {
-                task.Add(UpdloadImageAsync(file));
+                task.Add(UploadImageAsync(file));
             }
 
             await Task.WhenAll(task);
+        }
+    
+        public async Task<string?> UpdateImageAsync(string? oldFileName, FileStreamModel file)
+        {
+            if (file.Stream == null)
+            {
+                throw new Exception("File stream is null");
+            }
+
+            if (file.Name == null)
+            {
+                throw new Exception("File name is null");
+            }
+
+            if (oldFileName == null)
+            {
+                return null;
+            }
+
+            Console.WriteLine("Old file name: " + oldFileName);
+            await DeleteFilePermanentAsync(oldFileName);
+            return await UploadImageAsync(file);
         }
     }
 }

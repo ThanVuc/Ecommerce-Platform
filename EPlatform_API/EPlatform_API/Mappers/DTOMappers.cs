@@ -11,6 +11,7 @@ using EPlatform_API.ExtensionMethods;
 using EPlatform_API.Models;
 using EPlatform_API.Models.ShopOwners;
 using Microsoft.AspNetCore.Identity;
+using MongoDB.Bson;
 
 namespace EPlatform_API.Mappers
 {
@@ -158,7 +159,7 @@ namespace EPlatform_API.Mappers
                         specItems.Add(new SpecItem()
                         {
                             SpecValue = specValue,
-                            SpecImageUrl =  imgDic.ContainsKey(specValue) ? imgDic[specValue].Url : null,
+                            SpecImageUrl = imgDic.ContainsKey(specValue) ? imgDic[specValue].Url : null,
                             SpecImageName = imgDic.ContainsKey(specValue) ? imgDic[specValue].Name : null
                         });
                     }
@@ -178,7 +179,8 @@ namespace EPlatform_API.Mappers
 
             var specInfoInventories = new List<SpecInventory>();
 
-            try{
+            try
+            {
                 for (int i = 0; i < addProductRequest.SpecInventories.Count; i++)
                 {
                     specInfoInventories.Add(new SpecInventory()
@@ -188,7 +190,8 @@ namespace EPlatform_API.Mappers
                         Inventory = addProductRequest.SpecInventories[i].Inventory
                     });
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Console.WriteLine("Line approximately 183 - DTOMapper -" + e.Message);
             }
@@ -200,6 +203,50 @@ namespace EPlatform_API.Mappers
                 SpecInfos = specInfo,
                 SpecInfoInventories = specInfoInventories
             };
+        }
+
+        public static ProductSpecInfo ToProductSpecInfoUpdate(this AddProductRequest updateProductRequest, int productId, Dictionary<string, ImageStoreModel> imgDic)
+        {
+            try
+            {
+
+                if (updateProductRequest.SpecAttributes == null)
+                {
+                    throw new Exception("SpecAttributes is null");
+                }
+
+                if (updateProductRequest.SpecInventories == null)
+                {
+                    throw new Exception("SpecInventories is null");
+                }
+                Console.WriteLine("Dict: " + imgDic.ToJson());
+
+                return new ProductSpecInfo()
+                {
+                    ProductId = productId,
+                    SpecInfos = updateProductRequest.SpecAttributes.Select(spec => new Spec()
+                    {
+                        SpecName = spec.SpecName,
+                        IsPrimary = spec.IsPrimary,
+                        SpecItems = spec.SpecItems?.Select(item => new SpecItem()
+                        {
+                            SpecValue = item.SpecValue,
+                            SpecImageUrl = imgDic.ContainsKey(item.SpecValue) ? imgDic[item.SpecValue].Url : null,
+                            SpecImageName = imgDic.ContainsKey(item.SpecValue) ? imgDic[item.SpecValue].Name : null
+                        }).ToList()
+                    }).ToList(),
+                    SpecInfoInventories = updateProductRequest.SpecInventories.Select(specInventory => new SpecInventory()
+                    {
+                        PrimarySpecValueName = specInventory.PrimarySpecValueName,
+                        SubSpecValueName = specInventory.SubSpecValueName,
+                        Inventory = specInventory.Inventory
+                    }).ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("SpecAttributes is null");
+            }
         }
     }
 }

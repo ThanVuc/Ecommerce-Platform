@@ -9,5 +9,6 @@ namespace EPlatform_API.Models
     {
         public string? Name { get; set; }
         public string? Url { get; set; }
+        public bool isUpdating { get; set; } = false;
     }
 }

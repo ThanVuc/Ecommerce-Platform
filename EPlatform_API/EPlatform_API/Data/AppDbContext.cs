@@ -94,6 +94,5 @@ namespace EPlatform_API.Data
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<Shipment> Shipments { get; set; }
         public DbSet<ShipmentCarrier> ShipmentCarrier { get; set; }
-        public DbSet<ProductImage> ProductImages { get; set; }
     }
 }

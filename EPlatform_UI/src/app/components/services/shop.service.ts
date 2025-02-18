@@ -8,6 +8,7 @@ import { CategoryModel } from '../shopowner/models/category-model';
 import { ProductPostModel } from '../shopowner/models/product-post-model';
 import { ProductCreateUpdateModel } from '../shopowner/models/product-create-update-model';
 import { ProductUpdateResponse } from '../shopowner/models/product-update-response';
+import { env } from 'node:process';
 
 @Injectable({
   providedIn: 'root'
@@ -69,7 +70,43 @@ export class ShopService {
   }
 
   getUpdateProduct(productId: string): Observable<ApiResModel<ProductUpdateResponse>> {
-    return this.http.get<ApiResModel<ProductUpdateResponse>>(environment.UpdateProductResponse + `${productId}/update`);
+    return this.http.get<ApiResModel<ProductUpdateResponse>>(environment.UpdateProduct + `${productId}/update`);
+  }
+
+  updateProductById(productId: number, product: ProductCreateUpdateModel): Observable<ApiResModel<object>> {
+    const formData = new FormData();
+
+    formData.append('Name', product.Name);
+    formData.append('CategoryId', product.CategoryId.toString());
+    formData.append('Description', product.Description);
+    formData.append('Price', product.Price.toString());
+    formData.append('IsPublic', product.IsPublic.toString());
+    formData.append('WarehouseId', product.WarehouseId.toString());
+    formData.append('TotalInventory', product.TotalInventory.toString());
+    if (product.CoverImage){
+      formData.append('CoverImage', product.CoverImage);
+    }
+
+    product.SpecAttributes.forEach((specAttribute, index) => {
+      formData.append(`SpecAttributes[${index}].SpecName`, specAttribute.SpecName);
+      formData.append(`SpecAttributes[${index}].IsPrimary`, specAttribute.IsPrimary.toString());
+
+      specAttribute.SpecItems.forEach((specItem, itemIndex) => {
+        formData.append(`SpecAttributes[${index}].SpecItems[${itemIndex}].SpecValue`, specItem.SpecValue);
+
+        if (specItem.SpecImage) {
+          formData.append(`SpecAttributes[${index}].SpecItems[${itemIndex}].SpecImage`, specItem.SpecImage);
+        }
+      });
+    });
+
+    product.SpecInventories.forEach((specInventory, index) => {
+      formData.append(`SpecInventories[${index}].PrimarySpecValueName`, specInventory.PrimarySpecValueName);
+      formData.append(`SpecInventories[${index}].SubSpecValueName`, specInventory.SubSpecValueName);
+      formData.append(`SpecInventories[${index}].Inventory`, specInventory.Inventory.toString());
+    });
+
+    return this.http.put<ApiResModel<object>>(environment.UpdateProduct + `${productId}/update`, formData);
   }
 
 }

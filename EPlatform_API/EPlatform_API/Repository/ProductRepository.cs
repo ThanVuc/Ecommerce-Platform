@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlatform_API.Data;
+using EPlatform_API.DTOs.ProductDTOs;
 using EPlatform_API.DTOs.ShopDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IRepository;
@@ -64,30 +65,6 @@ namespace EPlatform_API.Repository
             }
         }
 
-        public async Task DeleteProductImage(string imageId)
-        {
-            var img = _context.ProductImages.FirstOrDefault(i => i.ImageId == imageId);
-            if (img == null)
-            {
-                throw new Exception("Image not found");
-            }
-
-            img.IsDeleted = true;
-            img.DeletedAt = DateTime.Now;
-            _context.ProductImages.Update(img);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteProductImage(List<string> imageIds)
-        {
-            var tasks = new List<Task>();
-            foreach (var imageId in imageIds)
-            {
-                tasks.Add(DeleteProductImage(imageId));
-            }
-            await Task.WhenAll(tasks);
-        }
-
         public async Task<List<GetCategoriesResponse>?> GetCategoriesAsync(int? parentCategoryId = null, string? searchString = null)
         {
             IQueryable<Category> categoryQueryable = _context.Categories.AsQueryable();
@@ -111,6 +88,7 @@ namespace EPlatform_API.Repository
         public async Task<Product?> GetProductByIdAsync(int productId)
         {
             var product = await _context.Products
+            .Include(p => p.Inventory)
             .FirstOrDefaultAsync(p => p.ProductId == productId);
 
             if (product == null)
@@ -158,42 +136,41 @@ namespace EPlatform_API.Repository
 
             return products;
         }
-
-        public async Task AddProductImagesAsync(int productId, Dictionary<string, ImageStoreModel> productImgDict)
+        public async Task<bool> UpdateProduct(int productId ,AddProductRequest updateProductModel, ImageStoreModel? imageStoreModel)
         {
-            // Add cover image
-            await _context.ProductImages.AddAsync(new ProductImage
-            {
-                ProductId = productId,
-                ImgType = "WebP",
-                ImgUrl = productImgDict["coverImage"].Url,
-                ImgName = productImgDict["coverImage"].Name,
-                IsPrimary = true,
-                DeletedAt = null,
-                IsDeleted = false,
-                UploadAt = DateTime.Now
-            });
+            var product = await _context.Products
+            .Include(p => p.Inventory)
+            .FirstOrDefaultAsync(p => p.ProductId == productId);
 
-            // add other images
-            foreach (var img in productImgDict)
+            if (product == null)
             {
-                if (img.Key == "coverImage")
-                {
-                    continue;
-                }
-
-                await _context.ProductImages.AddAsync(new ProductImage
-                {
-                    ProductId = productId,
-                    ImgType = "WebP",
-                    ImgUrl = img.Value.Url,
-                    ImgName = img.Value.Name,
-                    IsPrimary = false,
-                    DeletedAt = null,
-                    IsDeleted = false,
-                    UploadAt = DateTime.Now
-                });
+                return false;
             }
+
+            if (product.Inventory == null)
+            {
+                throw new Exception("Inventory is null");
+            }
+
+            product.Name = updateProductModel.Name;
+            product.Price = updateProductModel.Price;
+            product.Description = updateProductModel.Description;
+            product.CategoryId = updateProductModel.CategoryId;
+            product.IsPublic = updateProductModel.IsPublic;
+            if (imageStoreModel != null)
+            {
+                product.AvtImgUrl = imageStoreModel.Url;
+                product.AvtImgName = imageStoreModel.Name;
+            }
+            product.Inventory.Quantity = updateProductModel.TotalInventory;
+            product.Inventory.AvailableQuantity = updateProductModel.TotalInventory - product.Inventory.SoldQuantity;
+            product.Inventory.IsAvailable = product.Inventory.AvailableQuantity > 0;
+            product.UpdatedAt = DateTime.Now;
+            product.Inventory.WareHouseId = updateProductModel.WarehouseId;
+            product.IsPublic = updateProductModel.IsPublic;
+
+            _context.Products.Update(product);
+            return true;
         }
     }
 }
