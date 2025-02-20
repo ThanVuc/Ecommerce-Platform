@@ -1,4 +1,4 @@
-<div class="curtain" (click)="hideBoard()" id="curtain"></div>
+<div class="curtain" id="curtain"></div>
 
 <div>
   <div class="images-info" id="images-info">
@@ -15,7 +15,10 @@
       <div class="cover-image">
         <p>Upload Cover Image:</p>
         <div class="add-image">
-          <label for="file-input-cover-image" >
+          <label for="file-input-cover-image" (dragleave)="dragOverAndStart($event, false)" 
+          (dragenter)="dragOverAndStart($event, true)" 
+          (dragover)="dragOverAndStart($event, true)" 
+          (drop)="dropEvent($event)" >
             <span class="material-symbols-light--upload-rounded"></span>
             <img class="image-preview" src="{{productModel.CoverImageUrl}}" alt="Error">
           </label>
@@ -37,7 +40,10 @@
                 <tr>
                   <td>
                     <div class="add-image">
-                      <label for="file-input-{{specItem.SpecValue}}" >
+                      <label for="file-input-{{specItem.SpecValue}}" (dragleave)="dragOverAndStart($event, false)" 
+                      (dragenter)="dragOverAndStart($event, true)" 
+                      (dragover)="dragOverAndStart($event, true)" 
+                      (drop)="dropEvent($event,false,specItem.SpecValue)" >
                         <span class="material-symbols-light--upload-rounded"></span>
                         <img class="image-preview" src="{{specItem.SpecImageUrl}}" alt="Error">
                       </label>

@@ -7,7 +7,6 @@ $input-color-3: #637887;
 $error-effect-color: #b00202;
 
 .curtain{
-    display: none;
     position: fixed;
     top: 0;
     right: 0;
@@ -16,6 +15,7 @@ $error-effect-color: #b00202;
     background-color: $background-color;
     opacity: 0.7;
     z-index: 5;
+    display: none;
 }
 
 .show{

@@ -9,6 +9,7 @@ import { ProductPostModel } from '../shopowner/models/product-post-model';
 import { ProductCreateUpdateModel } from '../shopowner/models/product-create-update-model';
 import { ProductUpdateResponse } from '../shopowner/models/product-update-response';
 import { env } from 'node:process';
+import { ProductDetailResponse } from '../shopowner/models/product-detail-reponse';
 
 @Injectable({
   providedIn: 'root'
@@ -72,6 +73,11 @@ export class ShopService {
   getUpdateProduct(productId: string): Observable<ApiResModel<ProductUpdateResponse>> {
     return this.http.get<ApiResModel<ProductUpdateResponse>>(environment.UpdateProduct + `${productId}/update`);
   }
+
+  getDetailProduct(productId: string): Observable<ApiResModel<ProductDetailResponse>> {
+    return this.http.get<ApiResModel<ProductDetailResponse>>(environment.UpdateProduct + `${productId}`);
+  }
+
 
   updateProductById(productId: number, product: ProductCreateUpdateModel): Observable<ApiResModel<object>> {
     const formData = new FormData();

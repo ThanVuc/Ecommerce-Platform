@@ -17,6 +17,7 @@ export class SelectTagComponent {
 
   selectValue: string = '';
   document = inject(DOCUMENT);
+  @Input() isDisabled: boolean = false;
 
   remToPx(rem: number): number {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);

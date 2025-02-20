@@ -99,7 +99,7 @@ namespace EPlatform_API.Repository
             return product;
         }
 
-        public async Task<Product?> GetProductUpdateByIdAsync(int productId)
+        public async Task<Product?> GetProductAllByIdAsync(int productId)
         {
             var product = await _context.Products
             .Include(p => p.Inventory)
@@ -113,6 +113,7 @@ namespace EPlatform_API.Repository
 
             return product;
         }
+
         public IQueryable<Product> GetProductsByShopSummerize(string shopId)
         {
             var products = _context.Products

@@ -37,15 +37,15 @@
                 <td>{{ product.price }}</td>
                 <td class="inventory-field">{{ product.inventory.availableQuantity }}</td>
                 <td>
-                    <button class="action">
+                    <a href="/shop-owner/{{shopId}}/products/{{product.productId}}" class="action detail">
                         <span class="icon-park-outline--view-grid-detail"></span>
-                    </button>
-                    <button class="action delete">
-                        <span class="weui--delete-outlined"></span>
-                    </button>
+                    </a>
                     <a href="/shop-owner/{{shopId}}/products/{{product.productId}}/update" class="action edit">
                         <span class="flowbite--edit-outline"></span>
                     </a>
+                    <button class="action delete">
+                        <span class="weui--delete-outlined"></span>
+                    </button>
                 </td>
             </tr>
             }

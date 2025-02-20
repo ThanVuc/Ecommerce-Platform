@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, OnInit, Output, output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CategoryModel } from '../../models/category-model';
 import { ShopService } from '../../../services/shop.service';
@@ -29,6 +29,7 @@ export class SelectCategoryComponent implements OnInit {
     name: "Select Category",
     isNext: false
   };
+  @Input() isDetail: boolean = false;
 
   showCategories() {
     let category_board = document.getElementById("category_board");

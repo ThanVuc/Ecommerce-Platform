@@ -9,6 +9,13 @@
     }
   </div>
 
+  @if (isDetail){
+    <div class="action">
+      <a href="/shop-owner/{{shopId}}/products/{{productId}}/update" class="btn btn-outline-warning me-3">Update</a>
+      <a class="btn btn-outline-danger">Delete</a>
+    </div>
+  }
+
   <div class="body">
     <form #form="ngForm">
       <div class="product-create-info">
@@ -16,7 +23,7 @@
 
           <div class="form-group">
             <label for="exampleInputEmail1">Name Product</label>
-            <input focus type="text" required maxlength="256" #name="ngModel" [(ngModel)]="productModel.Name" name="name" class="form-control product-input" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <input focus type="text" disabled="{{isDetail}}" required maxlength="256" #name="ngModel" [(ngModel)]="productModel.Name" name="name" class="form-control product-input" id="exampleInputEmail1" aria-describedby="emailHelp">
             @if (name.invalid) {
               @if (name.errors?.["required"]) {
                 <p class="text-center extra-err text-danger">Name is Required</p>
@@ -32,15 +39,29 @@
             </div>
           }
 
-          <app-select-category (categorySelected)="saveCategory($event)"></app-select-category>
+          <app-select-category [isDetail]="isDetail" (categorySelected)="saveCategory($event)"></app-select-category>
           @if (productModel.CategoryId == 0) {
             <p class="text-center extra-err text-danger">Please, select category for product</p>
           }
 
           <div class="form-group">
             <label for="exampleFormControlTextarea1">Description Product</label>
-            <textarea class="form-control" name="description" [(ngModel)]="productModel.Description" id="exampleFormControlTextarea1" rows="3"></textarea>
+            <textarea class="form-control" name="description" disabled="{{isDetail}}" [(ngModel)]="productModel.Description" id="exampleFormControlTextarea1" rows="3"></textarea>
           </div>
+
+          @if (isDetail) {
+            <div class="form-time-group">
+              <div class="form-group">
+                <label for="slug">Created At</label>
+                <input type="text" style="background-color: #526471;"  name="createAt" id="created-at" [(ngModel)]="productModel.CreatedAt" class="form-control disabled">
+              </div>
+              <div class="form-group">
+                <label for="slug">Update At</label>
+                <input type="text" style="background-color: #526471;"  name="updateAt" id="update-at" [(ngModel)]="productModel.UpdatedAt" class="form-control disabled" disabled
+                aria-describedby="inventory">
+              </div>
+            </div>
+          }
 
           <div class="form-group">
             <label for="classify-product">Classify Product</label>
@@ -49,21 +70,24 @@
               <p class="text-end note">*Press enter to save attribute value</p>
               @for (spec of productModel.SpecAttributes; track $index) {
               <div class="product-spec">
-                <span class="material-symbols--close spec-remove" (click)="removeSpec(spec.SpecName)"></span>
-                <input type="text" class="name wrap" (blur)="saveSpecName($event,spec.SpecName)" 
+                <button class="material-symbols--close spec-remove" [disabled]="isDetail" (click)="removeSpec(spec.SpecName)"></button>
+                <input type="text" class="name wrap" disabled="{{isDetail}}" (blur)="saveSpecName($event,spec.SpecName)" 
                   value="{{spec.SpecName}}" name="" id="">
                 @for (specItem of spec.SpecItems; track $index) {
                 <label class="label-spec wrap">
                   <p>{{specItem.SpecValue}}</p>
-                  <span class="material-symbols--close" (click)="removeSpecValue(spec.SpecName,specItem.SpecValue)"></span>
+                  <button class="material-symbols--close" [disabled]="isDetail" (click)="removeSpecValue(spec.SpecName,specItem.SpecValue)"></button>
                 </label>
                 }
-                <input type="text" class="value wrap hide" (keydown.enter)="saveSpec($event)" name=""
+                @if (spec.SpecItems.length < 6 && !isDetail){
+                  <input type="text" class="value wrap" disabled="{{isDetail}}" (keydown.enter)="saveSpec($event)" name=""
                   placeholder="Value">
-                <span class="basil--add-outline add-spec-value show" (click)="showSpecValue($event)"></span>
+                  <span class="basil--add-outline add-spec-value show" (click)="showSpecValue($event)"></span>
+                }
+
               </div>
               }
-              @if(productModel.SpecAttributes.length < 2){
+              @if(productModel.SpecAttributes.length < 2 && !isDetail){
                 <div class="product-spec-add" (click)="addSpec($event)">
                   <span class="basil--add-outline"></span>
                 </div>
@@ -81,7 +105,7 @@
                 <div class="input-group-prepend">
                   <div class="input-group-text">$</div>
                 </div>
-                <input type="number" required="" #price="ngModel" [(ngModel)]="productModel.Price" name="public" min="0" class="form-control" id="inlineFormInputGroup" placeholder="Price">
+                <input type="number" required="" disabled="{{isDetail}}" #price="ngModel" [(ngModel)]="productModel.Price" name="public" min="0" class="form-control" id="inlineFormInputGroup" placeholder="Price">
         
               </div>
               @if (productModel.Price <= 0) {
@@ -93,13 +117,13 @@
               <div class="form-check-group" id="public-product-group">
                 @if (productModel.IsPublic){
                   <div class="form-check">
-                    <input class="form-check-input" (click)="setPublic(true)" name="public" type="radio" name="public" id="flexRadioDefault1" checked>
+                    <input class="form-check-input" [disabled]="isDetail" (click)="setPublic(true)" name="public" type="radio" name="public" id="flexRadioDefault1" checked>
                     <label class="form-check-label" for="flexRadioDefault1">
                       Public
                     </label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input" (click)="setPublic(false)" type="radio" name="hide" id="public-radio-2">
+                    <input class="form-check-input" [disabled]="isDetail" (click)="setPublic(false)" type="radio" name="hide" id="public-radio-2">
                     <label class="form-check-label" for="public-radio-2">
                       Hide
                     </label>
@@ -126,17 +150,34 @@
         </div>
 
         <div class="right">
-
-          <div class="images-info" id="images-info">
-            <app-upload-images (upload)="saveUploadImagesAndInventories($event)" [productModel]="productModel" ></app-upload-images>
-            @if (productModel.TotalInventory <= 0) {
-              <p class="text-center extra-err text-danger">Please, type inventory for product</p>
-            }
-            @if (productModel.CoverImage == null) {
-              <p class="text-center extra-err text-danger">Please, upload cover image for product</p>
-            }
-            
-          </div>
+              @if (isDetail){
+                <div class="images-info" id="images-info">
+                  <div class="selected-image-frame">
+                    <img src="{{ productModel.CoverImageUrl }}" alt="" class="selected-image">
+                  </div>
+                  <div class="mini-images" >
+                    <img src="{{ productModel.CoverImageUrl }}" (mouseenter)="setDetailImage($event)" alt="" class="mini-image" >
+                    @for (spec of productModel.SpecAttributes; track $index) {
+                      @if (spec.IsPrimary){
+                        @for (specItem of spec.SpecItems; track $index) {
+                              <img src="{{ specItem.SpecImageUrl }}" (mouseenter)="setDetailImage($event)" alt="" class="mini-image" >
+                        }
+                      }
+                    } 
+                  </div>
+                </div>
+          } @else {
+            <div class="images-info" id="images-info">
+              <app-upload-images (upload)="saveUploadImagesAndInventories($event)" [productModel]="productModel" ></app-upload-images>
+              @if (productModel.TotalInventory <= 0) {
+                <p class="text-center extra-err text-danger">Please, type inventory for product</p>
+              }
+              @if (productModel.CoverImage == null) {
+                <p class="text-center extra-err text-danger">Please, upload cover image for product</p>
+              }   
+            </div>
+          }
+          
           <div class="inventory-info">
             <div class="form-group">
               <label for="Inventory">Inventory</label>
@@ -145,7 +186,7 @@
             </div>
 
             <div class="warehouse-select">
-              <app-select-tag [items]="warehouseItems" (select)="getWarehouse($event)" ></app-select-tag>
+              <app-select-tag [isDisabled]="isDetail" [items]="warehouseItems" (select)="getWarehouse($event)" ></app-select-tag>
               @if (productModel.WarehouseId == 0) {
                 <p class="text-center extra-err text-danger">Please, select warehouse for product</p>
               }
@@ -154,15 +195,20 @@
         </div>
       </div>
 
-      @if (productId){
+      @if (productId && !isDetail){
         <div class="submit-product">
           <button type="submit" (click)="updateProduct()" class="btn btn-outline-light p-3">Update Product</button>
         </div>
-      } @else {
+      }
+      @if (!productId){
         <div class="submit-product">
           <button type="submit" (click)="createNewProduct()" class="btn btn-outline-light p-3">Create Product</button>
         </div>
       }
+
+        <div class="link-detail">
+          <a href="/shop-owner/{{shopId}}/products" type="submit" class="back-link">Back to products</a>
+        </div>
 
     </form>
 

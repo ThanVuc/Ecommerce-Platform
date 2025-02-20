@@ -4,6 +4,7 @@ import { ProductPostModel, SpecAttribute } from '../../models/product-post-model
 import { spec } from 'node:test/reporters';
 import { ProductCreateUpdateModel } from '../../models/product-create-update-model';
 import { DOCUMENT } from '@angular/common';
+import e from 'express';
 
 export interface FileUpload {
   file: File;
@@ -39,15 +40,20 @@ export class UploadImagesComponent {
     TotalInventory: 0,
     CoverImage: null,
     CoverImageUrl: null,
-    Slug: null
+    Slug: null,
+    CreatedAt: '',
+    UpdatedAt: ''
   }
 
+  renderer2 = inject(Renderer2);
+
   showBoard() {
-    let boardElement = document.getElementById('upload-file-board');
-    let curtain = document.getElementById('curtain');
+    const boardElement = document.getElementById('upload-file-board');
+    const curtain = document.getElementById('curtain');
+    console.log(curtain);
     if (boardElement && curtain) {
       boardElement.classList.add('show');
-      curtain.classList.add('show');
+      curtain.style.display = 'block';
     }
 
     this.document.querySelectorAll(".image-preview").forEach((ele) => {
@@ -87,12 +93,11 @@ export class UploadImagesComponent {
     let curtain = document.getElementById('curtain');
     if (boardElement && curtain) {
       boardElement.classList.remove('show');
-      curtain.classList.remove('show');
+      curtain.style.display = 'none';
     }
   }
 
-  saveFile(event: Event){
-    const input = event.target as HTMLInputElement;
+  saveFile(input: HTMLInputElement){
     if (input.files && input.files.length > 0) {
       this.currentFile = input.files[0];
     }
@@ -100,7 +105,7 @@ export class UploadImagesComponent {
 
   onFileChange(event: Event, isCover: boolean = true, specValue: string = '') {
     const input = event.target as HTMLInputElement;
-    this.saveFile(event);
+    this.saveFile(input);
 
     if (isCover){
       this.productModel.CoverImage = this.currentFile;
@@ -118,6 +123,61 @@ export class UploadImagesComponent {
 
     if (input.parentElement) {
       this.showPreview(input.parentElement);
+    }
+  }
+
+  onFileDrop(elemnt: HTMLElement, isCover: boolean = true, specValue: string = '') {
+    const input = elemnt as HTMLInputElement;
+    this.saveFile(input);
+
+    if (isCover){
+      this.productModel.CoverImage = this.currentFile;
+    } else {
+      this.productModel.SpecAttributes.forEach(specAttribute => {
+        if (specAttribute.IsPrimary){
+          specAttribute.SpecItems.forEach(specItem => {
+            if (specItem.SpecValue === specValue){
+              specItem.SpecImage = this.currentFile;
+            }
+          });
+        }
+      });
+    }
+
+    if (input.parentElement) {
+      this.showPreview(input.parentElement);
+    }
+  }
+
+  dragOverAndStart(event: Event, isShow: boolean){
+    event.preventDefault();
+    event.stopPropagation();
+    if (isShow){
+      const label = event.currentTarget as HTMLElement;
+      console.log(label);
+      label.style.transform = 'scale(1.2)';
+    } else {
+      const label = event.currentTarget as HTMLElement;
+      label.style.transform = 'scale(1)';
+    }
+  }
+
+  dropEvent(event: Event, isCover: boolean = true, specValue: string = ''){
+    event.preventDefault();
+    event.stopPropagation();
+    const labelElement = event.currentTarget as HTMLElement;
+    labelElement.style.transform = 'scale(1)';
+    this.handleDropFile(event, isCover, specValue);
+  }
+
+  handleDropFile(event: Event, isCover: boolean = true, specValue: string = ''){
+    const fileInputElement = (event.currentTarget as HTMLElement).nextElementSibling as HTMLInputElement;
+    const ev = event as DragEvent;
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (ev.dataTransfer?.files && ev.dataTransfer.files.length > 0){
+      fileInputElement.files = ev.dataTransfer.files;
+      this.onFileDrop(fileInputElement, isCover, specValue);
     }
   }
 }

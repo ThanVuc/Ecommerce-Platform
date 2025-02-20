@@ -201,7 +201,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             var productResponse = new UpdateProductResponse();
             try
             {
-                var product = await _productRepo.GetProductUpdateByIdAsync(productId);
+                var product = await _productRepo.GetProductAllByIdAsync(productId);
                 var productSpecInfo = await _productInfoMongoRepo.GetProductSpecInfoByProductIdAsync(productId);
 
                 if (product == null || productSpecInfo == null)
@@ -259,6 +259,74 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
         }
+
+        [HttpGet("/api/v1/products/{productId}")]
+        public async Task<IActionResult> GetProductDetailById([FromRoute] int productId)
+        {
+            var productResponse = new ProductDetailResponse();
+            try
+            {
+                var product = await _productRepo.GetProductAllByIdAsync(productId);
+                var productSpecInfo = await _productInfoMongoRepo.GetProductSpecInfoByProductIdAsync(productId);
+
+                if (product == null || productSpecInfo == null)
+                {
+                    return NotFound(new ApiResponseStandard<object>
+                    {
+                        Status = 404,
+                        Message = "Product not found"
+                    });
+                }
+
+                productResponse = new ProductDetailResponse
+                {
+                    Name = product.Name,
+                    CategoryId = product.CategoryId,
+                    CategoryName = product?.Category?.Name == null ? "" : product.Category.Name,
+                    Description = product.Description,
+                    Slug = product.Slug,
+                    Price = product.Price == null ? 0 : (decimal)product.Price,
+                    IsPublic = product.IsPublic,
+                    SpecAttributes = productSpecInfo.SpecInfos.Select(s => new SpecAttributeUpdate
+                    {
+                        SpecName = s.SpecName,
+                        IsPrimary = s.IsPrimary,
+                        SpecItems = s.SpecItems?.Select(si => new SpecItemUpdate
+                        {
+                            SpecValue = si.SpecValue,
+                            SpecImageUrl = si.SpecImageUrl
+                        }).ToList()
+                    }).ToList(),
+                    SpecInventories = productSpecInfo.SpecInfoInventories.Select(si => new SpecInventoryUpdate
+                    {
+                        PrimarySpecValueName = si.PrimarySpecValueName,
+                        SubSpecValueName = si.SubSpecValueName,
+                        Inventory = si.Inventory
+                    }).ToList(),
+                    WarehouseId = product.Inventory.WareHouseId,
+                    TotalInventory = product.Inventory == null ? 0 : (int)product.Inventory.Quantity,
+                    CoverImageUrl = product.AvtImgUrl,
+                    CreatedAt = product.CreatedAt,
+                    UpdatedAt = product.UpdatedAt
+                };
+
+                return Ok(new ApiResponseStandard<object>
+                {
+                    Status = 200,
+                    Message = "Get product success",
+                    Data = productResponse
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
 
         [HttpPut("/api/v1/products/{productId}/update")]
         public async Task<IActionResult> UpdateProductById([FromRoute] int productId, [FromForm] AddProductRequest updateProductModel)

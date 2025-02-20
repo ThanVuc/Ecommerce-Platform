@@ -13,6 +13,8 @@ export interface ProductCreateUpdateModel {
     CoverImage: File | null;
     CoverImageUrl: string | null;
     Slug: string | null;
+    CreatedAt: string;
+    UpdatedAt: string;
 }
 
 export interface SpecAttribute {

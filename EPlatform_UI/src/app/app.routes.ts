@@ -104,6 +104,10 @@ export const routes: Routes = [
             {
                 path: 'products/:product_id/update',
                 component: AddProductComponent
+            },
+            {
+                path: 'products/:product_id',
+                component: AddProductComponent
             }
         ]
     },

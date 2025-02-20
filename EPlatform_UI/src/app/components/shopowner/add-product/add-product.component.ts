@@ -12,7 +12,7 @@ import { spec } from 'node:test/reporters';
 import { selectModel } from '../../../shares/reusable/common-model/select-model';
 import { UtilitiesServiceService } from '../../services/utilities-service.service';
 import { ShopService } from '../../services/shop.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MessageComponent } from "../../../shares/reusable/message/message.component";
 import { Title } from '@angular/platform-browser';
 import { ProductCreateUpdateModel } from '../models/product-create-update-model';
@@ -42,67 +42,20 @@ export class AddProductComponent implements OnInit {
     this.activatedRoute.params.subscribe(params => {
       this.productId = params['product_id'];
       if (this.productId) {
-        this.titleSVC.setTitle("Product For Shop Onwer");
-        this.shopSVC.getUpdateProduct(this.productId).subscribe({
-          next: (res) => {
-            this.productModel = {
-              Name: res.data.name,
-              Description: res.data.description,
-              Price: res.data.price,
-              CategoryId: res.data.categoryId,
-              IsPublic: res.data.isPublic,
-              SpecAttributes: res.data.specAttributes.map((spec) => {
-                return {
-                  SpecName: spec.specName,
-                  IsPrimary: spec.isPrimary,
-                  SpecItems: spec.specItems.map((specItem) => {
-                    return {
-                      SpecValue: specItem.specValue,
-                      SpecImage: null,
-                      SpecImageUrl: specItem.specImageUrl
-                    }
-                  })
-                }
-              }),
-              SpecInventories: res.data.specInventories.map((specInventory) => {
-                return {
-                  PrimarySpecValueName: specInventory.primarySpecValueName,
-                  SubSpecValueName: specInventory.subSpecValueName,
-                  Inventory: specInventory.inventory
-                }
-              }),
-              WarehouseId: res.data.warehouseId,
-              TotalInventory: res.data.totalInventory,
-              CoverImage: null,
-              CoverImageUrl: res.data.coverImageUrl,
-              Slug: res.data.slug
-            }
-            this.selectCategory.setCategory({
-              categoryId: res.data.categoryId,
-              name: res.data.categoryName,
-              isNext: false
-            });
-            this.selectTag.setValueFromParent(res.data.warehouseId.toString());
-          },
-          error: (err) => {
-            console.log(err);
-          }
-        });
-        
+        this.isDetail = this.router.url.split('/').at(-1) === 'update' ? false : true;
+        if (this.isDetail){
+          this.handleDetailProduct();
+        } else {
+          this.handleUpdateProduct();
+        }
       } else {
-        this.titleSVC.setTitle("Add Product");
+        this.titleSVC.setTitle("Product Add");
       }
     });
   }
-  titleSVC: Title = inject(Title);
-  warehouseItems: WarehouseItem[] = [{
-    id: '1',
-    name: "Warehouse 1"
-  }, {
-    id: '2',
-    name: "Warehouse 2"
-  }];
 
+  titleSVC: Title = inject(Title);
+  warehouseItems: WarehouseItem[] = [];
   isSingleSpec: boolean = true;
 
   category: CategoryModel = {
@@ -122,14 +75,126 @@ export class AddProductComponent implements OnInit {
     TotalInventory: 0,
     CoverImage: null,
     CoverImageUrl: null,
-    Slug: null
+    Slug: null,
+    CreatedAt: '',
+    UpdatedAt: ''
   }
   shopId: string = '';
 
   utilitiesSVC = inject(UtilitiesServiceService);
   shopSVC = inject(ShopService);
   activatedRoute = inject(ActivatedRoute);
+  router = inject(Router);
   productId: string | null = null;
+  isDetail: boolean = false;
+
+  handleUpdateProduct(){
+    if (this.productId == null){
+      throw new Error("Product isn't updating status");
+    }
+    this.titleSVC.setTitle("Product Update");
+    this.shopSVC.getUpdateProduct(this.productId).subscribe({
+      next: (res) => {
+        this.productModel = {
+          Name: res.data.name,
+          Description: res.data.description,
+          Price: res.data.price,
+          CategoryId: res.data.categoryId,
+          IsPublic: res.data.isPublic,
+          SpecAttributes: res.data.specAttributes.map((spec) => {
+            return {
+              SpecName: spec.specName,
+              IsPrimary: spec.isPrimary,
+              SpecItems: spec.specItems.map((specItem) => {
+                return {
+                  SpecValue: specItem.specValue,
+                  SpecImage: null,
+                  SpecImageUrl: specItem.specImageUrl
+                }
+              })
+            }
+          }),
+          SpecInventories: res.data.specInventories.map((specInventory) => {
+            return {
+              PrimarySpecValueName: specInventory.primarySpecValueName,
+              SubSpecValueName: specInventory.subSpecValueName,
+              Inventory: specInventory.inventory
+            }
+          }),
+          WarehouseId: res.data.warehouseId,
+          TotalInventory: res.data.totalInventory,
+          CoverImage: null,
+          CoverImageUrl: res.data.coverImageUrl,
+          Slug: res.data.slug,
+          CreatedAt: '',
+          UpdatedAt: ''
+        }
+        this.selectCategory.setCategory({
+          categoryId: res.data.categoryId,
+          name: res.data.categoryName,
+          isNext: false
+        });
+        this.selectTag.setValueFromParent(res.data.warehouseId.toString());
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
+  }
+
+  handleDetailProduct(){
+    if (this.productId == null){
+      throw new Error("Product isn't detail status");
+    }
+    this.titleSVC.setTitle("Product Detail");
+    this.shopSVC.getDetailProduct(this.productId).subscribe({
+      next: (res) => {
+        this.productModel = {
+          Name: res.data.name,
+          Description: res.data.description,
+          Price: res.data.price,
+          CategoryId: res.data.categoryId,
+          IsPublic: res.data.isPublic,
+          SpecAttributes: res.data.specAttributes.map((spec) => {
+            return {
+              SpecName: spec.specName,
+              IsPrimary: spec.isPrimary,
+              SpecItems: spec.specItems.map((specItem) => {
+                return {
+                  SpecValue: specItem.specValue,
+                  SpecImage: null,
+                  SpecImageUrl: specItem.specImageUrl
+                }
+              })
+            }
+          }),
+          SpecInventories: res.data.specInventories.map((specInventory) => {
+            return {
+              PrimarySpecValueName: specInventory.primarySpecValueName,
+              SubSpecValueName: specInventory.subSpecValueName,
+              Inventory: specInventory.inventory
+            }
+          }),
+          WarehouseId: res.data.warehouseId,
+          TotalInventory: res.data.totalInventory,
+          CoverImage: null,
+          CoverImageUrl: res.data.coverImageUrl,
+          Slug: res.data.slug,
+          CreatedAt: new Date(res.data.createdAt).toLocaleString(),
+          UpdatedAt: new Date(res.data.updatedAt).toLocaleString()
+        }
+        this.selectCategory.setCategory({
+          categoryId: res.data.categoryId,
+          name: res.data.categoryName,
+          isNext: false
+        });
+        this.selectTag.setValueFromParent(res.data.warehouseId.toString());
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
+  }
 
   async getWarehousesForSelect() {
     this.warehouseItems = (await this.utilitiesSVC.getWarehouses()).data;
@@ -232,16 +297,14 @@ export class AddProductComponent implements OnInit {
         this.triggerError(valueInputElement);
         break;
     }
-    console.log(this.productModel.SpecInventories);
 
     const targetElement = event.target as HTMLElement;
     const productSpecElement = targetElement.parentElement;
 
     const valueElement = productSpecElement?.querySelector(".value") as HTMLInputElement;
-    valueElement?.classList.toggle("hide");
+    // valueElement?.classList.toggle("hide");
     valueElement.value = '';
-    productSpecElement?.querySelector(".add-spec-value")?.classList.toggle("show");
-
+    // productSpecElement?.querySelector(".add-spec-value")?.classList.toggle("show");
   }
 
   addSpec(event: Event) {
@@ -352,7 +415,9 @@ export class AddProductComponent implements OnInit {
           TotalInventory: 0,
           CoverImage: null,
           CoverImageUrl: null,
-          Slug: null
+          Slug: null,
+          CreatedAt: '',
+          UpdatedAt: ''
         };
         this.category = {
           categoryId: null,
@@ -393,5 +458,16 @@ export class AddProductComponent implements OnInit {
         console.log(err);
       }
     });
+  }
+
+  setDetailImage(event: Event){
+    const targetElement = event.currentTarget as HTMLImageElement;
+    const selectedImageElement = ((targetElement.parentElement as HTMLElement).previousSibling as HTMLElement).firstChild as HTMLImageElement;
+    const currentSrc = targetElement.src;
+    selectedImageElement.src = currentSrc;
+    selectedImageElement.classList.add("slide-in");
+    setTimeout(() => {
+      selectedImageElement.classList.remove("slide-in");
+    }, 500);
   }
 }

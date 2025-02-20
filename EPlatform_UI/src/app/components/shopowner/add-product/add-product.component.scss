@@ -46,6 +46,13 @@ $error-effect-color: #b00202;
     }
 }
 
+.action{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
 .show {
     display: block;
 }
@@ -130,6 +137,12 @@ $error-effect-color: #b00202;
         border: 1px solid $border-color;
         border-radius: 10px;
         padding: 20px;
+
+        .form-time-group{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
 
         .product-input{
             -webkit-text-fill-color: white;
@@ -335,6 +348,67 @@ $error-effect-color: #b00202;
         .images-info {
             width: 100%;
             height: auto;
+
+            @keyframes slideIn {
+                0% {
+                    transform: translateX(100%);
+                }
+
+                100% {
+                    transform: translateX(0%);
+                }
+            }
+
+            .selected-image-frame{
+                width: 100%;
+                height: auto;
+                border: 1px solid $border-color;
+                border-radius: 10px;
+                padding: 0.5rem;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background-color: #716f6f;
+                overflow: hidden;
+                margin-bottom: 0.5rem;
+            }
+
+            .slide-in{
+                animation: slideIn 0.3s ease-in-out;
+            }
+            
+            .selected-image{
+                width: 100%;
+                border-radius: 10px;
+                aspect-ratio: 1/0.9;
+                margin-bottom: 0.5rem;
+                object-fit: contain;
+            }
+
+            .mini-images{
+                width: 100%;
+                height: auto;
+                display: grid;
+                padding: 1rem;
+                border: 1px solid $border-color;
+                border-radius: 10px;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.3rem;
+
+                .mini-image{
+                    width: 100%;
+                    border: 1px solid $border-color;
+                    border-radius: 5px;
+                    object-fit: contain;
+                    aspect-ratio: 1/1;
+                }
+
+                .mini-image:hover{
+                    scale: 1.1;
+                    cursor: pointer;
+                }
+            }
         }
 
         .inventory-info {
@@ -377,5 +451,15 @@ $error-effect-color: #b00202;
     .submit-product{
         margin-top: 1rem;
         align-self: flex-end;
+    }
+
+    .link-detail{
+        width: 100%;
+        margin-top: 1rem;
+
+        .back-link{
+            text-decoration: underline;
+            color: rgb(216, 216, 216);
+        }
     }
 }
