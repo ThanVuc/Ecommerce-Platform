@@ -43,7 +43,7 @@
                     <a href="/shop-owner/{{shopId}}/products/{{product.productId}}/update" class="action edit">
                         <span class="flowbite--edit-outline"></span>
                     </a>
-                    <button class="action delete">
+                    <button (click)="deleteProduct(product.productId)" class="action delete">
                         <span class="weui--delete-outlined"></span>
                     </button>
                 </td>

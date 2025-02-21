@@ -115,4 +115,8 @@ export class ShopService {
     return this.http.put<ApiResModel<object>>(environment.UpdateProduct + `${productId}/update`, formData);
   }
 
+  deleteProduct(productId: number): Observable<ApiResModel<object>> {
+    return this.http.delete<ApiResModel<object>>(environment.DeleteProduct + `${productId}/delete`);
+  }
+
 }

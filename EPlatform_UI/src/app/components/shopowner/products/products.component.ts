@@ -82,4 +82,21 @@ export class ProductsComponent implements OnInit {
     });
   }
 
+  deleteProduct(productId: number) {
+    let isDeleting = confirm("Are you sure you want to delete this product?");
+    
+    if (!isDeleting) {
+      return;
+    }
+    
+    this.shopOwnerSVC.deleteProduct(productId).subscribe({
+      next: (res) => {
+        this.loadProducts();
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    }); 
+  }
+
 }

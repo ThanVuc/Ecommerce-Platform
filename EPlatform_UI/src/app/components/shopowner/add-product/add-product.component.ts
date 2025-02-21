@@ -399,7 +399,6 @@ export class AddProductComponent implements OnInit {
       });
       return;
     }
-    console.log(this.productModel);
     this.shopSVC.addProduct(this.shopId, this.productModel).subscribe({
       next: (res) => {
         this.messager.showModal("success", "Create Product Successful");
@@ -427,8 +426,7 @@ export class AddProductComponent implements OnInit {
 
       },
       error: (err) => {
-        this.messager.showModal("fail", "Create Product Fail");
-        console.log(err);
+        this.messager.showModal("fail", err);
       }
     });
   }
@@ -469,5 +467,26 @@ export class AddProductComponent implements OnInit {
     setTimeout(() => {
       selectedImageElement.classList.remove("slide-in");
     }, 500);
+  }
+
+  deleteProduct(){
+    let isDeleting = confirm("Are you sure to delete this product?");
+    if (!isDeleting){
+      return;
+    }
+    if (this.productId == null){
+      throw new Error("Product isn't detail status");
+    }
+    let numId = parseInt(this.productId);
+    this.shopSVC.deleteProduct(numId).subscribe({
+      next: (res) => {
+        this.messager.showModal("success", "Delete Product Successful");
+        this.router.navigate(['shop-owner', this.shopId, 'products']);
+      },
+      error: (err) => {
+        this.messager.showModal("fail", "Delete Product Fail");
+        console.log(err);
+      }
+    });
   }
 }

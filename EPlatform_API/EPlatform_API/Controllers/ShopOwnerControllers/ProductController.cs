@@ -153,7 +153,16 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             }
 
             // upload image
-            var imagesNameDict = await UploadProductImageAsync(addProductRequest);
+            var imagesNameDict = new Dictionary<string, ImageStoreModel>();
+            try {
+                imagesNameDict = await UploadProductImageAsync(addProductRequest);
+            } catch (System.NullReferenceException ex){
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = "The specialize image of each field is require"
+                });
+            }
 
             // add product core to sql server
             var product = addProductRequest.ToProduct();
@@ -357,6 +366,26 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 Status = 200,
                 Message = "Update product success",
                 Data = productInfo
+            });
+        }
+
+        [HttpDelete("/api/v1/products/{productId}/delete")]
+        public async Task<IActionResult> DeleteProductById([FromRoute] int productId)
+        {
+            try {
+                _productRepo.DeleteProductByIdAsync(productId);
+            } catch (Exception ex){
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 404,
+                    Message = ex.Message
+                });
+            }
+            await _unitOfWork.SaveAsync();
+            return Ok(new ApiResponseStandard<object>
+            {
+                Status = 200,
+                Message = "Delete product success"
             });
         }
 

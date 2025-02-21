@@ -117,7 +117,7 @@ namespace EPlatform_API.Repository
         public IQueryable<Product> GetProductsByShopSummerize(string shopId)
         {
             var products = _context.Products
-            .Where(p => p.ShopId == shopId)
+            .Where(p => p.ShopId == shopId && p.IsDeleted == false)
             .Select(p => new Product
             {
                 ProductId = p.ProductId,
@@ -170,6 +170,19 @@ namespace EPlatform_API.Repository
             product.Inventory.WareHouseId = updateProductModel.WarehouseId;
             product.IsPublic = updateProductModel.IsPublic;
 
+            _context.Products.Update(product);
+            return true;
+        }
+        public bool DeleteProductByIdAsync(int productId)
+        {
+            var product = _context.Products
+            .FirstOrDefault(p => p.ProductId == productId);
+            if (product == null)
+            {
+                throw new Exception("Product is not found");
+            }
+            product.IsDeleted = true;
+            product.DeletedAt = DateTime.Now;
             _context.Products.Update(product);
             return true;
         }

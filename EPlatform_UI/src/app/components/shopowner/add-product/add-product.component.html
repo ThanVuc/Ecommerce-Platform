@@ -3,18 +3,30 @@
 <div class="container">
   <div class="header">
     @if (productId){
-      <p class="title">{{ productModel.Name }}</p>
+      @if (isDetail){
+        <p class="title">{{ productModel.Name }}</p>
+      } @else {
+        <p class="title">Update: {{ productModel.Name }}</p>
+      }
     } @else {
       <p class="title">Add Products</p>
     }
   </div>
 
-  @if (isDetail){
-    <div class="action">
-      <a href="/shop-owner/{{shopId}}/products/{{productId}}/update" class="btn btn-outline-warning me-3">Update</a>
-      <a class="btn btn-outline-danger">Delete</a>
-    </div>
+  @if (productId){
+    @if (isDetail){
+      <div class="action">
+        <a href="/shop-owner/{{shopId}}/products/{{productId}}/update" class="btn btn-outline-warning me-3">Update</a>
+        <a class="btn btn-outline-danger" (click)="deleteProduct()">Delete</a>
+      </div>
+    } @else {
+      <div class="action" >
+        <a href="/shop-owner/{{shopId}}/products/{{productId}}" class="btn btn-outline-primary me-3">Product Detail</a>
+      </div>
+    }
   }
+
+
 
   <div class="body">
     <form #form="ngForm">
@@ -66,21 +78,30 @@
           <div class="form-group">
             <label for="classify-product">Classify Product</label>
             <div class="classify-product" id="classify-product-group">
-              <p class="text-end note">*The first special attribute of product is primary</p>
-              <p class="text-end note">*Press enter to save attribute value</p>
+              @if (!isDetail){
+                <p class="text-end note">*The first special attribute of product is primary</p>
+                <p class="text-end note">*Press enter to save attribute value</p>
+              } @else {
+                <p class="text-end note">*Please redirect to update to view the inventory of each special attribute</p>
+              }
+
               @for (spec of productModel.SpecAttributes; track $index) {
               <div class="product-spec">
-                <button class="material-symbols--close spec-remove" [disabled]="isDetail" (click)="removeSpec(spec.SpecName)"></button>
-                <input type="text" class="name wrap" disabled="{{isDetail}}" (blur)="saveSpecName($event,spec.SpecName)" 
+                @if (!isDetail){
+                  <button class="material-symbols--close spec-remove" (click)="removeSpec(spec.SpecName)"></button>
+                }
+                <input type="text" class="name wrap" [disabled]="isDetail" (blur)="saveSpecName($event,spec.SpecName)" 
                   value="{{spec.SpecName}}" name="" id="">
                 @for (specItem of spec.SpecItems; track $index) {
                 <label class="label-spec wrap">
                   <p>{{specItem.SpecValue}}</p>
-                  <button class="material-symbols--close" [disabled]="isDetail" (click)="removeSpecValue(spec.SpecName,specItem.SpecValue)"></button>
+                  @if (!isDetail){
+                    <button class="material-symbols--close" [disabled]="isDetail" (click)="removeSpecValue(spec.SpecName,specItem.SpecValue)"></button>
+                  }
                 </label>
                 }
                 @if (spec.SpecItems.length < 6 && !isDetail){
-                  <input type="text" class="value wrap" disabled="{{isDetail}}" (keydown.enter)="saveSpec($event)" name=""
+                  <input type="text" class="value wrap" [disabled]="isDetail" (keydown.enter)="saveSpec($event)" name=""
                   placeholder="Value">
                   <span class="basil--add-outline add-spec-value show" (click)="showSpecValue($event)"></span>
                 }
@@ -163,7 +184,7 @@
                               <img src="{{ specItem.SpecImageUrl }}" (mouseenter)="setDetailImage($event)" alt="" class="mini-image" >
                         }
                       }
-                    } 
+                    }
                   </div>
                 </div>
           } @else {
