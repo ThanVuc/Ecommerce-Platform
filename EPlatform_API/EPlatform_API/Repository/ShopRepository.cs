@@ -48,14 +48,13 @@ namespace EPlatform_API.Repository
             }
 
             var shop = await _shopTable
-            .Select(s => new ShopDetailResponse {
+            .Select(s => new ShopDetailResponse
+            {
                 ShopId = s.ShopId,
                 Name = s.Name,
-                PickUpAddress = s.PickUpAddress,
                 Email = s.Email,
                 Phone = s.Phone,
                 ShopAddress = s.ShopAddress,
-                InvoiceEmail = s.InvoiceEmail,
                 TaxesCode = s.TaxesCode,
                 IdentificationNumber = s.IdentificationNumber
             })
@@ -82,7 +81,8 @@ namespace EPlatform_API.Repository
             }
 
             var shopOwner = await _userTable
-            .Select(u => new ShopLayoutResponse {
+            .Select(u => new ShopLayoutResponse
+            {
                 ShopId = u.Id,
                 Name = u.Last,
                 AvatarImageUrl = u.AvatarImageUrl
@@ -98,6 +98,16 @@ namespace EPlatform_API.Repository
             _redisDb.StringSet($"shop-layout:{shopId}", shopLayoutJson, TimeSpan.FromDays(1));
 
             return shopOwner;
+        }
+
+        public async Task<string> GetUserIdByNameAsync(string? name)
+        {
+            var user = await _userTable.FirstOrDefaultAsync(u => u.UserName == name);
+            if (user == null)
+            {
+                throw new NullReferenceException("User not found");
+            }
+            return user.Id;
         }
     }
 }

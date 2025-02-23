@@ -349,7 +349,6 @@ namespace EPlatform_API.Controllers.Identity
                 });
             }
 
-
             var claim = new Claim(addClaimModel.ClaimType, addClaimModel.ClaimValue);
             var addResult = await _roleManager.AddClaimAsync(role, claim);
 

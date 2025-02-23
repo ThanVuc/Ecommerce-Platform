@@ -1,0 +1,104 @@
+<div class="body">
+    <a href="/" class="back">&lt;</a>
+    <div class="container">
+        <div class="welcome-and-congratulation show">
+            <img class="welcome-and-congratulation-logo" src="/assets/img/welcome.webp" alt="">
+            <button class="welcome-and-congratulation-btn" (click)="showForm($event)">Register to Shop Owner</button>
+        </div>
+        <div class="shop-form-container">
+            <div class="shop-header">
+                <p class="shop-information">Shop Information</p>
+            </div>
+            <form class="shop-form" #form="ngForm" (submit)="onSubmit($event)" novalidate >
+                <div class="form-box">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1" class="label-control">Shop Name</label>
+                        <input type="text" #name="ngModel" name="name" [(ngModel)]="createShopModel.Name" required maxlength="256" class="form-control" />
+                        @if (name.invalid) {
+                            @if (name.errors?.["required"]) {
+                              <p class="text-center extra-err">Name is Required</p>
+                            }
+                            @if (name.errors?.["maxlength"]) {
+                              <p class="text-center extra-err">Name is too long</p>
+                            }
+                          }
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Shop Description</label>
+                        <textarea class="form-control" [(ngModel)]="createShopModel.Description" name="description" id="exampleFormControlTextarea1"
+                            rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1" class="label-control">Phone</label>
+                        <input type="text" #phone="ngModel" name="phone" [(ngModel)]="createShopModel.Phone" required phone class="form-control" />
+                        @if (phone.invalid) {
+                            @if (phone.errors?.["required"]) {
+                              <p class="text-center extra-err">Phone is Required</p>
+                            }
+                            @if (phone.errors?.["phone"]) {
+                              <p class="text-center extra-err">It must be phone</p>
+                            }
+                          }
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1" class="label-control">Email</label>
+                        <input type="text" #email="ngModel" name="email"  [(ngModel)]="createShopModel.Email" email required maxlength="256" class="form-control" />
+                        @if (email.invalid) {
+                            @if (email.errors?.["required"]) {
+                              <p class="text-center extra-err">Phone is Required</p>
+                            }
+                            @if (email.errors?.["email"]) {
+                              <p class="text-center extra-err">It must be email</p>
+                            }
+                            @if (email.errors?.["maxlength"]) {
+                              <p class="text-center extra-err">Email is too long</p>
+                            }
+                          }
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1" class="label-control">Taxes Code</label>
+                        <input type="text" #taxes="ngModel" name="taxes" [(ngModel)]="createShopModel.TaxesCode" required maxlength="256" class="form-control" />
+                        @if (taxes.invalid) {
+                            @if (taxes.errors?.["required"]) {
+                              <p class="text-center extra-err ">Taxes is Required</p>
+                            }
+                            @if (taxes.errors?.["maxlength"]) {
+                              <p class="text-center extra-err">Taxes is too long</p>
+                            }
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1" class="label-control">Identification Number</label>
+                        <input type="text" [(ngModel)]="createShopModel.IdentificationNumber" required maxlength="256" class="form-control" />
+                        @if (createShopModel.IdentificationNumber.length != 12){
+                            <p class="text-center extra-err">Identification Number must be 12</p>
+                        }
+
+                    </div>
+                    <div class="address">
+                        <app-select-address (getAddress)="saveAddress($event)" ></app-select-address>
+                        @if (createShopModel.ShopAddress == ""){
+                            <p class="text-center extra-err">Address is Required</p>
+                        }
+                    </div>
+                    <div class="LogoImage">
+                        <label for="exampleInputEmail1" class="label-control">Logo</label>
+                        <input type="file" (change)="saveFile($event)" class="form-control" />
+                        @if (createShopModel.LogoImage == null){
+                            <p class="text-center extra-err">Logo is Required</p>
+                        }
+                    </div>
+                </div>
+            </form>
+            <div class="continue">
+                <button (click)="saveShopInfo($event)" >Continue</button>
+            </div>
+        </div>
+        <div class="welcome-and-congratulation">
+            <img class="welcome-and-congratulation-logo" src="/assets/img/congratulation.webp" alt="">
+            <button (click)="createShop()" class="welcome-and-congratulation-btn">Finish Registration</button>
+            <button (click)="backToShopInfo($event)" class="welcome-and-congratulation-btn">Back To Shop Information</button>
+        </div>
+    </div>
+</div>

@@ -64,11 +64,9 @@ namespace EPlatform_API.Services
                 CreatedAt = faker.Date.Past(),
                 UpdatedAt = faker.Date.Recent(),
                 Slug = UtilityServices.GenerateSlug("Sinh Nguyen"),
-                PickUpAddress = faker.Address.FullAddress(),
                 ShopAddress = faker.Address.FullAddress(),
                 Phone = faker.Phone.PhoneNumber("###########"),
                 Email = faker.Internet.Email(),
-                InvoiceEmail = faker.Internet.Email(),
                 TaxesCode = faker.Random.String2(10, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
                 IdentificationNumber = faker.Random.String2(12, "0123456789"),
                 ShopOwner = null // Assuming you will set this later
@@ -91,11 +89,9 @@ namespace EPlatform_API.Services
                     CreatedAt = faker.Date.Past(),
                     UpdatedAt = faker.Date.Recent(),
                     Slug = UtilityServices.GenerateSlug(name),
-                    PickUpAddress = faker.Address.FullAddress(),
                     ShopAddress = faker.Address.FullAddress(),
                     Phone = faker.Phone.PhoneNumber("###########"),
                     Email = faker.Internet.Email(),
-                    InvoiceEmail = faker.Internet.Email(),
                     TaxesCode = faker.Random.String2(10, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
                     IdentificationNumber = faker.Random.String2(12, "0123456789"),
                     ShopOwner = null // Assuming you will set this later

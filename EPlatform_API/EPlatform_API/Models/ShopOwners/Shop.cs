@@ -38,10 +38,6 @@ namespace EPlatform_API.Models.ShopOwners
 
         [Required]
         [StringLength(256)]
-        public string? PickUpAddress { get; set; }
-
-        [Required]
-        [StringLength(256)]
         public string? ShopAddress { get; set; }
 
         [Required]
@@ -51,10 +47,6 @@ namespace EPlatform_API.Models.ShopOwners
         [Required]
         [StringLength(256)]
         public string? Email { get; set; }
-
-        [Required]
-        public string? InvoiceEmail { get; set; }
-
         public string? TaxesCode { get; set; }
 
         [Required]

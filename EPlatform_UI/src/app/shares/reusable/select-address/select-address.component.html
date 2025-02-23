@@ -1,0 +1,44 @@
+<div class="select-box">
+    <div class="province">
+        <label for="">Province</label>
+        <button class="select-button" (click)="showBoard()" >
+            <input type="text" placeholder="Province" id="province" readonly>
+            <span class="icon-park-outline--down"></span>
+        </button>
+        <ul class="dropdown-board" id="dropdown-board">
+            @for (item of provinces; track $index) {
+                <li (click)="choseProvince($event ,item.code, item.name)" >{{ item.name }}</li>
+            }
+        </ul>
+    </div>
+    <div class="district">
+        <label for="">District</label>
+        <button class="select-button">
+            <input type="text" placeholder="District" id="district" readonly>
+            <span class="icon-park-outline--down"></span>
+        </button>
+        <ul class="dropdown-board" id="dropdown-board">
+            @for (item of districts; track $index) {
+                <li (click)="choseDistrict($event, item.code, item.name)" >{{ item.name }}</li>
+            }
+        </ul>
+    </div>
+    <div class="ward">
+        <label for="">Ward</label>
+        <button class="select-button">
+            <input type="text" placeholder="Ward" id="ward" readonly>
+            <span class="icon-park-outline--down"></span>
+        </button>
+        <ul class="dropdown-board" id="dropdown-board">
+            @for (item of wards; track $index) {
+                <li (click)="choseWards($event, item.name)" >{{ item.name }}</li>
+            }
+        </ul>
+    </div>
+</div>
+@if (ward){
+    <div>
+        <label for="">Detail Address</label>
+        <input class="form-control" type="text" placeholder="2x example street" (blur)="typeDetailAddress($event)" >
+    </div>
+}

@@ -6,17 +6,22 @@ using EPlatform_API.DTOs.ApiStandard;
 using EPlatform_API.DTOs.ShopDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.Mappers;
+using EPlatform_API.Models;
 using EPlatform_API.Models.ShopOwners;
 using EPlatform_API.Repository;
 using EPlatform_API.UnitOfWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using StackExchange.Redis;
 
 namespace EPlatform_API.Controllers.ShopOwnerControllers
 {
     [ApiController]
     [Route("api/v1/shops")]
+    [Authorize]
     public class ShopController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -24,7 +29,8 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         private readonly IDatabase _redisDb;
 
         public ShopController(
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            UserManager<AppUser> userManager
         )
         {
             _unitOfWork = unitOfWork;
@@ -33,23 +39,28 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllShop(){
+        public async Task<IActionResult> GetAllShop()
+        {
             var shops = await _shopRepo.GetAllAsync();
             return Ok(shops);
         }
-        
+
         [HttpGet("layout/{shopId}")]
-        public async Task<IActionResult> GetShopByIdLayout(string shopId){
+        public async Task<IActionResult> GetShopByIdLayout(string shopId)
+        {
             var shopLayout = await _shopRepo.GetShopByIdlayoutAsync(shopId);
 
-            if(shopLayout == null){
-                return StatusCode(404,new ApiResponseStandard<object>{
+            if (shopLayout == null)
+            {
+                return StatusCode(404, new ApiResponseStandard<object>
+                {
                     Status = 404,
                     Message = "Shop not found"
                 });
             }
 
-            return Ok(new ApiResponseStandard<ShopLayoutResponse>{
+            return Ok(new ApiResponseStandard<ShopLayoutResponse>
+            {
                 Status = 200,
                 Message = "Shop found",
                 Data = shopLayout
@@ -57,17 +68,21 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         }
 
         [HttpGet("{shopId}")]
-        public async Task<IActionResult> GetShopById(string shopId){
+        public async Task<IActionResult> GetShopById(string shopId)
+        {
             var shop = await _shopRepo.GetShopResponseByIdAsync(shopId);
 
-            if(shop == null){
-                return StatusCode(404,new ApiResponseStandard<object>{
+            if (shop == null)
+            {
+                return StatusCode(404, new ApiResponseStandard<object>
+                {
                     Status = 404,
                     Message = "Shop not found"
                 });
             }
 
-            return Ok(new ApiResponseStandard<ShopDetailResponse>{
+            return Ok(new ApiResponseStandard<ShopDetailResponse>
+            {
                 Status = 200,
                 Message = "Shop found",
                 Data = shop
@@ -75,48 +90,55 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateShop([FromBody] CreateShopRequest shopRequest){
-            if (shopRequest == null){
-                return StatusCode(400, new ApiResponseStandard<object>{
+        public async Task<IActionResult> CreateShop([FromBody] CreateShopRequest shopRequest)
+        {
+            if (shopRequest == null)
+            {
+                return StatusCode(400, new ApiResponseStandard<object>
+                {
                     Status = 400,
                     Message = "Invalid request"
                 });
             }
-            
+
             var shop = shopRequest.ToShop();
             await _shopRepo.AddAsync(shop);
             await _unitOfWork.SaveAsync();
 
-            return Ok(new ApiResponseStandard<object>{
+            return Ok(new ApiResponseStandard<object>
+            {
                 Status = 200,
                 Message = "Shop created",
                 Data = shop
             });
         }
-    
+
         [HttpPut("{shopId}/update")]
-        public async Task<IActionResult> UpdateShop(string shopId, [FromBody] UpdateShopRequest shopRequest){
-            if (shopRequest == null){
-                return StatusCode(400, new ApiResponseStandard<object>{
+        public async Task<IActionResult> UpdateShop(string shopId, [FromBody] UpdateShopRequest shopRequest)
+        {
+            if (shopRequest == null)
+            {
+                return StatusCode(400, new ApiResponseStandard<object>
+                {
                     Status = 400,
                     Message = "Invalid request"
                 });
             }
 
             var shop = await _shopRepo.GetShopByIdAsync(shopId);
-            if(shop == null){
-                return StatusCode(404, new ApiResponseStandard<object>{
+            if (shop == null)
+            {
+                return StatusCode(404, new ApiResponseStandard<object>
+                {
                     Status = 404,
                     Message = "Shop not found"
                 });
             }
 
             shop.Name = shopRequest.Name ?? shop.Name;
-            shop.PickUpAddress = shopRequest.PickUpAddress ?? shop.PickUpAddress;
             shop.Email = shopRequest.Email ?? shop.Email;
             shop.Phone = shopRequest.Phone ?? shop.Phone;
             shop.ShopAddress = shopRequest.ShopAddress ?? shop.ShopAddress;
-            shop.InvoiceEmail = shopRequest.InvoiceEmail ?? shop.InvoiceEmail;
             shop.TaxesCode = shopRequest.TaxesCode ?? shop.TaxesCode;
             shop.IdentificationNumber = shopRequest.IdentificationNumber ?? shop.IdentificationNumber;
 
@@ -126,18 +148,22 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             _redisDb.KeyDelete($"shop:{shopId}");
             _redisDb.KeyDelete($"shop-layout:{shopId}");
 
-            return Ok(new ApiResponseStandard<object>{
+            return Ok(new ApiResponseStandard<object>
+            {
                 Status = 200,
                 Message = "Shop updated",
                 Data = shop
             });
         }
-    
+
         [HttpDelete("{shopId}/delete")]
-        public async Task<IActionResult> DeleteShop(string shopId){
+        public async Task<IActionResult> DeleteShop(string shopId)
+        {
             var shop = await _shopRepo.GetShopByIdAsync(shopId);
-            if(shop == null){
-                return StatusCode(404, new ApiResponseStandard<object>{
+            if (shop == null)
+            {
+                return StatusCode(404, new ApiResponseStandard<object>
+                {
                     Status = 404,
                     Message = "Shop not found"
                 });
@@ -149,12 +175,35 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             _redisDb.KeyDelete($"shop:{shopId}");
             _redisDb.KeyDelete($"shop-layout:{shopId}");
 
-            return Ok(new ApiResponseStandard<object>{
+            return Ok(new ApiResponseStandard<object>
+            {
                 Status = 200,
                 Message = "Shop deleted"
             });
         }
-    
-        
+
+        [HttpGet("get-user-id")]
+        public async Task<IActionResult> GetUserId()
+        {
+            try
+            {
+                var userName = User.Identity.Name;
+                var userId = await _shopRepo.GetUserIdByNameAsync(userName);
+                return Ok(new ApiResponseStandard<object>
+                {
+                    Status = 200,
+                    Message = "User found",
+                    Data = userId
+                });
+            }
+            catch (NullReferenceException e)
+            {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = e.Message
+                });
+            }
+        }
     }
 }

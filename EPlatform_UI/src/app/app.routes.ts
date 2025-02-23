@@ -20,6 +20,7 @@ import { NotFoundError } from 'rxjs';
 import { NotFoundPageComponent } from './shares/reusable/not-found-page/not-found-page.component';
 import { ProductsComponent } from './components/shopowner/products/products.component';
 import { AddProductComponent } from './components/shopowner/add-product/add-product.component';
+import { CreateShopComponent } from './components/shopowner/create-shop/create-shop.component';
 
 export const routes: Routes = [
     {
@@ -90,6 +91,11 @@ export const routes: Routes = [
         ]
     },
     {
+        path: "shop-owner/create-shop",
+        component: CreateShopComponent,
+        canActivate: [AuthGuard]
+    },
+    {
         path: 'shop-owner/:shop_id',
         component: ShopownerlayoutComponent,
         loadChildren: () => [
@@ -109,7 +115,7 @@ export const routes: Routes = [
                 path: 'products/:product_id',
                 component: AddProductComponent
             }
-        ]
+        ],
     },
     {
         path: '**',

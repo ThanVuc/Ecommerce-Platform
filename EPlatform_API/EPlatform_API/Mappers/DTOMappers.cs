@@ -89,11 +89,9 @@ namespace EPlatform_API.Mappers
                 CreatedAt = createShopRequest.CreatedAt,
                 UpdatedAt = createShopRequest.UpdatedAt,
                 Slug = UtilityServices.GenerateSlug(createShopRequest.Name),
-                PickUpAddress = createShopRequest.PickUpAddress,
                 ShopAddress = createShopRequest.ShopAddress,
                 Phone = createShopRequest.Phone,
                 Email = createShopRequest.Email,
-                InvoiceEmail = createShopRequest.InvoiceEmail,
                 TaxesCode = createShopRequest.TaxesCode,
                 IdentificationNumber = createShopRequest.IdentificationNumber
             };

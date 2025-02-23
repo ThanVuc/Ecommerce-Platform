@@ -119,4 +119,8 @@ export class ShopService {
     return this.http.delete<ApiResModel<object>>(environment.DeleteProduct + `${productId}/delete`);
   }
 
+  getUserId(): Observable<ApiResModel<string>> {
+    return this.http.get<ApiResModel<string>>(environment.Shop + "get-user-id");
+  }
+
 }
