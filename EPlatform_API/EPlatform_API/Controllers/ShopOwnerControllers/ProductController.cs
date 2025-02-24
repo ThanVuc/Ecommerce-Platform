@@ -17,6 +17,7 @@ using EPlatform_API.Models.ShopOwners;
 using EPlatform_API.Repository;
 using EPlatform_API.Services;
 using EPlatform_API.UnitOfWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
@@ -26,6 +27,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
 {
     [ApiController]
     [Route("api/v1/shops/{shopId}/products")]
+    [Authorize(Roles = "ShopOwner")]
     public class ProductController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -45,7 +47,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         {
             _unitOfWork = unitOfWork;
             _productRepo = unitOfWork.ProductRepo;
-            _imagesBlobServices = new BlobServices(configuration, BlogStorage.PublicImages);
+            _imagesBlobServices = new BlobServices(configuration, BlobStorage.PublicImages);
             _logger = logger;
             _loggingService = loggingService;
             _productInfoMongoRepo = productInfoMongoRepository;

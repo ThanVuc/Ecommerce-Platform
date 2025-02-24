@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EPlatform_API.ExtensionMethods
 {
-    public static class BlogStorage
+    public static class BlobStorage
     {
         public const string PublicImages = "public-images";
         public const string Logs = "logs";

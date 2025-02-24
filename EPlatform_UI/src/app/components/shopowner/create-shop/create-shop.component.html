@@ -70,7 +70,7 @@
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1" class="label-control">Identification Number</label>
-                        <input type="text" [(ngModel)]="createShopModel.IdentificationNumber" required maxlength="256" class="form-control" />
+                        <input type="text" name="identification" [(ngModel)]="createShopModel.IdentificationNumber" required maxlength="256" class="form-control" />
                         @if (createShopModel.IdentificationNumber.length != 12){
                             <p class="text-center extra-err">Identification Number must be 12</p>
                         }

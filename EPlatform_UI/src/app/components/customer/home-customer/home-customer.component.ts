@@ -12,8 +12,4 @@ export class HomeCustomerComponent implements OnInit {
   ngOnInit(): void {
     
   }
-  authSVC = inject(AuthService);
-  signOut(){
-    this.authSVC.signOut();
-  }
 }

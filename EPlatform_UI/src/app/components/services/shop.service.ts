@@ -10,6 +10,7 @@ import { ProductCreateUpdateModel } from '../shopowner/models/product-create-upd
 import { ProductUpdateResponse } from '../shopowner/models/product-update-response';
 import { env } from 'node:process';
 import { ProductDetailResponse } from '../shopowner/models/product-detail-reponse';
+import { CreateShopModel } from '../shopowner/models/create-shop-model';
 
 @Injectable({
   providedIn: 'root'
@@ -121,6 +122,24 @@ export class ShopService {
 
   getUserId(): Observable<ApiResModel<string>> {
     return this.http.get<ApiResModel<string>>(environment.Shop + "get-user-id");
+  }
+
+  createShop(createShopModel: CreateShopModel): Observable<object> {
+    const formData = new FormData();
+    formData.append('Name', createShopModel.Name);
+    formData.append('Description', createShopModel.Description || "");
+    if (createShopModel.LogoImage){
+      formData.append('LogoImage', createShopModel.LogoImage);
+    }
+    formData.append('ShopAddress', createShopModel.ShopAddress);
+    formData.append('Phone', createShopModel.Phone);
+    formData.append('Email', createShopModel.Email);
+    formData.append('TaxesCode', createShopModel.TaxesCode || "");
+    formData.append('IdentificationNumber', createShopModel.IdentificationNumber || "");
+    formData.append('ShopId', createShopModel.ShopId);
+
+
+    return this.http.post(environment.Shop + "create", formData);
   }
 
 }

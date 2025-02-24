@@ -67,6 +67,5 @@ export class AuthGuard implements CanActivate{
     this.localStorage.setValue("RefreshToken",refreshRes.refreshToken);
     return isRefresh;
   }
-
 }
 

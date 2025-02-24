@@ -109,5 +109,9 @@ namespace EPlatform_API.Repository
             }
             return user.Id;
         }
+    
+        public async Task CreateShopAsync(Shop shop){
+            await _shopTable.AddAsync(shop);
+        }
     }
 }

@@ -86,13 +86,14 @@ namespace EPlatform_API.Mappers
             {
                 ShopId = createShopRequest.ShopId,
                 Name = createShopRequest.Name,
-                CreatedAt = createShopRequest.CreatedAt,
-                UpdatedAt = createShopRequest.UpdatedAt,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = null,
                 Slug = UtilityServices.GenerateSlug(createShopRequest.Name),
                 ShopAddress = createShopRequest.ShopAddress,
                 Phone = createShopRequest.Phone,
                 Email = createShopRequest.Email,
                 TaxesCode = createShopRequest.TaxesCode,
+                Description = createShopRequest.Description,
                 IdentificationNumber = createShopRequest.IdentificationNumber
             };
         }

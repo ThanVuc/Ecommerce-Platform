@@ -1,0 +1,159 @@
+@import url(../../../icon.component.scss);
+
+.container-fluid{
+    height: auto;
+    min-height: 100vh;
+    padding: 0;
+    width: 100%;
+
+    .header{
+        width: 100%;
+        height: 25vh;
+        border-bottom: 1px solid #000000;
+        box-shadow: 1px 1px 8px 0 #3866a5;
+        background-color: black;
+        position: sticky;
+        top: 0;
+
+        .top-header{
+            width: 100%;
+            height: 20%;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+
+            a{
+                color: #EEF079;
+                margin-top: 1%;
+                font-family: 'acme';
+            }
+
+            a:hover{
+                transform: scale(1.05);
+                cursor: pointer;
+            }
+
+            .left-chanel{
+                margin-left: 10%;
+            }
+
+            .right{
+                width: 30%;
+                display: flex;
+                justify-content: end;
+
+                .right-item{
+                    margin-right: 2rem;
+                }
+            }
+
+        }
+
+        .seperator{
+            width: 100%;
+            border: 1px solid #560052;
+            clip-path: inset(0 5% 0 5%);
+        }
+
+        .bottom-header{
+            width: 100%;
+            height: 70%;
+            padding-inline: 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            .logo{
+                display: flex;
+                width: 15%;
+                height: 100%;
+                align-items: center;
+                text-decoration: none;
+
+                img{
+                    height: 60%;
+                }
+
+                h3{
+                    margin-left: 0.3rem;
+                    color: whitesmoke;
+                }
+            }
+
+            .search-bar{
+                width: 50%;
+                height: 45%;
+                background-color: white;
+                display: flex;
+                border: 2px solid #54B9DB;
+                border-radius: 10px;
+                align-items: center;
+
+                .iconamoon--search-light{
+                    background-color: #000000;
+                    font-size: 1.5rem;
+                }
+
+                input{
+                    width: 95%;
+                    height: 100%;
+                    border: none;
+                    outline: none;
+                    padding-left: 1rem;
+                    font-size: 1rem;
+                    border-radius: 10px;
+                }
+            }
+
+            .cart{
+                position: relative;
+                width: 6%;
+                height: 45%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 2px solid #EE4D2D;
+                border-radius: 10%;
+    
+                .mdi--cart-outline{
+                    font-size: 2rem;
+                    color: #EE4D2D;
+                }
+    
+                .cart-number{
+                    position: absolute;
+                    color: #EE4D2D;
+                    border-radius: 50%;
+                    width: 1rem;
+                    height: 1rem;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 1rem;
+                    top: 0;
+                    right: 0;
+                }
+            }
+
+            .cart:hover{
+                background-color: #fabfb3;
+                cursor: pointer;
+            }
+        }
+
+    }
+
+    .body{
+        padding: 1rem;
+        min-height: 65vh;
+        margin-block: 1rem;
+    }
+
+    .footer{
+        width: 100%;
+        height: 10vh;
+        background-color: rgb(0, 0, 0);
+        border-top: 1px solid black;
+        box-shadow: 2px -1px 10px #d25fcc;
+    }
+}

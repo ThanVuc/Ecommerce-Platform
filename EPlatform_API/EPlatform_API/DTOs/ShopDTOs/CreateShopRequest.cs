@@ -15,18 +15,14 @@ namespace EPlatform_API.DTOs.ShopDTOs
 
         public DateTime? UpdatedAt { get; set; }
 
-        public string? Slug { get; set; }
-
-        public string? PickUpAddress { get; set; }
-
         public string? ShopAddress { get; set; }
+        public string? Description { get; set; }
 
         public string? Phone { get; set; }
 
         public string? Email { get; set; }
-        public string? InvoiceEmail { get; set; }
-
         public string? TaxesCode { get; set; }
         public string? IdentificationNumber { get; set; }
+        public IFormFile? LogoImage { get; set; }
     }
 }

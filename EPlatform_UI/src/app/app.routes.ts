@@ -98,6 +98,7 @@ export const routes: Routes = [
     {
         path: 'shop-owner/:shop_id',
         component: ShopownerlayoutComponent,
+        canActivate: [AuthGuard],
         loadChildren: () => [
             {
                 path: "products",

@@ -46,7 +46,7 @@ export class CreateShopComponent implements OnInit {
   getUserId(){
     this.shopSVC.getUserId().subscribe({
       next: (res) => {
-        console.log(res.data);
+        this.createShopModel.ShopId = res.data;
       },
       error: (err) => {
         console.log(err);
@@ -84,7 +84,14 @@ export class CreateShopComponent implements OnInit {
   }
 
   createShop(){
-
+    this.shopSVC.createShop(this.createShopModel).subscribe({
+      next: (res) => {
+        console.log(res);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
   }
 
   backToShopInfo(event: Event){

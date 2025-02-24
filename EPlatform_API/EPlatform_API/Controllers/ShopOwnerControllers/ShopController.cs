@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using EPlatform_API.DTOs.ApiStandard;
 using EPlatform_API.DTOs.ShopDTOs;
 using EPlatform_API.ExtensionMethods;
+using EPlatform_API.IServices;
 using EPlatform_API.Mappers;
 using EPlatform_API.Models;
 using EPlatform_API.Models.ShopOwners;
 using EPlatform_API.Repository;
+using EPlatform_API.Services;
 using EPlatform_API.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -26,16 +28,19 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ShopRepository _shopRepo;
+        private readonly IBlobServices _blogService;
         private readonly IDatabase _redisDb;
 
         public ShopController(
             IUnitOfWork unitOfWork,
-            UserManager<AppUser> userManager
+            UserManager<AppUser> userManager,
+            IConfiguration configuration
         )
         {
             _unitOfWork = unitOfWork;
             _shopRepo = _unitOfWork.ShopRepo;
             _redisDb = RedisManager.Connection.GetDatabase();
+            _blogService = new BlobServices(configuration, BlobStorage.PublicImages);
         }
 
         [HttpGet]
@@ -90,9 +95,9 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateShop([FromBody] CreateShopRequest shopRequest)
+        public async Task<IActionResult> CreateShop([FromForm] CreateShopRequest createShopModel)
         {
-            if (shopRequest == null)
+            if (createShopModel == null)
             {
                 return StatusCode(400, new ApiResponseStandard<object>
                 {
@@ -101,11 +106,29 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
 
-            var shop = shopRequest.ToShop();
+            var shop = createShopModel.ToShop();
+
+            // delete email by retrive the name in url
+            if (createShopModel.LogoImage != null)
+            {
+                var fileName = $"{UtilityServices.GenerateRandomString(5)}{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+                shop.LogoUrl = await _blogService.UploadImageAsync(
+                    _blogService.ConvertToFileStreamModel(fileName, createShopModel.LogoImage)
+                );
+            }
+            else
+            {
+                return StatusCode(400, new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "Invalid request due to missing logo image"
+                });
+            } 
+
             await _shopRepo.AddAsync(shop);
             await _unitOfWork.SaveAsync();
 
-            return Ok(new ApiResponseStandard<object>
+            return Ok(new ApiResponseStandard<Shop>
             {
                 Status = 200,
                 Message = "Shop created",

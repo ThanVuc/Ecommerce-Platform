@@ -1,2 +1,35 @@
-<p>customerlayout works!</p>
-<router-outlet></router-outlet>
+<div class="container-fluid">
+  <div class="header">
+    <div class="top-header">
+      <a class="left-chanel" (click)="redirectToShop()" >Shop's Owner Chanel</a>
+      <div class="right">
+        <a class="notification right-item" >Notification</a>
+        @if (tokenSVC.isAuthenicated()){
+          <a class="logout right-item" (click)="signOut()" >Sign Out</a>
+        } @else {
+          <a class="register right-item" href="auth/register" >Sign Up</a>
+          <a class="login right-item" href="auth/login" >Sign In</a>
+        }
+      </div>
+    </div>
+    <div class="seperator"></div>
+    <div class="bottom-header">
+      <a class="logo" href="/" >
+        <img src="/assets/img/shopping_logo.jpg" alt="">
+        <h3>TRANS</h3>
+      </a>
+      <div class="search-bar">
+        <input type="text" placeholder="Search for products" >
+        <span class="iconamoon--search-light"></span>
+      </div>
+      <div class="cart">
+        <p class="cart-number">5</p>
+        <span class="mdi--cart-outline"></span>
+      </div>
+    </div>
+  </div>
+  <div class="body">
+    <router-outlet></router-outlet>
+  </div>
+  <div class="footer"></div>
+</div>

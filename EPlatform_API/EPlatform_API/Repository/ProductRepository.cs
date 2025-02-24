@@ -25,7 +25,7 @@ namespace EPlatform_API.Repository
 
         public ProductRepository(AppDbContext context, IConfiguration configuration, ILoggingService loggingService) : base(context, configuration, loggingService)
         {
-            _blobServices = new BlobServices(configuration, BlogStorage.PublicImages);
+            _blobServices = new BlobServices(configuration, BlobStorage.PublicImages);
             _context = context;
             _redis = RedisManager.Connection.GetDatabase();
         }
