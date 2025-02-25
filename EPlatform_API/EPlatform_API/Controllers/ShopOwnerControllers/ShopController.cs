@@ -29,6 +29,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly ShopRepository _shopRepo;
         private readonly IBlobServices _blogService;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IDatabase _redisDb;
 
         public ShopController(
@@ -41,6 +42,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             _shopRepo = _unitOfWork.ShopRepo;
             _redisDb = RedisManager.Connection.GetDatabase();
             _blogService = new BlobServices(configuration, BlobStorage.PublicImages);
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -123,17 +125,58 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                     Status = 400,
                     Message = "Invalid request due to missing logo image"
                 });
-            } 
+            }
 
-            await _shopRepo.AddAsync(shop);
-            await _unitOfWork.SaveAsync();
-
-            return Ok(new ApiResponseStandard<Shop>
+            try
             {
-                Status = 200,
-                Message = "Shop created",
-                Data = shop
-            });
+                await _unitOfWork.BeginTransaction();
+
+                if (createShopModel.ShopId == null)
+                {
+                    await _unitOfWork.RollBackTransaction();
+                    throw new Exception("ShopId is required");
+                }
+
+                var user = await _userManager.FindByIdAsync(createShopModel.ShopId);
+
+                if (user == null)
+                {
+                    await _unitOfWork.RollBackTransaction();
+                    throw new Exception("User not found");
+                }
+
+                if (await _shopRepo.CheckExist(user.Id)){
+                    await _unitOfWork.RollBackTransaction();
+                    throw new Exception("Shop already exist");
+                }
+
+                var addRoleRs = await _userManager.AddToRoleAsync(user, RoleStorage.ShopOwner);
+
+                if (!addRoleRs.Succeeded)
+                {
+                    await _unitOfWork.RollBackTransaction();
+                    throw new Exception("Failed to add role");
+                }
+
+                await _shopRepo.CreateShopAsync(shop);
+                await _unitOfWork.SaveAsync();
+                await _unitOfWork.CommitTransaction();
+
+                return Ok(new ApiResponseStandard<Shop>
+                {
+                    Status = 200,
+                    Message = "Shop created",
+                    Data = shop
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = e.Message
+                });
+            }
         }
 
         [HttpPut("{shopId}/update")]

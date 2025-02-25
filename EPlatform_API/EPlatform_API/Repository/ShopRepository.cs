@@ -113,5 +113,10 @@ namespace EPlatform_API.Repository
         public async Task CreateShopAsync(Shop shop){
             await _shopTable.AddAsync(shop);
         }
+    
+        public async Task<bool> CheckExist(string shopId){
+            var shop = await _shopTable.FirstOrDefaultAsync(s => s.ShopId == shopId);
+            return shop != null;
+        }
     }
 }

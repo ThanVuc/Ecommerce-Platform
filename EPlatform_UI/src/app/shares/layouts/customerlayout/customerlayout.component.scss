@@ -12,8 +12,12 @@
         border-bottom: 1px solid #000000;
         box-shadow: 1px 1px 8px 0 #3866a5;
         background-color: black;
-        position: sticky;
+        position: fixed;
         top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+
 
         .top-header{
             width: 100%;
@@ -144,9 +148,9 @@
     }
 
     .body{
+        margin-top: 27vh;
         padding: 1rem;
         min-height: 65vh;
-        margin-block: 1rem;
     }
 
     .footer{
