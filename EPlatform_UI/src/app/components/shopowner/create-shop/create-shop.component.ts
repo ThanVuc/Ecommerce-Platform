@@ -5,6 +5,7 @@ import { SelectAddressComponent } from "../../../shares/reusable/select-address/
 import { CreateShopModel } from '../models/create-shop-model';
 import { FormsModule } from '@angular/forms';
 import { PhoneDirective } from '../../validator/PhoneValidator';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-shop',
@@ -21,6 +22,7 @@ export class CreateShopComponent implements OnInit {
   renderer2 = inject(Renderer2);
   document = inject(DOCUMENT);
   shopSVC = inject(ShopService);
+  router = inject(Router);
   createShopModel: CreateShopModel = {
     ShopId: "",
     Name: "",
@@ -86,7 +88,7 @@ export class CreateShopComponent implements OnInit {
   createShop(){
     this.shopSVC.createShop(this.createShopModel).subscribe({
       next: (res) => {
-        console.log(res);
+        this.router.navigateByUrl(`/shop-owner/${this.createShopModel.ShopId}`);
       },
       error: (err) => {
         console.log(err);

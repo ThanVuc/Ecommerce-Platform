@@ -24,6 +24,11 @@ namespace EPlatform_API.Repository
             await _collection.InsertOneAsync(document);
         }
 
+        public virtual async Task CreateManyAsync(List<T> documents)
+        {
+            await _collection.InsertManyAsync(documents);
+        }
+
         public virtual async Task DeleteAsync(string id)
         {
             var filter = Builders<T>.Filter.Eq("_id",id);

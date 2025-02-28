@@ -36,13 +36,8 @@ namespace EPlatform_API.Models.ShopOwners
 
         [Required]
         public string? ShippingAddress { get; set; }
-
-        public DateTime? OrderDate { get; set; }
-        public DateTime? ShippingDate { get; set; }
-        public DateTime? DeliveryDate { get; set; }
-
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? TaxAmount { get; set; }
+        public DateTime? ExpectedDeliveryDate { get; set; }
+        public DateTime? CompleteOrderDate { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? DiscountAmount { get; set; }

@@ -186,5 +186,69 @@ namespace EPlatform_API.Repository
             _context.Products.Update(product);
             return true;
         }
+    
+        // ----------------------
+        public async Task<List<object>> GetCategoriesInHome()
+        {
+            var categories = await _context.Categories
+            .Where(c => c.CategoryParentId == null)
+            .Select(c => new 
+            {
+                c.CategoryId,
+                c.Name,
+                c.ImgUrl
+            })
+            .ToListAsync();
+
+            return categories.Cast<object>().ToList();
+        }
+    
+        public async Task<List<object>> GetHotProducts()
+        {
+            var beginThisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+
+            var products = await _context.Products
+            .Include(p => p.Inventory)
+            .Where(p => p.IsPublic == true && p.CreatedAt >= beginThisMonth)
+            .OrderByDescending(p => p.Inventory.SoldQuantity)
+            .Select(p => new 
+            {
+                ProductId = p.ProductId,
+                Name = p.Name,
+                Price = p.Price,
+                AvtImgUrl = p.AvtImgUrl,
+                SoldQuantity = UtilityServices.ConvertBigNumberToShortNumber((long)p.Inventory.SoldQuantity),
+                Slug = p.Slug
+            })
+            .Take(20)
+            .ToListAsync();
+
+            return products.Cast<object>().ToList();
+        }
+
+        public async Task<List<object>> GetTodaySuggestions()
+        {
+            // take day begin week, monday
+            var beginThisWeek = DateTime.Now.AddDays(-(int)DateTime.Now.DayOfWeek + (int)DayOfWeek.Monday);
+
+
+            var products = await _context.Products
+            .Include(p => p.Inventory)
+            .Where(p => p.IsPublic == true && p.CreatedAt >= beginThisWeek)
+            .OrderByDescending(p => p.Inventory.SoldQuantity)
+            .Select(p => new 
+            {
+                ProductId = p.ProductId,
+                Name = p.Name,
+                Price = p.Price,
+                AvtImgUrl = p.AvtImgUrl,
+                SoldQuantity = UtilityServices.ConvertBigNumberToShortNumber((long)p.Inventory.SoldQuantity),
+                Slug = p.Slug
+            })
+            .Take(20)
+            .ToListAsync();
+
+            return products.Cast<object>().ToList();
+        }
     }
 }

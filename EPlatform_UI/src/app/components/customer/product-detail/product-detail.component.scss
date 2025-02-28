@@ -1,0 +1,337 @@
+@import url(./../../../icon.component.scss);
+$temp-color: #f0f0f0;
+$background-color: #000000;
+
+.container{
+    min-height: 100vh;
+    color: white;
+
+    img{
+        border: 1px solid white;
+        border-radius: 0.2rem;
+    }
+
+    img:hover{
+        border: none;
+    }
+
+    .product-info{
+        height: 40rem;
+        width: 80rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        border: 1px solid rgb(99, 99, 99);
+        border-radius: .5rem;
+        box-shadow: 0 0 10px 0 rgba(205, 205, 205, 0.5);
+
+        .images{
+            height: 100%;
+            width: 37.5%;
+
+            .main-image{
+                width: 100%;
+                height: 75%;
+                cursor: pointer;
+
+                img{
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+            }
+
+            .sub-images{
+                width: 100%;
+                height: 25%;
+                margin-top: 1rem;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 0.5rem;
+                position: relative;
+
+                .img-controller{
+                    position: absolute;
+                    background-color: #8e8e8e;
+                    opacity: 0.5;
+                    cursor: pointer;
+                    width: 1.5rem;
+                    height: 2rem;
+                    span{
+                        width: 100%;
+                        height: 100%;
+                        color: white;
+                    }
+
+                    &.prev{
+                        top: 40%;
+                        left: 0;
+                        transform: translateY(-50%);
+                    }
+
+                    &.next{
+                        top: 40%;
+                        right: 0;
+                        transform: translateY(-50%);
+                    }
+                }
+                
+                .sub-image{
+                    width: 100%;
+                    height: 80%;
+                    background-color: rgb(0, 0, 0);
+                    img{
+                        width: 100%;
+                        height: 100%;
+                        object-fit: contain;
+                        cursor: pointer;
+                    }
+
+                    &:hover{
+                        border: 2px solid rgb(193, 54, 3);
+                        transition: border 0.1s;
+                    }
+                }
+            }
+        }
+
+        .detail-info{
+            width: 60%;
+            height: 90%;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+
+            .name{
+                font-size: 2.5rem;
+                font-family: 'acme';
+            }
+
+            .sold{
+                color: #01FFC0;
+
+            }
+
+            .price{
+                width: 100%;
+                border: 1px solid #EE4D2D;
+                border-radius: 0.3rem;
+                padding: 0.5rem;
+                margin-block: 1rem;
+
+                p{
+                    text-align: center;
+                    color: #EE4D2D;
+                    font-size: 1.5rem;
+                    margin: 0;
+                }
+            }
+
+            .classify{
+                display: flex;
+                flex-direction: column;
+
+                .title{
+                    font-size: 1.5rem;
+                    color: aqua;
+                }
+
+                .classify-block{
+                    display: flex;
+                    flex-direction: row;
+                    margin-bottom: 1rem;
+                    margin-left: 1rem;
+
+                    .spec-name{
+                        width: auto;
+                        height: 3rem;
+                        padding-block: 0.5rem;
+                        padding-inline: 1rem;
+                        margin-right: 2rem;
+                        border: 1px solid white;
+                        border-radius: 0.2rem;
+
+                        p{
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                        }
+                    }
+    
+                    .spec-values{
+                        height: 3rem;
+                        display: flex;
+                        flex-direction: row;
+                        gap: 0.5rem;
+
+                        .spec-value{
+                            height: 100%;
+                            display: flex;
+                            flex-direction: row;
+                            justify-content: center;
+                            align-items: center;
+                            padding-block: 0.5rem;
+                            padding-inline: 1rem;
+                            border: 1px solid white;
+                            border-radius: 0.2rem;
+                            cursor: pointer;
+
+                            &:hover{
+                                background-color: #2d2d2d;
+                                transform: scale(1.1);
+                                transition: transform 0.2s;
+                            }
+
+                            img{
+                                width: 2rem;
+                                height: 2rem;
+                                object-fit: fill;
+                                margin-right: 0.2rem;
+                            }
+                            
+                            p{
+                                position: relative;
+                                top: 0.45rem;
+                                font-size: 1.2rem;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .quantity{
+                display: flex;
+                gap: 1rem;
+                margin-block: 1rem;
+                align-items: center;
+
+                .quantity-title{
+                    font-size: 1.2rem;
+                    position: relative;
+                    top: 0.3rem;
+                    color: #EE4D2D;
+                }
+
+                .chosen-quantity{
+                    display: flex;
+                    gap: 0.5rem;
+                    border: 1px solid white;
+                    height: 3rem;
+                    width: auto;
+                    border-radius: 0.5rem;
+
+                    input[type="number"] {
+                        -moz-appearance: textfield; /* Firefox */
+                        appearance: textfield; /* Standard */
+                    }
+                    
+                    input[type="number"]::-webkit-outer-spin-button,
+                    input[type="number"]::-webkit-inner-spin-button {
+                        -webkit-appearance: none;
+                        margin: 0;
+                    }                    
+                    
+                    .chosen-controller{
+                        border: none;
+                        width: 100%;
+                        height: 100%;
+                        background-color: black;
+                        color: white;
+                        padding-top: 0.3rem;
+
+                        &.minus{
+                            cursor: pointer;
+                            border-right: 1px solid white;
+                            border-top-left-radius: 0.5rem;
+                            border-bottom-left-radius: 0.5rem;
+                        }
+
+                        &.plus{
+                            cursor: pointer;
+                            border-left: 1px solid white;
+                            border-top-right-radius: 0.5rem;
+                            border-bottom-right-radius: 0.5rem;
+                        }
+                    }
+
+                    .quantity-number{
+                        width: 4rem;
+                        height: 80%;
+                        text-align: center;
+                        position: relative;
+                        top: 0.3rem;
+                        font-size: large;
+                        background-color: #000000;
+                        color: greenyellow;
+                        border: none;
+                    }
+                }
+
+                .available-inventory{
+                    position: relative;
+                    top: 0.3rem;
+                    color: rgb(145, 239, 5);
+                }
+            }
+
+            .submit{
+                display: flex;
+                width: auto;
+                height: 3rem;
+                gap: 1rem;
+
+                button{
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 2rem 3rem;
+                    background-color: #000000;
+                    color: white;
+                    border: none;
+                    border-radius: 0.2rem;
+
+                    span{
+                        width: 1.5rem;
+                        height: 1.5rem;
+                    }
+
+                    .wrapper{
+                        height: 1.5rem;
+
+                        p{
+                            font-weight: bold;
+                        }
+                    }
+                    &:hover{
+                        background-color: black;
+                        box-shadow: 0 0 20px 0 rgba(205, 205, 205, 0.5);
+                        transform: scale(1.1);
+                        transition: transform 0.2s;
+                    }
+                }
+
+                .add-to-cart{
+                    border: 1px solid #EE4D2D;
+                    background-color: #F5E3E3;
+                    color: #EE4D2D;
+
+                    span{
+                        color: #EE4D2D;
+                    }
+                }
+
+                .buy-now{
+                    background-color: #EE4D2D;
+                    border: 1px solid #FF0303;
+                }
+            }
+        }
+    }
+
+    .product-description{
+        p{
+
+        }
+    }
+}

@@ -40,5 +40,22 @@ namespace EPlatform_API.ExtensionMethods
             }
             return new string(randomString);
         }
+    
+        public static string ConvertBigNumberToShortNumber(long number)
+        {
+            if(number < 1000)
+            {
+                return number.ToString();
+            }
+            if(number < (double)1000000)
+            {
+                return $"{(double)number/1000}K";
+            }
+            if(number < 1000000000)
+            {
+                return $"{(double)number/1000000}M";
+            }
+            return $"{(double)number/1000000000}B";
+        }
     }
 }

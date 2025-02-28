@@ -21,6 +21,7 @@ import { NotFoundPageComponent } from './shares/reusable/not-found-page/not-foun
 import { ProductsComponent } from './components/shopowner/products/products.component';
 import { AddProductComponent } from './components/shopowner/add-product/add-product.component';
 import { CreateShopComponent } from './components/shopowner/create-shop/create-shop.component';
+import { ProductDetailComponent } from './components/customer/product-detail/product-detail.component';
 
 export const routes: Routes = [
     {
@@ -35,6 +36,10 @@ export const routes: Routes = [
             {
                 path: 'home',
                 component: HomeCustomerComponent
+            },
+            {
+                path: ':product_slug',
+                component: ProductDetailComponent
             }
         ]
     },

@@ -1,238 +1,80 @@
 <div class="container-fluid" >
     <div class="category-list mb-5">
-        @if (start > 0) {
+        @if (categories.start > 0) {
             <div class="prev controller" (click)="categoryChange(true)" >
                 <span>&lt;</span>
             </div>
         }
 
         <div class="categories">
-            @for (item of categories.slice(start,start+showCount); track $index) {
-                <div class="item">
-                    <img src="{{item.Img}}" alt="Clothes">
-                    <p>{{item.Name}}</p>
-                </div>
+            @for (item of categories.categoiesInHome.slice(categories.start,categories.start + categories.showCount); track $index) {
+                <a class="item">
+                    <img src="{{item.imgUrl}}" alt="Clothes">
+                    <p>{{item.name}}</p>
+                </a>
             }
         </div>
 
-        @if (start + showCount < categories.length) {
+        @if (categories.start + categories.showCount < categories.categoiesInHome.length) {
             <div class="next controller" (click)="categoryChange(false)" >
                 <span>&gt;</span>
             </div>
         }
+
     </div>
     <div class="hot-product mb-5">
         <div class="hot-product-title">
-            <p>Hot Products</p>
             <span class="mdi--fire"></span>
+            <p>Hot Products</p>
         </div>
         <div class="hot-products-list">
-            <div class="prev controller" (click)="categoryChange(true)" >
-                <span>&lt;</span>
-            </div>
-            <div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
+            @if (productHandler.start > 0) {
+                <div class="prev controller" (click)="productChange(true)" >
+                    <span>&lt;</span>
                 </div>
-            </div>
-            <div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
+            }
+            @for (item of productHandler.products.slice(productHandler.start, productHandler.start + productHandler.showCount); track $index) {
+                <a href="/{{item.slug}}" class="product">
+                    <img src="{{ item.avtImgUrl }}" alt="">
+                    <div class="product-info">
+                        <p class="product-name">{{ item.name }}</p>
+                        <div class="product-price-sold">
+                            <p class="product-price">${{ item.price }}</p>
+                            <p class="product-sold">sold {{ item.soldQuantity }}</p>
+                        </div>
                     </div>
+                </a>
+            }
+            @if (productHandler.start + productHandler.showCount < productHandler.products.length) {
+                <div class="next controller" (click)="productChange(false)" >
+                    <span>&gt;</span>
                 </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div>
-            <div class="next controller" (click)="categoryChange(false)" >
-                <span>&gt;</span>
-            </div>
+            }
         </div>
     </div>
     <div class="today-suggest mb-5">
         <div class="today-suggest-product-title">
-            <p>Today Suggest</p>
             <span class="material-symbols--today"></span>
+            <p>Today Suggest</p>
         </div>
         <div class="today-suggest-products-list">
-            <div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
+            @for (item of productTodaySuggestions; track $index) {
+                <a href="/{{item.slug}}?product_id={{item.productId}}" class="product">
+                    <img src="{{item.avtImgUrl}}" alt="">
+                    <div class="product-info">
+                        <p class="product-name">{{item.name}}</p>
+                        <div class="product-price-sold">
+                            <p class="product-price">${{ item.price }}</p>
+                            <p class="product-sold">sold {{item.soldQuantity}}</p>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div>
-            <div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div>
-            <div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div>
-            <div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div><div class="product">
-                <img src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="product-info">
-                    <p class="product-name">the girl t-shirt which use for girl...</p>
-                    <div class="product-price-sold">
-                        <p class="product-price">$10</p>
-                        <p class="product-sold">sold 12,2k</p>
-                    </div>
-                </div>
-            </div>
+                </a>
+            }
         </div>
         @if (tokenSVC.isAuthenicated()){
             <button class="btn btn-outline-info today-suggestion-btn" >More Suggestion</button>
         }   @else {
-            <button class="btn btn-outline-primary today-suggestion-btn" >Login To See More</button>
+            <a href="/auth/login" class="btn btn-outline-primary today-suggestion-btn">Sign In To See More</a>
         }
     </div>
 </div>
