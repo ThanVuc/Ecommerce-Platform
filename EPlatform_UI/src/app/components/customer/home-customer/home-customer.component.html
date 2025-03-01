@@ -34,7 +34,7 @@
                 </div>
             }
             @for (item of productHandler.products.slice(productHandler.start, productHandler.start + productHandler.showCount); track $index) {
-                <a href="/{{item.slug}}" class="product">
+                <a href="/{{item.slug}}?product_id={{item.productId}}" class="product">
                     <img src="{{ item.avtImgUrl }}" alt="">
                     <div class="product-info">
                         <p class="product-name">{{ item.name }}</p>

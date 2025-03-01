@@ -2,83 +2,87 @@
     <div class="product-info">
         <div class="images">
             <div class="main-image">
-                <img src="/assets/img/luoi.jpg" alt="">
+                <img id="main-image" src="{{images[currentImageIndex]}}" alt="">
             </div>
             <div class="sub-images">
-                <div class="img-controller prev">
-                    <span class="grommet-icons--previous"></span>
-                </div>
+                @if (images.length > 4){
+                    <div class="img-controller prev" (click)="prevImage()" >
+                        <span class="grommet-icons--previous"></span>
+                    </div>
+    
+                    <div class="img-controller next">
+                        <span class="grommet-icons--next" (click)="nextImage()"></span>
+                    </div>
+                }
+                
 
-                <div class="img-controller next">
-                    <span class="grommet-icons--next"></span>
-                </div>
-
-                <div class="sub-image">
-                    <img src="/assets/img/shopping_logo.jpg" alt="">
-                </div>
-                <div class="sub-image">
-                    <img src="/assets/img/category.jpg" alt="">
-                </div>
-
-                <div class="sub-image">
-                    <img src="/assets/img/shopping_logo.jpg" alt="">
-                </div>
-                <div class="sub-image">
-                    <img src="/assets/img/category.jpg" alt="">
-                </div>
+                @for (imgIdx of imagesIndex; track $index) {
+                    <div class="sub-image">
+                        <img src="{{images[imgIdx]}}" (mouseenter)="hoverImage(imgIdx)" alt="">
+                    </div>
+                }
             </div>
         </div>
         <div class="detail-info">
-            <p class="name">Product name 1</p>
-            <p class="sold">19.9k sold</p>
+            <p class="name">{{ productDetail.name }}</p>
+            <p class="sold">{{ productDetail.sold }} sold</p>
             <div class="price">
-                <p>2000$</p>
+                <p>{{ productDetail.price }}$</p>
             </div>
             <div class="classify">
                 <p class="title">Classify</p>
-                <div class="classify-block">
-                    <div class="spec-name">
-                        <p>Color</p>
-                    </div>
-                    <div class="spec-values">
-                        <div class="spec-value">
-                            <img src="/assets/img/shopping_logo.jpg" alt="">
-                            <p>Red</p>
+                @for (specAttribute of productDetail.specAttributes; track $index) {
+                    @if (specAttribute.isPrimary){
+                        <div class="classify-block">
+                            <div class="spec-name">
+                                <p>{{ specAttribute.specName }}</p>
+                            </div>
+                            <div class="spec-values" id="spec-primary-value">
+                                @for (item of specAttribute.specItems; track $index) {
+                                        <div class="spec-value" (click)="chooseSpecValue($event, item.specValue,true,item.specImageUrl)">
+                                            <img src="{{item.specImageUrl}}" alt="">
+                                            <p>{{item.specValue}}</p>
+                                        </div>
+                                }
+                            </div>
                         </div>
-                        <div class="spec-value">
-                            <img src="/assets/img/shopping_logo.jpg" alt="">
-                            <p>Red</p>
+                    } @else {
+                        <div class="classify-block">
+                            <div class="spec-name">
+                                <p>{{ specAttribute.specName }}</p>
+                            </div>
+                            <div class="spec-values">
+                                @for (item of specAttribute.specItems; track $index) {
+                                        <div class="spec-value" (click)="chooseSpecValue($event, item.specValue, false)">
+                                            <p>{{item.specValue}}</p>
+                                        </div>
+                                }
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="classify-block">
-                    <div class="spec-name">
-                        <p>Size</p>
-                    </div>
-                    <div class="spec-values">
-                        <div class="spec-value">
-                            <p>XXL</p>
-                        </div>
-                        <div class="spec-value">
-                            <p>Red</p>
-                        </div>
-                    </div>
-                </div>
-
+                    }
+                    
+                }
             </div>
             <div class="quantity">
                 <p class="quantity-title" >Quantity: </p>
                 <div class="chosen-quantity">
-                    <button class="minus chosen-controller">
+                    <button class="minus chosen-controller" (click)="minusQuantity()">
                         <span class="ic--baseline-minus"></span>
                     </button>
-                    <input class="quantity-number" min="1" type="number" value="1">
-                    <button class="plus chosen-controller">
+                    <input class="quantity-number" min="1" type="number" [(ngModel)]="buyQuantity" name="quantity" >
+                    <button class="plus chosen-controller" (click)="plusQuantity()">
                         <span class="ic--baseline-plus"></span>
                     </button>
                 </div>
-                <p class="available-inventory">22 products is available</p>
+                <p class="available-inventory">{{availabel}} products is available</p>
             </div>
+            @if (buyQuantity > availabel){
+                <p class="err text-danger mt-3">Out of inventory of this product</p>
+            }
+            @if (buyQuantity < 1){
+                <p class="err text-danger mt-3">Quantity must be greater than 0</p>
+            }
+
             <div class="submit">
                 <button class="add-to-cart">
                     <span class="mdi--cart-outline"></span>
@@ -96,6 +100,7 @@
         </div>
     </div>
     <div class="product-description">
-        <p></p>
+        <p class="title">Description</p>
+        <textarea class="description" disabled >{{ productDetail.description }}</textarea>
     </div>
 </div>

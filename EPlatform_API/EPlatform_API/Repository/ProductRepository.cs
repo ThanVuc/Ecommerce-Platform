@@ -223,6 +223,25 @@ namespace EPlatform_API.Repository
             .Take(20)
             .ToListAsync();
 
+            if (products.Count < 5){
+                var temp = await _context.Products
+                .Include(p => p.Inventory)
+                .Where(p => p.IsPublic == true)
+                .OrderByDescending(p => p.Inventory.SoldQuantity)
+                .Select(p => new 
+                {
+                    ProductId = p.ProductId,
+                    Name = p.Name,
+                    Price = p.Price,
+                    AvtImgUrl = p.AvtImgUrl,
+                    SoldQuantity = UtilityServices.ConvertBigNumberToShortNumber((long)p.Inventory.SoldQuantity),
+                    Slug = p.Slug
+                })
+                .Take(20 - products.Count)
+                .ToListAsync();
+                products.AddRange(temp);
+            }
+
             return products.Cast<object>().ToList();
         }
 
@@ -249,6 +268,20 @@ namespace EPlatform_API.Repository
             .ToListAsync();
 
             return products.Cast<object>().ToList();
+        }
+
+        public async Task<Product> GetProductById(int productId)
+        {
+            var product = await _context.Products
+            .Include(p => p.Inventory)
+            .FirstOrDefaultAsync(p => p.ProductId == productId && p.IsPublic == true);
+
+            if (product == null)
+            {
+                throw new Exception("Product is not found");
+            }
+
+            return product;
         }
     }
 }

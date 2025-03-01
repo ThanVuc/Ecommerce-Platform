@@ -22,7 +22,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         private readonly ILogger<ProductController> _logger;
         private readonly ProductInfoMongoRepository _productInfoMongoRepo;
         private readonly ILoggingService _loggingService;
-        
+
         public ProductController(
             IUnitOfWork unitOfWork,
             IConfiguration configuration,
@@ -43,7 +43,8 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         public async Task<IActionResult> GetCategoriesInHome()
         {
             var categories = await _productRepo.GetCategoriesInHome();
-            return Ok(new ApiResponseStandard<object>{
+            return Ok(new ApiResponseStandard<object>
+            {
                 Message = "Categories in home",
                 Data = categories
             });
@@ -53,7 +54,8 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         public async Task<IActionResult> GetHotProducts()
         {
             var products = await _productRepo.GetHotProducts();
-            return Ok(new ApiResponseStandard<object>{
+            return Ok(new ApiResponseStandard<object>
+            {
                 Message = "Products",
                 Data = products
             });
@@ -63,10 +65,62 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         public async Task<IActionResult> GetTodaySuggestions()
         {
             var products = await _productRepo.GetTodaySuggestions();
-            return Ok(new ApiResponseStandard<object>{
+            return Ok(new ApiResponseStandard<object>
+            {
                 Message = "Products",
                 Data = products
             });
+        }
+
+        [HttpGet("{productId}")]
+        public async Task<IActionResult> GetProductById(int productId)
+        {
+            try
+            {
+                var product = await _productRepo.GetProductById(productId);
+                var productSpecInfo = await _productInfoMongoRepo.GetProductSpecInfoByProductIdAsync(productId);
+
+                var productResponse = new
+                {
+                    Name = product.Name,
+                    Price = product.Price,
+                    Description = product.Description,
+                    AvtImageUrl = product.AvtImgUrl,
+                    Sold = UtilityServices.ConvertBigNumberToShortNumber((long)product.Inventory.SoldQuantity),
+                    Availabel = product.Inventory.AvailableQuantity,
+                    SpecAttributes = productSpecInfo.SpecInfos.Select(s => new
+                    {
+                        SpecName = s.SpecName,
+                        IsPrimary = s.IsPrimary,
+                        SpecItems = s.SpecItems?.Select(si => new
+                        {
+                            SpecValue = si.SpecValue,
+                            SpecImageUrl = si.SpecImageUrl
+                        }).ToList()
+                    }).ToList(),
+                    SpecInventories = productSpecInfo.SpecInfoInventories.Select(si => new
+                    {
+                        PrimarySpecValueName = si.PrimarySpecValueName,
+                        SubSpecValueName = si.SubSpecValueName,
+                        Inventory = si.Inventory
+                    }).ToList(),
+                };
+
+                return Ok(new ApiResponseStandard<object>
+                {
+                    Status = 200,
+                    Message = "Product",
+                    Data = productResponse
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Message = "Error",
+                    Data = ex.Message
+                });
+            }
         }
     }
 }
