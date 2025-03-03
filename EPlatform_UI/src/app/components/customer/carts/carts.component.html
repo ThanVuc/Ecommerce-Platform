@@ -1,0 +1,48 @@
+<div class="container">
+    <div class="carts-list hide">
+        <div class="cart">
+            <div class="left">
+                <div class="selected" (click)="tickTheBox($event)" >
+                    <span class="mdi--tick"></span>
+                </div>
+                <img class="product-img" src="/assets/img/shopping_logo.jpg" alt="">
+                <div class="general-info">
+                    <p class="product-name">The Normal Product</p>
+                    <div class="price-and-inventory-status">
+                        <p class="price">$212</p>
+                        <p class="inventory-status in-stock">In Stock</p>
+                    </div>
+                    <div class="quantity">
+                        <div class="quantity-form">
+                            <button class="minus" (click)="minusQuantity()">
+                                <span class="ic--baseline-minus"></span>
+                            </button>
+                            <input class="quantity-number" min="1" type="number" name="quantity" >
+                            <button class="plus" (click)="plusQuantity()">
+                                <span class="ic--baseline-plus"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right">
+                <div class="total-price">
+                    <p class="price">Total: $12904</p>
+                </div>
+                <div class="remove">
+                    <span class="material-symbols--close"></span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <app-buy-product></app-buy-product>
+    <div class="buy-products">
+        <div class="total">
+            <p class="title">Total Payment</p>
+            <p class="price">$12904</p>
+        </div>
+        <button class="buy-product-btn">Buy Product</button>
+    </div>
+</div>

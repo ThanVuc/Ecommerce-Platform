@@ -1,0 +1,220 @@
+@import url(../../../icon.component.scss);
+$quantity-border-color: #777474;
+
+.container {
+    color: white;
+    position: relative;
+    font-family: 'acme, sans-serif';
+    min-height: 100vh;
+
+    .hide{
+        display: none !important;
+    }
+
+    .carts-list {
+        width: 100%;
+        .cart {
+            background-color: #2A2A2A;
+            border-radius: 0.5rem;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            height: 14rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+    
+            .left {
+                display: flex;
+                gap: 1rem;
+                align-items: center;
+    
+                .selected {
+                    width: 1.5rem;
+                    height: 1.5rem;
+                    border: 1px solid white;
+    
+                    span {
+                        width: 100%;
+                        height: 100%;
+                        color: rgb(174, 255, 11);
+                        display: none;
+                    }
+    
+                    .checked {
+                        display: block !important;
+                    }
+    
+                    &:hover {
+                        transform: scale(1.05);
+                    }
+                }
+    
+                img {
+                    height: 100%;
+                    margin-right: 1rem;
+                }
+    
+                .general-info {
+                    font-size: 1.5rem;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+    
+                    .product-name{
+                        color: #02C0FF;
+                    }
+    
+                    .price-and-inventory-status {
+                        font-size: 1.2rem;
+                        display: flex;
+                        gap: 1rem;
+    
+                        .price{
+                            color: #FF7777;
+                        }
+    
+                        .in-stock{
+                            color: #0bcf0b;
+                        }
+    
+                        .out-of-stock{
+                            color: #FF0000;
+                        }
+                    }
+    
+    
+                    .quantity {
+                        display: flex;
+                        height: 3rem;
+    
+                        input[type="number"] {
+                            -moz-appearance: textfield;
+                            /* Firefox */
+                            appearance: textfield;
+                            /* Standard */
+                            z-index: 10;
+                        }
+    
+                        input[type="number"]::-webkit-outer-spin-button,
+                        input[type="number"]::-webkit-inner-spin-button {
+                            -webkit-appearance: none;
+                            margin: 0;
+                        }
+    
+                        .quantity-form {
+                            display: flex;
+                            border: 1px solid $quantity-border-color;
+                            border-radius: 0.3rem;
+                            width: 11rem;
+    
+                            button {
+                                border: none;
+                                width: 30%;
+                                height: 100%;
+                                background-color: black;
+                                color: white;
+                                padding-top: 0.3rem;
+                                padding-inline: 10%;
+    
+                                span {
+                                    width: 100%;
+                                    height: 100%;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                }
+    
+                                &.minus {
+                                    border-top-left-radius: 0.3rem;
+                                    border-bottom-left-radius: 0.3rem;
+                                    border-right: 1px solid $quantity-border-color;
+                                }
+    
+                                &.plus {
+                                    border-top-right-radius: 0.3rem;
+                                    border-bottom-right-radius: 0.3rem;
+                                    border-left: 1px solid $quantity-border-color;
+                                }
+                            }
+    
+                            input {
+                                width: 50%;
+                                border: none;
+                                background-color: black;
+                                color: rgb(167, 250, 1);
+                                text-align: center;
+                            }
+                        }
+                    }
+                }
+            }
+    
+            .right {
+                position: relative;
+                display: flex;
+                align-items: end;
+
+                .price{
+                    color: #FF421D;
+                    font-size: 2rem;
+                    margin-right: 1rem;
+                }
+    
+                span{
+                    font-size: 1.5rem;
+                    position: absolute;
+                    top: -1.2rem;
+                    right: -1.2rem;
+                    color: #ba0404;
+                }
+            }
+        }
+    }
+
+    .buy-products{
+        box-shadow: 0 0 0.2rem 0.1rem #4c4c4c;
+        position: fixed;
+        background-color: black;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        width: 100%;
+        height: 7rem;
+        bottom: 0;
+        left: 0;
+        gap: 1rem;
+
+        .total{
+            display: flex;
+            padding-top: 0.5rem;
+            gap: 1rem;
+            height: 50%;
+
+            .title{
+                font-size: 1.3rem;
+            }
+
+            .price{
+                font-size: 1.6rem;
+                color: #FF421D;
+            }
+        }
+
+        .buy-product-btn{
+            border: 1px solid #FF2B01;
+            margin-right: 3rem;
+            font-size: 2rem;
+            height: 50%;
+            color: #FF2B01;
+            background-color: #FFA593;
+            border-radius: 0.3rem;
+
+            &:hover{
+                background-color: black;
+                transform: scale(1.05);
+            }
+        }
+    }
+
+}

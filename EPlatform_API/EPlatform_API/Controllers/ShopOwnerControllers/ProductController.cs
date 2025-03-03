@@ -104,6 +104,10 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                         SubSpecValueName = si.SubSpecValueName,
                         Inventory = si.Inventory
                     }).ToList(),
+                    Categories = await GetAllParentCategories(productId),
+                    ShopId = product.ShopId,
+                    ShopName = product.Shop.Name,
+                    LogoUrl = product.Shop.LogoUrl,
                 };
 
                 return Ok(new ApiResponseStandard<object>
@@ -121,6 +125,19 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                     Data = ex.Message
                 });
             }
+        }
+
+        private async Task<object> GetAllParentCategories(int productId)
+        {
+            var product = await _productRepo.GetProductById(productId);
+            var categories = product.Category.getAllParentCategories()
+            .Select(c => new
+            {
+                c.CategoryId,
+                c.Name,
+                c.Slug
+            }).ToList();
+            return categories;
         }
     }
 }

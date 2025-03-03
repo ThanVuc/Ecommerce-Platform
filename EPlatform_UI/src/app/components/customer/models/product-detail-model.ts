@@ -10,4 +10,14 @@ export interface ProductDetailModel {
     availabel: number
     specAttributes: SpecAttribute[]
     specInventories: SpecInventory[]
+    categories: CategoryOfProduct[]
+    shopId: string
+    shopName: string
+    logoUrl: string
+  }
+
+  export interface CategoryOfProduct {
+    categoryId: number;
+    name: string;
+    slug: string;
   }

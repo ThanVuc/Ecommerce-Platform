@@ -22,6 +22,7 @@ import { ProductsComponent } from './components/shopowner/products/products.comp
 import { AddProductComponent } from './components/shopowner/add-product/add-product.component';
 import { CreateShopComponent } from './components/shopowner/create-shop/create-shop.component';
 import { ProductDetailComponent } from './components/customer/product-detail/product-detail.component';
+import { CartsComponent } from './components/customer/carts/carts.component';
 
 export const routes: Routes = [
     {
@@ -40,6 +41,10 @@ export const routes: Routes = [
             {
                 path: ':product_slug',
                 component: ProductDetailComponent
+            },
+            {
+                path: 'carts/:user_id',
+                component: CartsComponent
             }
         ]
     },

@@ -1,0 +1,105 @@
+@import url(../../../../icon.component.scss);
+.buy-product-container{
+    width: 100%;
+    min-height: 100vh;
+    font-family: 'acme, sans-serif';
+
+    .customer-info{
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #9c9c9c;
+
+        .title{
+            text-align: center;
+            font-size: 2rem;
+        }
+        
+        .form{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+
+            .user-personal{
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                .form-field{
+                    width: 48%;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                    label{
+                        font-size: 1rem;
+                    }
+                    input{
+                        width: 100%;
+                        height: 2.5rem;
+                        border: 1px solid #777474;
+                        border-radius: 0.5rem;
+                        padding: 0.5rem;
+                        font-size: 1rem;
+                    }
+                }
+            }
+        }
+    }
+
+    .products-info{
+        margin-top: 1rem;
+
+        .product{
+            background-color: #2A2A2A;
+            width: 100%;
+            height: 14rem;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+
+            .product-info{
+                display: flex;
+                gap: 1rem;
+                img{
+                    height: 100%;
+                }
+
+                .product-details{
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-around;
+
+                    .product-name{
+                        font-size: 1.5rem;
+                        color: #02C0FF;
+                    }
+
+                    .product-quantity{
+                        font-size: 1.2rem;
+                        color: rgb(167, 250, 1);
+                    }
+
+                    .cost{
+                        display: flex;
+                        gap: 1rem;
+                        font-size: 1.1rem;
+
+                        .product-price{
+                            color: #FF7777;
+                        }
+
+                        .product-shipping-cost{
+                            color: #FF7777;
+                        }
+                    }
+                }
+            }
+
+            .total-cost{
+                font-size: 2rem;
+                color: #FF421D;
+                display: flex;
+                align-items: end;
+                margin-bottom: 1rem;
+            }
+        }
+    }
+}

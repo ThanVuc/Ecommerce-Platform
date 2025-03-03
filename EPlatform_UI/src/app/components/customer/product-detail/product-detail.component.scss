@@ -6,6 +6,20 @@ $background-color: #000000;
     min-height: 100vh;
     color: white;
 
+    .categories{
+        margin-bottom: 1rem;
+
+        .category{
+            text-decoration: none;
+            color: white;
+        }
+
+        .category:hover{
+            color: rgb(172, 172, 255);
+            cursor: pointer;
+        }
+    }
+
     img{
         border: 1px solid white;
         border-radius: 0.3rem;
@@ -114,10 +128,34 @@ $background-color: #000000;
                 font-family: 'acme';
             }
 
-            .sold{
-                color: #01FFC0;
+            .shop-info{
+                display: flex;
+                justify-content: space-between;
+                img{
+                    width: 2rem;
+                    height: 2rem;
+                    object-fit: contain;
+                    border-radius: 50%;
+                }
 
+                img:hover{
+                    border: 1px solid white;
+                }
+
+                .shop{
+                    display: flex;
+                    gap: .3rem;
+                    p{
+                        margin-top: 0.12rem;
+                    }
+                }
+
+                .sold{
+                    color: #01FFC0;
+                }
             }
+
+
 
             .price{
                 width: 100%;

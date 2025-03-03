@@ -250,10 +250,10 @@ namespace EPlatform_API.Repository
             // take day begin week, monday
             var beginThisWeek = DateTime.Now.AddDays(-(int)DateTime.Now.DayOfWeek + (int)DayOfWeek.Monday);
 
-
             var products = await _context.Products
             .Include(p => p.Inventory)
-            .Where(p => p.IsPublic == true && p.CreatedAt >= beginThisWeek)
+            // .Where(p => p.IsPublic == true && p.CreatedAt >= beginThisWeek)
+            .Where(p => p.IsPublic)
             .OrderByDescending(p => p.Inventory.SoldQuantity)
             .Select(p => new 
             {
@@ -274,6 +274,9 @@ namespace EPlatform_API.Repository
         {
             var product = await _context.Products
             .Include(p => p.Inventory)
+            .Include(p => p.Category)
+            .ThenInclude(c => c.ParentCategory)
+            .Include(p => p.Shop)
             .FirstOrDefaultAsync(p => p.ProductId == productId && p.IsPublic == true);
 
             if (product == null)

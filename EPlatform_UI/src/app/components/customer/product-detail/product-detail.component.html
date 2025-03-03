@@ -1,4 +1,13 @@
 <div class="container" >
+    <div class="categories">
+        @for (item of productDetail.categories; track $index) {
+            @if ($index < productDetail.categories.length - 1){
+                <a class="category">{{item.name}} >> </a>
+            } @else {
+                <a class="category">{{item.name}}</a>
+            }
+        }
+    </div>
     <div class="product-info">
         <div class="images">
             <div class="main-image">
@@ -25,7 +34,13 @@
         </div>
         <div class="detail-info">
             <p class="name">{{ productDetail.name }}</p>
-            <p class="sold">{{ productDetail.sold }} sold</p>
+            <div class="shop-info">
+                <div class="shop">
+                    <img src="{{ productDetail.logoUrl }}" alt="">
+                    <p>{{ productDetail.shopName }}</p>
+                </div>
+                <p class="sold">{{ productDetail.sold }} sold</p>
+            </div>
             <div class="price">
                 <p>{{ productDetail.price }}$</p>
             </div>

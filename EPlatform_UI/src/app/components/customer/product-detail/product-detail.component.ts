@@ -48,7 +48,11 @@ export class ProductDetailComponent implements OnInit {
     sold: '0',
     availabel: 0,
     specAttributes: [],
-    specInventories: []
+    specInventories: [],
+    categories: [],
+    shopId: '',
+    shopName: '',
+    logoUrl: ''
   };
   productId = 0;
   availabel = 0;

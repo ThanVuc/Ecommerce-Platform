@@ -16,6 +16,9 @@ namespace EPlatform_API.Models.ShopOwners
         [ForeignKey("Order")]
         public int OrderId {get; set;}
 
+        [ForeignKey("Carrier")]
+        public int CarrierId {get; set;}
+
         [Required]
         public DateTime ShipmentDate { get; set; }
 
