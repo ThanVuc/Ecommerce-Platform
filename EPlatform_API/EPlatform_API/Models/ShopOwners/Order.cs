@@ -47,6 +47,7 @@ namespace EPlatform_API.Models.ShopOwners
 
         [StringLength(100)]
         public string? PaymentMethod { get; set; }
+        public string? isDeleted { get; set; }
 
         public OrderStatus? OrderStatus { get; set; }
         public ICollection<OrderProduct>? OrderProducts { get; set; }

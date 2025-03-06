@@ -1,14 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlatform_API.DTOs.ApiStandard;
+using EPlatform_API.DTOs.ProductDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IServices;
 using EPlatform_API.Repository;
 using EPlatform_API.Services;
 using EPlatform_API.UnitOfWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace EPlatform_API.Controllers.ShopOwnerControllers
 {
@@ -125,6 +129,97 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                     Data = ex.Message
                 });
             }
+        }
+
+        [HttpPost("carts/add-to-cart")]
+        [Authorize]
+        public async Task<IActionResult> AddToCart([FromBody] AddItemToCart request)
+        {
+            var customerName = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (customerName == null)
+            {
+                return Unauthorized(new ApiResponseStandard<object>
+                {
+                    Message = "Unauthorized",
+                    Data = "You must login to add item to cart"
+                });
+            }
+            if (string.IsNullOrEmpty(request.SpecInfo)){
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Message = "Bad request",
+                    Data = "Spec info is required"
+                });
+            }
+            var cartItem = await _productRepo.AddItemToCart(customerName ,request);
+            await _unitOfWork.SaveAsync();
+            return Ok(new ApiResponseStandard<object>
+            {
+                Message = "Add item to cart",
+                Data = cartItem.CartItemId
+            });
+        }
+
+        [HttpGet("carts")]
+        [Authorize]
+        public async Task<IActionResult> GetCartItems()
+        {
+            var customerName = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (customerName == null){
+                return Unauthorized(new ApiResponseStandard<object>
+                {
+                    Message = "Unauthorized",
+                    Data = "You must login to get cart items"
+                });
+            }
+
+            var carts = await _productRepo.GetCartItems(customerName);
+            foreach (var item in carts)
+            {
+                var specInfo = item.SpecInfo;
+                if (specInfo != null)
+                {
+                    var both = specInfo.Split(':');
+                    if (both.Length == 2)
+                    {
+                        var specValue = both[1].Trim();
+                        item.AvailableQuantity = await _productInfoMongoRepo.GetAvailableInventory(item.ProductId, specValue);
+                    } else {
+                        // mix value is wrong with the expectation
+                        var mix = both[1].Split(',');
+                        var primary = mix[0].Trim();
+                        var sub = both.Last().Trim();
+                        item.AvailableQuantity = await _productInfoMongoRepo.GetAvailableInventory(item.ProductId, primary, sub);
+                    }
+                }
+            }
+            return Ok(new ApiResponseStandard<object>
+            {
+                Message = "Cart items",
+                Data = carts
+            });
+        }
+
+        [HttpDelete("carts/{cartId}/remove-item")]
+        public async Task<IActionResult> RemoveProductFromCart(int cartId){
+            try {
+                await _productRepo.RemoveCartItems(cartId);
+                await _unitOfWork.SaveAsync();
+            } catch (Exception ex) {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Message = "Error",
+                    Data = ex.Message
+                });
+            }
+
+            return Ok(new ApiResponseStandard<object>
+            {
+                Message = "Remove item from cart",
+                Data = "remove successful"
+            });
         }
 
         private async Task<object> GetAllParentCategories(int productId)

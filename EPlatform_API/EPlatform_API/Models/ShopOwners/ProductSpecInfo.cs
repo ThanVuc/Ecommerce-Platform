@@ -40,5 +40,5 @@ public class SpecItem
 public class SpecInventory{
     public string? PrimarySpecValueName { get; set; }
     public string? SubSpecValueName { get; set; }
-    public int Inventory { get; set; }
+    public int Inventory { get; set; } = 0;
 }

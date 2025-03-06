@@ -22,5 +22,6 @@ namespace EPlatform_API.Models
         public bool Gender {get; set;}
         public Shop? Shop {get; set;}
         public ICollection<Order>? Orders {get; set;}
+        public Cart? Cart {get; set;}
     }
 }

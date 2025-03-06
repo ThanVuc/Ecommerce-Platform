@@ -39,12 +39,13 @@ export const routes: Routes = [
                 component: HomeCustomerComponent
             },
             {
-                path: ':product_slug',
+                path: 'products/:product_slug',
                 component: ProductDetailComponent
             },
             {
-                path: 'carts/:user_id',
-                component: CartsComponent
+                path: 'carts',
+                component: CartsComponent,
+                canActivate: [AuthGuard]
             }
         ]
     },

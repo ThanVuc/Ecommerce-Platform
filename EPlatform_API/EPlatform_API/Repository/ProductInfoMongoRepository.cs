@@ -55,6 +55,40 @@ namespace EPlatform_API.Repository
             }
         }
 
+        public async Task<int> GetAvailableInventory(int productId ,string primary, string? sub = null)
+        {
+            try
+            {
+                var productSpecInfo = await _productSpecInfoCollection.Find(p => p.ProductId == productId).FirstOrDefaultAsync();
+                SpecInventory? inventory;
+                if (sub == null){
+                    inventory = productSpecInfo.SpecInfoInventories.FirstOrDefault(p => p.PrimarySpecValueName == primary && p.SubSpecValueName == null);
+                    if (inventory != null)
+                    {
+                        return inventory.Inventory;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                } else {
+                    inventory = productSpecInfo.SpecInfoInventories.FirstOrDefault(p => p.PrimarySpecValueName == primary && p.SubSpecValueName == sub);
+                    if (inventory != null)
+                    {
+                        return inventory.Inventory;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
 
     }
 }

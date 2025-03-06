@@ -5,32 +5,52 @@
             <div class="user-personal">
                 <div class="form-field">
                     <label for="email">Email</label>
-                    <input type="text" email name="" id="email" placeholder="abc@xyz.com">
+                    <input type="text" #email="ngModel" name="email" [(ngModel)]="createOrderModel.email" required email name="" id="email" placeholder="abc@xyz.com">
+                    @if (email.invalid) {            
+                        @if (email.errors?.['required']) {
+                        <p class="err text-danger hide">The email is required</p>
+                        } @if (email.errors?.['email']){
+                        <p class="err text-danger hide">Please, Enter the email</p>
+                        }
+                    }
                 </div>
                 <div class="form-field">
                     <label for="email">Phone</label>
-                    <input type="text" phone name="" id="phone" placeholder="xxx-xxx-xxxx">
+                    <input type="text" #phone="ngModel" [(ngModel)]="createOrderModel.phone" required phone name="" id="phone" placeholder="xxx-xxx-xxxx">
+                    @if (phone.invalid) {            
+                        @if (phone.errors?.['required']) {
+                        <p class="err text-danger hide">The phone is required</p>
+                        } @if (email.errors?.['email']){
+                        <p phone="err text-danger hide">Please, Enter the phone</p>
+                        }
+                    }
                 </div>
             </div>
-            <app-select-address></app-select-address>
+            <app-select-address (getAddress)="getAddress($event)" ></app-select-address>
+            @if (createOrderModel.address === '') {
+                <p class="err text-danger hide">Please, select the address</p>
+            }
         </div>
     </div>
 
     <div class="products-info">
-        <div class="product">
-            <div class="product-info">
-                <img src="/assets/img/luoi.jpg" alt="">
-                <div class="product-details">
-                    <p class="product-name">Product Name</p>
-                    <p class="product-quantity">Quantity: 1</p>
-                    <div class="cost">
-                        <p class="product-price">Price: $100</p>
-                        <p class="product-shipping-cost">Shipping Cost: $1</p>
+        @for (cartItem of cartItems; track $index) {
+            @if (cartItem.isSelected) {
+                <div class="product">
+                    <div class="product-info">
+                        <img src="{{cartItem.productAvtImg}}" alt="">
+                        <div class="product-details">
+                            <p class="product-name">{{cartItem.productName}}</p>
+                            <p class="product-quantity">Quantity: {{cartItem.quantity}}</p>
+                            <div class="cost">
+                                <p class="product-price">Price: ${{ cartItem.productPrice}}</p>
+                                <!-- <p class="product-shipping-cost">Shipping Cost: $1</p> -->
+                            </div>
+                        </div>
                     </div>
+                    <div class="total-cost">Total Cost: {{cartItem.quantity*cartItem.productPrice > 0 ? cartItem.quantity*cartItem.productPrice : 0}}$</div>
                 </div>
-            </div>
-            <div class="total-cost">Total Cost: 101$</div>
-        </div>
-    </div>
-
+            }
+        }
+    </div>    
 </div>

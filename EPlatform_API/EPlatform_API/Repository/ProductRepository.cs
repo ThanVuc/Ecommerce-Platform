@@ -12,6 +12,7 @@ using EPlatform_API.Mappers;
 using EPlatform_API.Models;
 using EPlatform_API.Models.ShopOwners;
 using EPlatform_API.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using StackExchange.Redis;
@@ -23,7 +24,11 @@ namespace EPlatform_API.Repository
         private readonly AppDbContext _context;
         private readonly IDatabase _redis;
 
-        public ProductRepository(AppDbContext context, IConfiguration configuration, ILoggingService loggingService) : base(context, configuration, loggingService)
+        public ProductRepository(
+            AppDbContext context, 
+            IConfiguration configuration, 
+            ILoggingService loggingService
+        ) : base(context, configuration, loggingService)
         {
             _blobServices = new BlobServices(configuration, BlobStorage.PublicImages);
             _context = context;
@@ -137,7 +142,7 @@ namespace EPlatform_API.Repository
 
             return products;
         }
-        public async Task<bool> UpdateProduct(int productId ,AddProductRequest updateProductModel, ImageStoreModel? imageStoreModel)
+        public async Task<bool> UpdateProduct(int productId, AddProductRequest updateProductModel, ImageStoreModel? imageStoreModel)
         {
             var product = await _context.Products
             .Include(p => p.Inventory)
@@ -186,13 +191,13 @@ namespace EPlatform_API.Repository
             _context.Products.Update(product);
             return true;
         }
-    
+
         // ----------------------
         public async Task<List<object>> GetCategoriesInHome()
         {
             var categories = await _context.Categories
             .Where(c => c.CategoryParentId == null)
-            .Select(c => new 
+            .Select(c => new
             {
                 c.CategoryId,
                 c.Name,
@@ -202,16 +207,18 @@ namespace EPlatform_API.Repository
 
             return categories.Cast<object>().ToList();
         }
-    
+
         public async Task<List<object>> GetHotProducts()
         {
             var beginThisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             var products = await _context.Products
             .Include(p => p.Inventory)
-            .Where(p => p.IsPublic == true && p.CreatedAt >= beginThisMonth)
-            .OrderByDescending(p => p.Inventory.SoldQuantity)
-            .Select(p => new 
+            // .Where(p => p.IsPublic == true && p.CreatedAt >= beginThisMonth)
+            .Where(p => p.IsPublic == true)
+            // .OrderByDescending(p => p.Inventory.SoldQuantity)
+            .OrderByDescending(p => p.CreatedAt)
+            .Select(p => new
             {
                 ProductId = p.ProductId,
                 Name = p.Name,
@@ -223,12 +230,13 @@ namespace EPlatform_API.Repository
             .Take(20)
             .ToListAsync();
 
-            if (products.Count < 5){
+            if (products.Count < 5)
+            {
                 var temp = await _context.Products
                 .Include(p => p.Inventory)
                 .Where(p => p.IsPublic == true)
                 .OrderByDescending(p => p.Inventory.SoldQuantity)
-                .Select(p => new 
+                .Select(p => new
                 {
                     ProductId = p.ProductId,
                     Name = p.Name,
@@ -255,7 +263,7 @@ namespace EPlatform_API.Repository
             // .Where(p => p.IsPublic == true && p.CreatedAt >= beginThisWeek)
             .Where(p => p.IsPublic)
             .OrderByDescending(p => p.Inventory.SoldQuantity)
-            .Select(p => new 
+            .Select(p => new
             {
                 ProductId = p.ProductId,
                 Name = p.Name,
@@ -285,6 +293,100 @@ namespace EPlatform_API.Repository
             }
 
             return product;
+        }
+
+        public async Task<Cart> GetCart(string userId){
+
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.CustomerId == userId);
+
+            if (cart != null){
+                return cart;
+            }
+
+            var cart_new = new Cart
+            {
+                CustomerId = userId
+            };
+
+            await _context.Carts.AddAsync(cart_new);
+            await _context.SaveChangesAsync();
+            return cart_new;
+        }
+
+        public async Task<CartItem> AddItemToCart(string customerName ,AddItemToCart addItemToCart)
+        {;
+            var customerId = RetriveUserIdFromName(customerName);
+            var cart = await GetCart(customerId);
+
+            var cartItem = await _context.CartItems
+            .FirstOrDefaultAsync(ci => ci.CartId == cart.CartId && ci.ProductId == addItemToCart.ProductId && ci.SpecInfo == addItemToCart.SpecInfo);
+
+            if (cartItem != null)
+            {
+                cartItem.Quantity += addItemToCart.Quantity;
+                _context.CartItems.Update(cartItem);
+            }
+            else
+            {
+                var newCartItem = new CartItem
+                {
+                    CartId = cart.CartId,
+                    ProductId = addItemToCart.ProductId,
+                    Quantity = addItemToCart.Quantity,
+                    SpecInfo = addItemToCart.SpecInfo,
+                    CreatedAt = DateTime.Now
+                };
+
+                await _context.CartItems.AddAsync(newCartItem);
+                return newCartItem;
+            }
+
+            return cartItem;
+        }
+
+        public async Task<List<CartItemsResponse>> GetCartItems(string customerName)
+        {
+            var customerId = RetriveUserIdFromName(customerName);
+            var cartId = (await GetCart(customerId)).CartId;
+
+            var cartItems = await _context.CartItems
+            .Include(ci => ci.Product)
+            .ThenInclude(p => p.Inventory)
+            .Include(ci => ci.Product)
+            .ThenInclude(p => p.Shop)
+            .Where(ci => ci.CartId == cartId)
+            .Select(ci => new CartItemsResponse {
+                CartItemId = ci.CartItemId,
+                ProductName = ci.Product.Name,
+                ProductPrice = ci.Product.Price,
+                AvailableQuantity = 0,
+                Quantity = ci.Quantity,
+                ProductAvtImg = ci.Product.AvtImgUrl,
+                ProductId = ci.ProductId,
+                SpecInfo = ci.SpecInfo,
+                ShopId = ci.Product.ShopId,
+                ShopName = ci.Product.Shop.Name,
+                ShopLogoUrl = ci.Product.Shop.LogoUrl
+            })
+            .ToListAsync();
+            
+
+            return cartItems;
+        }
+
+        public string RetriveUserIdFromName(string name)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.UserName == name);
+            if (user == null)
+            {
+                throw new Exception("User is not found");
+            }
+            return user.Id;
+        }
+
+        public Task RemoveCartItems(int cartItemId){
+            _context.CartItems.Remove(new CartItem { CartItemId = cartItemId });
+            return Task.CompletedTask;
         }
     }
 }

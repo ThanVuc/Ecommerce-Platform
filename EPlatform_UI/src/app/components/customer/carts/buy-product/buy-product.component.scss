@@ -3,6 +3,10 @@
     width: 100%;
     min-height: 100vh;
     font-family: 'acme, sans-serif';
+    
+    .hide{
+        display: none !important;
+    }
 
     .customer-info{
         padding-bottom: 1rem;
@@ -46,12 +50,15 @@
 
     .products-info{
         margin-top: 1rem;
+        height: auto;
+        margin-bottom: 1rem;
 
         .product{
             background-color: #2A2A2A;
             width: 100%;
             height: 14rem;
             padding: 1.5rem;
+            margin-bottom: 1rem;
             display: flex;
             justify-content: space-between;
 
@@ -60,6 +67,8 @@
                 gap: 1rem;
                 img{
                     height: 100%;
+                    width: 10rem;
+                    object-fit: contain;
                 }
 
                 .product-details{
@@ -100,6 +109,10 @@
                 align-items: end;
                 margin-bottom: 1rem;
             }
+        }
+
+        .product:last-child{
+            margin-bottom: 3.2rem;
         }
     }
 }

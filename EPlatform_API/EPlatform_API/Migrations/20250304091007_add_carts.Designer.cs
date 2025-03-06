@@ -4,6 +4,7 @@ using EPlatform_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlatform_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250304091007_add_carts")]
+    partial class add_carts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -126,9 +129,7 @@ namespace EPlatform_API.Migrations
 
                     b.HasKey("CartId");
 
-                    b.HasIndex("CustomerId")
-                        .IsUnique()
-                        .HasFilter("[CustomerId] IS NOT NULL");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Carts");
                 });
@@ -342,9 +343,6 @@ namespace EPlatform_API.Migrations
 
                     b.Property<decimal?>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("isDeleted")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("OrderId");
 
@@ -795,8 +793,8 @@ namespace EPlatform_API.Migrations
             modelBuilder.Entity("EPlatform_API.Models.ShopOwners.Cart", b =>
                 {
                     b.HasOne("EPlatform_API.Models.AppUser", "Customer")
-                        .WithOne("Cart")
-                        .HasForeignKey("EPlatform_API.Models.ShopOwners.Cart", "CustomerId");
+                        .WithMany()
+                        .HasForeignKey("CustomerId");
 
                     b.Navigation("Customer");
                 });
@@ -1007,8 +1005,6 @@ namespace EPlatform_API.Migrations
 
             modelBuilder.Entity("EPlatform_API.Models.AppUser", b =>
                 {
-                    b.Navigation("Cart");
-
                     b.Navigation("Orders");
 
                     b.Navigation("Shop");

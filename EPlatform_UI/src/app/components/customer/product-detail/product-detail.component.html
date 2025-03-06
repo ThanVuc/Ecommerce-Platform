@@ -45,7 +45,7 @@
                 <p>{{ productDetail.price }}$</p>
             </div>
             <div class="classify">
-                <p class="title">Classify</p>
+                <p id="classify-title" class="title">Classify</p>
                 @for (specAttribute of productDetail.specAttributes; track $index) {
                     @if (specAttribute.isPrimary){
                         <div class="classify-block">
@@ -68,7 +68,7 @@
                             </div>
                             <div class="spec-values">
                                 @for (item of specAttribute.specItems; track $index) {
-                                        <div class="spec-value" (click)="chooseSpecValue($event, item.specValue, false)">
+                                        <div class="spec-value" (click)="chooseSpecValue($event,item.specValue, false)">
                                             <p>{{item.specValue}}</p>
                                         </div>
                                 }
@@ -84,28 +84,28 @@
                     <button class="minus chosen-controller" (click)="minusQuantity()">
                         <span class="ic--baseline-minus"></span>
                     </button>
-                    <input class="quantity-number" min="1" type="number" [(ngModel)]="buyQuantity" name="quantity" >
+                    <input class="quantity-number" min="1" type="number" [(ngModel)]="addToCartModel.quantity" name="quantity" >
                     <button class="plus chosen-controller" (click)="plusQuantity()">
                         <span class="ic--baseline-plus"></span>
                     </button>
                 </div>
                 <p class="available-inventory">{{availabel}} products is available</p>
             </div>
-            @if (buyQuantity > availabel){
-                <p class="err text-danger mt-3">Out of inventory of this product</p>
+            @if (addToCartModel.quantity > availabel){
+                <p class="err text-danger mt-3 hide">Out of inventory of this product</p>
             }
-            @if (buyQuantity < 1){
-                <p class="err text-danger mt-3">Quantity must be greater than 0</p>
+            @if (addToCartModel.quantity < 1){
+                <p class="err text-danger mt-3 hide">Quantity must be greater than 0</p>
             }
 
             <div class="submit">
-                <button class="add-to-cart">
+                <button class="add-to-cart" (click)="addToCart()">
                     <span class="mdi--cart-outline"></span>
                     <div class="wrapper">
                         <p>Add To Cart</p>                        
                     </div>
                 </button>
-                <button class="buy-now">
+                <button class="buy-now" (click)="buyNow()">
                     <span class="icon-park-outline--buy"></span>
                     <div class="wrapper">
                         <p>Buy Now</p>                        

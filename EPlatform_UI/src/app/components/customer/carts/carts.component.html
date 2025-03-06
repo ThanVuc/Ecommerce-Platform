@@ -1,48 +1,68 @@
 <div class="container">
-    <div class="carts-list hide">
-        <div class="cart">
-            <div class="left">
-                <div class="selected" (click)="tickTheBox($event)" >
-                    <span class="mdi--tick"></span>
-                </div>
-                <img class="product-img" src="/assets/img/shopping_logo.jpg" alt="">
-                <div class="general-info">
-                    <p class="product-name">The Normal Product</p>
-                    <div class="price-and-inventory-status">
-                        <p class="price">$212</p>
-                        <p class="inventory-status in-stock">In Stock</p>
+    @if (!isCarts) {
+        <button class="btn btn-outline-info mb-2" (click)="backToCart()" >Back to carts</button>
+    }
+
+    <div class="carts-list mb-5" id="carts-list">
+        @for (cartItem of cartItemsModel; track $index) {
+            <div class="cart">
+                <div class="left">
+                    <div class="selected" (click)="tickTheBox($event, cartItem)">
+                        <span class="mdi--tick"  [ngClass]="{'checked': cartItem.isSelected}"></span>
                     </div>
-                    <div class="quantity">
-                        <div class="quantity-form">
-                            <button class="minus" (click)="minusQuantity()">
-                                <span class="ic--baseline-minus"></span>
-                            </button>
-                            <input class="quantity-number" min="1" type="number" name="quantity" >
-                            <button class="plus" (click)="plusQuantity()">
-                                <span class="ic--baseline-plus"></span>
-                            </button>
+                    <img class="product-img" src="{{cartItem.productAvtImg}}" alt="">
+                    <div class="general-info">
+                        <p class="product-name">{{cartItem.productName}}</p>
+                        <div class="price-and-inventory-status">
+                            <p class="price">${{cartItem.productPrice}}</p>
+                            @if (cartItem.quantity > cartItem.availableQuantity || cartItem.quantity < 1) {
+                                <p class="inventory-status out-of-stock">Out of Stock</p>
+                            } @else {
+                                <p class="inventory-status in-stock">In Stock</p>
+                            }
+                        </div>
+                        <p style="font-size: 1.1rem;" >{{cartItem.specInfo}}</p>
+                        <div class="quantity">
+                            <div class="quantity-form">
+                                <button class="minus" (click)="minusQuantity(cartItem)">
+                                    <span class="ic--baseline-minus"></span>
+                                </button>
+                                <input class="quantity-number" [(ngModel)]="cartItem.quantity" min="1" type="number" name="quantity" >
+                                <button class="plus" (click)="plusQuantity(cartItem)">
+                                    <span class="ic--baseline-plus"></span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="right">
-                <div class="total-price">
-                    <p class="price">Total: $12904</p>
+    
+                <div class="right">
+                    <div class="shop">
+                        <img src="{{cartItem.shopLogoUrl}}" alt="">
+                        <div class="wrapper">
+                            <p>{{cartItem.shopName}}</p>
+                        </div>
+                    </div>
+                    <div class="total-price">
+                        <p class="price">Total: ${{cartItem.quantity*cartItem.productPrice > 0 ? cartItem.quantity*cartItem.productPrice : 0}}</p>
+                    </div>
+                    <button class="remove" (click)="removeCartItem($event, cartItem.cartItemId)" >
+                        <span class="material-symbols--close"></span>
+                    </button>
                 </div>
-                <div class="remove">
-                    <span class="material-symbols--close"></span>
-                </div>
             </div>
-        </div>
-
+        }
     </div>
-    <app-buy-product></app-buy-product>
+    <app-buy-product (getPersonalInfo)="getPersonalInfo($event)" [cartItems]="cartItemsModel" id="app-buy-product" class="hide"></app-buy-product>
     <div class="buy-products">
         <div class="total">
             <p class="title">Total Payment</p>
-            <p class="price">$12904</p>
+            <p class="price">${{totalCost()}}</p>
         </div>
-        <button class="buy-product-btn">Buy Product</button>
+        @if (isCarts) {
+            <button class="buy-product-btn" (click)="buyProduct()" >Buy Product</button>
+        } @else {
+            <button class="buy-product-btn" (click)="createOrder()" >Create Orders</button>
+        }
     </div>
 </div>

@@ -4,6 +4,7 @@ using EPlatform_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlatform_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250304092126_add_carts_1")]
+    partial class add_carts_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -342,9 +345,6 @@ namespace EPlatform_API.Migrations
 
                     b.Property<decimal?>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("isDeleted")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("OrderId");
 
