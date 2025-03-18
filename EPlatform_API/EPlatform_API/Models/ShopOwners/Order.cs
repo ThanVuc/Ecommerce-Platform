@@ -23,7 +23,6 @@ namespace EPlatform_API.Models.ShopOwners
         // [StringLength(10)]
         public string? CustomerId { get; set; }
 
-        [Required]
         [ForeignKey("Shipment")]
         public string? ShipmentId {get; set;}
 

@@ -38,9 +38,7 @@
                     <td>{{user.username}}</td>
                     <td>{{user.created | date:'mediumDate'}}</td>
                     <td>
-                        @for (role of user.roles; track $index) {
-                        <span>{{role}}</span>
-                        }
+                        {{user.roles.join(', ')}}
                     </td>
                     <td>
                         <div class="active" (click)="changeStatus(user.id)">

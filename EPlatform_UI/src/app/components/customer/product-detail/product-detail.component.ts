@@ -45,6 +45,7 @@ export class ProductDetailComponent implements OnInit {
           }
         },
         error: err => {
+          this.router.navigateByUrl('/not-found');
           console.log(err);
         }
       });
@@ -57,7 +58,7 @@ export class ProductDetailComponent implements OnInit {
   router = inject(Router);
 
   productDetail: ProductDetailModel = {
-    name: 'Product Name',
+    name: '',
     price: 0,
     description: '',
     avtImageUrl: '',
@@ -227,7 +228,7 @@ export class ProductDetailComponent implements OnInit {
 
   checkProductConditionToAddToCart() : boolean{
     if (!this.tokenSVC.isAuthenicated()){
-      this.router.navigateByUrl('auth/login');
+      this.router.navigateByUrl('/carts');
       return false;
     }
     

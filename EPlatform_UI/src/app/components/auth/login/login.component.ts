@@ -2,7 +2,7 @@ import { AfterContentChecked, AfterViewInit, ChangeDetectorRef, Component, injec
 import { Title } from '@angular/platform-browser';
 import { SignInRequestModel } from '../models/SignInRequestModel';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { catchError, of } from 'rxjs';
 import { TokenService } from '../../services/token.service';
@@ -26,6 +26,7 @@ export class LoginComponent implements OnInit {
   authService = inject(AuthService);
   tokenService = inject(TokenService);
   router = inject(Router);
+  activatedRoute = inject(ActivatedRoute);
   titleService = inject(Title);
   document = inject(DOCUMENT);
   http = inject(HttpClient);
@@ -42,11 +43,13 @@ export class LoginComponent implements OnInit {
 
   isRemember: boolean = false;
   extraErr:string | null = null;
+  returnUrl: string  = "/";
   constructor(){
   }
 
   ngOnInit(): void {
     this.titleService.setTitle(this.title);
+    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';
     // if (this.document.defaultView?.localStorage){
     //   this.authService.signOut();
     // }
@@ -65,7 +68,7 @@ export class LoginComponent implements OnInit {
     ).subscribe((res) => {
       if (res?.data != null){
         this.tokenService.saveJWTToken(res?.data);
-        this.router.navigate(["/"]);
+        this.router.navigateByUrl(decodeURIComponent(this.returnUrl));
       }
     })
   }

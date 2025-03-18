@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, inject, OnInit, Renderer2 } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TokenService } from '../../../components/services/token.service';
 import { ShopService } from '../../../components/services/shop.service';
 import { AuthService } from '../../../components/services/auth.service';
@@ -8,7 +8,7 @@ import { AuthService } from '../../../components/services/auth.service';
 @Component({
   selector: 'app-customerlayout',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './customerlayout.component.html',
   styleUrl: './customerlayout.component.scss'
 })
@@ -27,7 +27,8 @@ export class CustomerlayoutComponent implements OnInit {
 
   redirectToShop() {
     if (!this.tokenSVC.isAuthenicated()){
-      this.router.navigateByUrl('auth/login');
+      this.router.navigateByUrl(`/shop-owner/unauthorized`);
+      return;
     }
 
     if (this.role && this.role.includes('ShopOwner')) {

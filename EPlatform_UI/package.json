@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:EPlatform_UI": "node dist/eplatform-ui/server/server.mjs"
+    "serve:ssr:EPlatform_UI": "node dist/eplatform-ui/server/server.mjs",
+    "compressed-icon": "sass --style=compressed ./src/app/icon.component.scss ./src/app/icon.min.scss"
   },
   "private": true,
   "dependencies": {
@@ -41,6 +42,8 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "sass": "^1.85.1",
+    "svgo": "^3.3.2",
     "typescript": "~5.5.2"
   }
 }

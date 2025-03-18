@@ -32,7 +32,6 @@ export class TokenService {
     const roleKey = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
     if (accessToken){
       const decode = this.jwtHelper.decodeToken(accessToken);
-      console.log(decode);
       return decode[roleKey];
     }
     return null;

@@ -23,6 +23,7 @@ import { AddProductComponent } from './components/shopowner/add-product/add-prod
 import { CreateShopComponent } from './components/shopowner/create-shop/create-shop.component';
 import { ProductDetailComponent } from './components/customer/product-detail/product-detail.component';
 import { CartsComponent } from './components/customer/carts/carts.component';
+import { OrdersComponent } from './components/shopowner/orders/orders.component';
 
 export const routes: Routes = [
     {
@@ -36,15 +37,24 @@ export const routes: Routes = [
             },
             {
                 path: 'home',
-                component: HomeCustomerComponent
+                loadComponent() {
+                    return import('./components/customer/home-customer/home-customer.component')
+                    .then(hc => hc.HomeCustomerComponent)
+                },
             },
             {
                 path: 'products/:product_slug',
-                component: ProductDetailComponent
+                loadComponent() {
+                    return import('./components/customer/product-detail/product-detail.component')
+                    .then(pd => pd.ProductDetailComponent)
+                },
             },
             {
                 path: 'carts',
-                component: CartsComponent,
+                loadComponent() {
+                    return import('./components/customer/carts/carts.component')
+                    .then(c => c.CartsComponent)
+                },
                 canActivate: [AuthGuard]
             }
         ]
@@ -60,15 +70,24 @@ export const routes: Routes = [
             },
             {
                 path: 'login',
-                component: LoginComponent
+                loadComponent() {
+                    return import('./components/auth/login/login.component')
+                    .then(l => l.LoginComponent)
+                },
             },
             {
                 path: 'register',
-                component: RegisterComponent
+                loadComponent() {
+                    return import('./components/auth/register/register.component')
+                    .then(r => r.RegisterComponent)
+                },
             },
             {
                 path: 'reset-password',
-                component: ResetpasswordComponent,
+                loadComponent() {
+                    return import('./components/auth/resetpassword/resetpassword.component')
+                    .then(rp => rp.ResetpasswordComponent)
+                },
                 canActivate: [AuthGuard]
             }
         ]
@@ -85,19 +104,31 @@ export const routes: Routes = [
             },
             {
                 path: 'roles',
-                component: RoleComponent
+                loadComponent() {
+                    return import('./components/admin/role/role.component')
+                    .then(r => r.RoleComponent)
+                },
             },
             {
                 path: 'roles/:id',
-                component: RoleDetailComponent
+                loadComponent() {
+                    return import('./components/admin/role-detail/role-detail.component')
+                    .then(rd => rd.RoleDetailComponent)
+                },
             },
             {
                 path: 'users',
-                component: UserComponent
+                loadComponent() {
+                    return import('./components/admin/users/user.component')
+                    .then(u => u.UserComponent)
+                },
             },
             {
                 path: 'users/:id',
-                component: UserDetailComponent
+                loadComponent() {
+                    return import('./components/admin/user-detail/user-detail.component')
+                    .then(ud => ud.UserDetailComponent)
+                },
             }
         ]
     },
@@ -113,19 +144,54 @@ export const routes: Routes = [
         loadChildren: () => [
             {
                 path: "products",
-                component: ProductsComponent
+                loadComponent(){
+                    return import('./components/shopowner/products/products.component')
+                    .then(p => p.ProductsComponent)
+                }
             },
             {
                 path: "add-product",
-                component: AddProductComponent
-            },
-            {
-                path: 'products/:product_id/update',
-                component: AddProductComponent
+                loadComponent() {
+                    return import('./components/shopowner/add-product/add-product.component')
+                    .then(ap => ap.AddProductComponent)
+                },
             },
             {
                 path: 'products/:product_id',
-                component: AddProductComponent
+                loadComponent() {
+                    return import('./components/shopowner/add-product/add-product.component')
+                    .then(ap => ap.AddProductComponent)
+                },
+            },
+            {
+                path: 'products/:product_id/update',
+                loadComponent() {
+                    return import('./components/shopowner/add-product/add-product.component')
+                    .then(ap => ap.AddProductComponent)
+                },
+            },
+            {
+                path: 'orders',
+                loadComponent() {
+                    return import('./components/shopowner/orders/orders.component')
+                    .then(o => o.OrdersComponent)
+                },
+                loadChildren: () => [
+                    {
+                        path: '',
+                        loadComponent() {
+                            return import('./components/shopowner/orders/orders-management/orders-management.component')
+                            .then(o => o.OrdersManagementComponent)
+                        }
+                    },
+                    {
+                        path: ':order_id',
+                        loadComponent() {
+                            return import('./components/shopowner/orders/order-detail/order-detail.component')
+                            .then(od => od.OrderDetailComponent)
+                        }
+                    }
+                ]
             }
         ],
     },

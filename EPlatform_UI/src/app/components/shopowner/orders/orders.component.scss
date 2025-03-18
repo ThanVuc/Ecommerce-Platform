@@ -1,0 +1,127 @@
+@import url(../../../icon.min.scss);
+
+.order-container {
+    min-width: 65rem;
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+    .header {
+        margin-block: 1rem;
+        h3 {
+            color: rgb(9, 229, 229);
+            text-align: center;
+            font-size: 2rem;
+        }
+    }
+
+    .body {
+        background-color: #091B23;
+        border-radius: 1rem;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 0.8rem;
+        color: #fff;
+
+        .body-header {
+            display: flex;
+            flex-direction: column;
+            row-gap: 1rem;
+
+
+            .header-label {
+                display: flex;
+                background-color: inherit;
+                width: 100%;
+                border-bottom: 1px solid rgba(#FFFFFF,0.3);
+                gap: 0.8rem;
+
+                .label {
+                    text-decoration: none;
+                    border: none;
+                    background-color: inherit;
+                    color: #969696;
+                    font-size: 1.1rem;
+                    line-height: 1.5rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    padding-inline: 0.5rem;
+                    padding-block: 0.8rem;
+                }
+
+                .header-active{
+                    height: 100%;
+                    border-bottom: 1px solid #3AAEE1;
+                    color: #3AAEE1;
+                }
+            }
+
+            .tool {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                .search-bar {
+                    width: 60%;
+                    display: flex;
+                    align-items: center;
+                    background-color: #143B4C;
+                    padding-inline: 0.5rem;
+                    border: 1px solid #ABA5A5;
+                    border-radius: .5rem;
+
+                    &:has(input:focus){
+                        box-shadow: 0 0 0 1px #03b3ff;
+                    }
+
+                    span{
+                        font-size: 1.5rem;
+                    }
+
+                    input {
+                        padding: 10px;
+                        border-radius: 5px;
+                        background-color: inherit;
+                        border: none;
+                        width: 100%;
+                        z-index: 0;
+                        color: #fff;
+
+                        &:focus {
+                            outline: none;
+                        }
+
+                        &::placeholder {
+                            color: rgba(#fff, .6);
+                        }
+                    }
+                }
+
+                .save-status {
+                    border: 1px solid #ABA5A5;
+                    background-color: #143B4C;
+                    color: #fff;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+
+                    display: flex;
+                    gap: 0.2rem;
+                    justify-content: center;
+                    align-items: center;
+
+                    &:hover {
+                        transform: scale(1.05);
+                        box-shadow: 0 0 0 1px #03b3ff;
+                        transition: all 0.3s;
+                    }
+                }
+            }
+        }
+
+        .body-content {
+            margin-top: 20px;
+        }
+    }
+}

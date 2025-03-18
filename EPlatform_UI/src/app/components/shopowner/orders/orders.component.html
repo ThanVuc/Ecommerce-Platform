@@ -1,0 +1,29 @@
+<div class="order-container">
+    <div class="header">
+        <h3>Orders Management</h3>
+    </div>
+    <div class="body">
+        <div class="body-header">
+            <div class="header-label">
+                <a [routerLink]="['.']" [queryParams]="{ status: 1 }" class="label header-active">All Active Order (80)</a>
+                <a [routerLink]="['.']" [queryParams]="{ status: 2 }" class="label">Preparing (50)</a>
+                <a [routerLink]="['.']" [queryParams]="{ status: 3 }" class="label">Delivery (50)</a>
+                <a [routerLink]="['.']" [queryParams]="{ status: 4 }" class="label">Completed (50)</a>
+                <a [routerLink]="['.']" [queryParams]="{ status: 5 }" class="label">Cancel (50)</a>
+            </div>
+            <div class="tool">
+                <div class="search-bar">
+                    <span class="iconamoon--search-light"></span>
+                    <input type="text" placeholder="Searching Here!">
+                </div>
+                <button class="save-status">
+                    <span class="fluent--status-20-regular"></span>
+                    <span class="save-status-text">Save Status</span>
+                </button>
+            </div>
+        </div>
+        <div class="body-content">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

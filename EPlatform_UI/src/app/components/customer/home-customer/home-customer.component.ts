@@ -52,7 +52,6 @@ export class HomeCustomerComponent implements OnInit {
     this.productSVC.getHotProducts().subscribe({
       next: res => {
         this.productHandler.products = res.data;
-        console.log(this.productHandler.products);
       },
       error: err => {
         console.log(err);
