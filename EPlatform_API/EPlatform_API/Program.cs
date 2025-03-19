@@ -88,6 +88,8 @@ services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
 services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
 services.AddScoped<IVietnameseLocationRepository,VietnameseLocationRepository>();
 services.AddScoped<ProductInfoMongoRepository,ProductInfoMongoRepository>();
+services.AddScoped<UserRepo,UserRepo>();
+services.AddScoped<OrderRepository,OrderRepository>();
 
 var app = builder.Build();
 

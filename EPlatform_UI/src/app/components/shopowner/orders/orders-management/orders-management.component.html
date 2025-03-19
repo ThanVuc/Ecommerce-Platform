@@ -1,1 +1,62 @@
-<p>orders-management works!</p>
+<div class="order-management-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Order Id</th>
+                <th>Customer</th>
+                <th>Payment</th>
+                <th>Product</th>
+                <th>Created At</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>#001</td>
+                <td>sinhnguyen&#64;gmail.com</td>
+                <td>Directed</td>
+                <td>Shoes, Shirt, Pant</td>
+                <td>02/20/2024</td>
+                <td class="status">
+                    <button (click)="changeStatus($event)" class="status-btn preparing">Preparing</button>
+                    <div class="select-status">
+                        <span class="connector"></span>
+                        <span class="material-symbols--close" (click)="hideSelectStatus($event)"></span>
+                        <div class="header">Status</div>
+                        <div class="status-item">
+                            <div class="status-item-content preparing">Preparing</div>
+                            <div class="status-item-content delivering">Delivering</div>
+                            <div class="status-item-content completed">Completed</div>
+                            <div class="status-item-content cancel">Cancel</div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>#001</td>
+                <td>sinhnguyen&#64;gmail.com</td>
+                <td>Directed</td>
+                <td>Shoes, Shirt, Pant</td>
+                <td>02/20/2024</td>
+                <td class="status">
+                    <button (click)="changeStatus($event)" class="status-btn preparing">Preparing</button>
+                    <div class="select-status">
+                        <span class="connector"></span>
+                        <span class="material-symbols--close" (click)="hideSelectStatus($event)"></span>
+                        <div class="header">Status</div>
+                        <div class="status-item">
+                            <div class="status-item-content preparing">Preparing</div>
+                            <div class="status-item-content delivering">Delivering</div>
+                            <div class="status-item-content completed">Completed</div>
+                            <div class="status-item-content cancel">Cancel</div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="pagination">
+        <app-pagination [pageIndex]="1" [limit]="10" [totalItem]="100"
+            (page)="loadPage($event)"></app-pagination>
+    </div>
+</div>

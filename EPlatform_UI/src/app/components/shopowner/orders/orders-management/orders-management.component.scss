@@ -1,0 +1,161 @@
+@import url(../../../../icon.min.scss);
+
+.order-management-container{
+    min-width: 100%;
+    min-height: 70vh;
+
+    table{
+        width: 100%;
+
+        thead{
+            box-sizing: border-box;
+            background-color: rgba(#FFFFFF, 0.1);
+
+            th{
+                padding-block: 0.75rem;
+                padding-inline: 1rem;
+                text-align: left;
+                background-color: inherit;
+                color: #fff;
+                font-size: 1.1rem;
+                font-weight: 600;
+
+                &:first-child{
+                    border-top-left-radius: 0.5rem;
+                    border-bottom-left-radius: 0.5rem;
+                }
+                &:last-child{
+                    border-top-right-radius: 0.5rem;
+                    border-bottom-right-radius: 0.5rem;
+                }
+            }
+        }
+
+        tbody{
+            tr{
+                td{
+                    position: relative;
+                    padding-inline: 1rem;
+                    padding-block: 0.75rem;
+                    border-bottom: 1px solid #1C4E64;
+                    font-weight: 520;
+                    max-width: 10rem;
+                    overflow-x: hidden;
+                    text-overflow: ellipsis;
+                    line-height: 1.5rem;
+                }
+
+                .status-btn{
+                    text-align: center;
+                    font-weight: 550;
+                    padding: 0.5rem;
+                    border: none;
+                    border-radius: 1rem;
+
+                    &:hover{
+                        cursor: pointer;
+                        transform: scale(1.05);
+                        transition: transform 0.1s;
+                    }
+                }
+                
+                .show-select-status{
+                    display: flex !important;
+                    transition: all 0.5s;
+                }
+
+                .status{
+                    position: relative;
+                    overflow: visible;
+
+                    .select-status{
+                        z-index: 10;
+                        position: absolute;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        top: 0;
+                        left: 0;
+                        transform: translate(-100%, -30%);
+                        background-color: #1C4E64;
+                        box-sizing: border-box;
+                        padding-block: 0.8rem;
+                        padding-inline: 2rem;
+                        border-radius: 1.2rem;
+                        display: none;
+                        
+                        .connector{
+                            position: absolute;
+                            right: 0;
+                            transform: translateX(100%);
+                            top: 40%;
+                            width: 0.8rem;
+                            height: 0.8rem;
+                            background-color: #1C4E64;
+                            clip-path: polygon(0 0, 100% 50%, 0 100%);
+                        }
+                        
+                        .material-symbols--close{
+                            position: absolute;
+                            top: 0.5rem;
+                            right: 0.5rem;
+                            font-size: 1.4rem;
+                            color: #ff0000;
+                            cursor: pointer;
+
+                            &:hover{
+                                transform: scale(1.1);
+                                transition: transform 0.1s;
+                            }
+                        }
+
+                        .header{
+                            color: #01FFC0;
+                            font-size: 1.1rem;
+                        }
+
+                        .status-item{
+                            color: black;
+                            .status-item-content{
+                                padding-inline: 2rem;
+                                padding-block: 0.7rem;
+                                border-radius: 1rem;
+                                text-align: center;
+                                margin-top: 0.2rem;
+
+                                &:hover{
+                                    transform: scale(1.05);
+                                    transition: transform 0.1s;
+                                    cursor: pointer;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .preparing{
+                    background-color: #FFE710;
+                }
+                .delivering{
+                    background-color: #46F4EC;
+                }
+                .completed{
+                    background-color: #0EEF42;
+                }
+                .cancel{
+                    background-color: #E60808;
+                    color: white;
+                }
+            }
+        }
+    }
+
+    .pagination{
+        width: 100%;
+        margin-block: 1rem;
+
+        app-pagination{
+            width: 100%;
+        }
+    }
+}

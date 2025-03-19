@@ -5,7 +5,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlatform_API.DTOs.ApiStandard;
 using EPlatform_API.DTOs.ProductDTOs;
+using EPlatform_API.IRepository;
 using EPlatform_API.IServices;
+using EPlatform_API.Repository;
 using EPlatform_API.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,15 +21,25 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<ProductController> _logger;
         private readonly ILoggingService _loggingService;
+        private readonly UserRepo _userRepo;
+        private readonly IProductRepository _productRepo;
+        private readonly OrderRepository _orderRepository;
+
         public OrderController(
             IUnitOfWork unitOfWork,
             ILogger<ProductController> logger,
-            ILoggingService loggingService
+            ILoggingService loggingService,
+            UserRepo userRepo,
+            IProductRepository productRepo,
+            OrderRepository orderRepository
         )
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _loggingService = loggingService;
+            _userRepo = userRepo;
+            _productRepo = productRepo;
+            _orderRepository = orderRepository;
         }
 
         [HttpPost("create-order")]
@@ -45,8 +57,11 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
 
-            // var order = await _productRepo.CreateOrder(customerName, request);
-            // await _unitOfWork.SaveAsync();
+            var user = await _userRepo.GetUserByEmail(customerName);
+            
+
+            await _unitOfWork.SaveAsync();
+
             return Ok(new ApiResponseStandard<object>
             {
                 Status = 201,
