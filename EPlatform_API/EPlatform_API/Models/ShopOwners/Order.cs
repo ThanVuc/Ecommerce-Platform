@@ -44,9 +44,13 @@ namespace EPlatform_API.Models.ShopOwners
         [Column(TypeName = "decimal(18,2)")]
         public decimal? ShipmentCost { get; set; }
 
+        public string? Email { get; set; }
+        [Required]
+        public string? Phone { get; set; }
+
         [StringLength(100)]
         public string? PaymentMethod { get; set; }
-        public string? isDeleted { get; set; }
+        public bool? isDeleted { get; set; }
 
         public OrderStatus? OrderStatus { get; set; }
         public ICollection<OrderProduct>? OrderProducts { get; set; }

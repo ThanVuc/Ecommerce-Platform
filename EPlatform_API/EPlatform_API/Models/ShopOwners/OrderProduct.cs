@@ -18,7 +18,7 @@ namespace EPlatform_API.Models.ShopOwners
         public int ProductId { get; set; }
 
         public int Quantity { get; set; }
-        public int ProductsPrice { get; set; }
+        public Decimal ProductsPrice { get; set; }
         public string? SpecInfo { get; set; }
         public Order? Order { get; set; }
         public Product? Product { get; set; }

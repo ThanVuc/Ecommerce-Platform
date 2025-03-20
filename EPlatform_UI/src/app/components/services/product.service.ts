@@ -44,5 +44,9 @@ export class ProductService {
   removeCartItem(cartItemId: number) : Observable<ApiResModel<object>> {
     return this.http.delete<ApiResModel<object>>(environment.getCartItems+ `/${cartItemId}/remove-item`);
   }
+
+  getCartNum() : Observable<ApiResModel<number>> {
+    return this.http.get<ApiResModel<number>>(environment.getCartNum);
+  }
 }
 

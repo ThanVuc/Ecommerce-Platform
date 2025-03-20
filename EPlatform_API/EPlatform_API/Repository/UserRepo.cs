@@ -29,5 +29,11 @@ namespace EPlatform_API.Repository
             return user;
         }
 
+        public async Task<string?> GetUserIdByEmail(string email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return user?.Id;
+        }
+
     }
 }

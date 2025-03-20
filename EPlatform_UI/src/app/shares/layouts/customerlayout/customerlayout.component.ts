@@ -1,9 +1,10 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, inject, OnInit, Renderer2 } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Component, inject, OnChanges, OnInit, Renderer2, SimpleChanges } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TokenService } from '../../../components/services/token.service';
 import { ShopService } from '../../../components/services/shop.service';
 import { AuthService } from '../../../components/services/auth.service';
+import { ProductService } from '../../../components/services/product.service';
 
 @Component({
   selector: 'app-customerlayout',
@@ -16,7 +17,39 @@ export class CustomerlayoutComponent implements OnInit {
   ngOnInit(): void {
     this.renderer2.setStyle(this.document.body, 'background-color', 'black');
     this.role = this.tokenSVC.getRole();
+    this.router.events.subscribe({
+      next: (event) => {
+        if (event instanceof NavigationEnd){
+          this.url = event.url;
+          if (this.tokenSVC.isAuthenicated()){
+            this.productSVC.getCartNum().subscribe({
+              next: (data) => {
+                this.cartNum = data.data;
+              },
+              error: (error) => {
+                console.log(error);
+              }
+            });
+          }
+        }
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    });
+
+    if (this.tokenSVC.isAuthenicated()){
+      this.productSVC.getCartNum().subscribe({
+        next: (data) => {
+          this.cartNum = data.data;
+        },
+        error: (error) => {
+          console.log(error);
+        }
+      });
+    }
   }
+  productSVC = inject(ProductService);
   renderer2 = inject(Renderer2);
   document = inject(DOCUMENT);
   tokenSVC = inject(TokenService);
@@ -24,6 +57,8 @@ export class CustomerlayoutComponent implements OnInit {
   shopSVC = inject(ShopService);
   authSVC = inject(AuthService);
   role: string[] | null = null;
+  cartNum: number | null = null;
+  url: string | null = null;
 
   redirectToShop() {
     if (!this.tokenSVC.isAuthenicated()){

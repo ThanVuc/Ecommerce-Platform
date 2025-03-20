@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlatform_API.DTOs.ProductDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IServices;
 using EPlatform_API.Models;
@@ -86,6 +87,58 @@ namespace EPlatform_API.Repository
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task MinusInventory(List<CartItemOfOrder> cartItemOfOrders){
+            try
+            {
+                foreach (var cartItem in cartItemOfOrders)
+                {
+                    var productSpecInfo = await _productSpecInfoCollection.Find(p => p.ProductId == cartItem.ProductId).FirstOrDefaultAsync();
+                    
+                    if (productSpecInfo == null)
+                    {
+                        throw new Exception("Product not found");
+                    }
+
+                    if (cartItem.SpecInfo == null)
+                    {
+                        throw new Exception("Product not found");
+                    }
+                    Console.WriteLine($"cartItem.SpecInfo: {cartItem.SpecInfo}");
+                    var inventoryArr = cartItem.SpecInfo.Split(",");
+                    string primarySpecValueName = "";
+                    string? subSpecValueName = null;
+                    primarySpecValueName = inventoryArr[0].Split(":")[1].Trim();
+                    if (inventoryArr.Length > 1)
+                    {
+                        subSpecValueName = inventoryArr[1].Split(":")[1].Trim();
+                    }
+                    Console.WriteLine($"primarySpecValueName: {primarySpecValueName}, subSpecValueName: {subSpecValueName}");
+                    var inventory = productSpecInfo.SpecInfoInventories.FirstOrDefault(p => p.PrimarySpecValueName == primarySpecValueName && p.SubSpecValueName == subSpecValueName);
+                    
+                    if (inventory == null)
+                    {
+                        throw new Exception("Inventory not found");
+                    }
+
+                    if (inventory.Inventory < cartItem.Quantity)
+                    {
+                        throw new Exception("Inventory not enough");
+                    }
+
+                    inventory.Inventory -= cartItem.Quantity;
+
+                    var filter = Builders<ProductSpecInfo>.Filter.Eq(p => p.ProductId, cartItem.ProductId);
+                    var update = Builders<ProductSpecInfo>.Update
+                        .Set(p => p.SpecInfoInventories, productSpecInfo.SpecInfoInventories);
+                    await _productSpecInfoCollection.UpdateOneAsync(filter, update);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"product mongo info repo: {ex.Message}");
             }
         }
 

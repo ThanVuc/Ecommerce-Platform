@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlatform_API.Data;
+using EPlatform_API.DTOs.ProductDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IServices;
 using EPlatform_API.Models.ShopOwners;
@@ -18,6 +19,58 @@ namespace EPlatform_API.Repository
         {
             _context = context;
             _redis = RedisManager.Connection.GetDatabase();
+        }
+
+        public async Task InitStatus(){
+            _context.OrderStatuses.RemoveRange(_context.OrderStatuses);
+            await _context.OrderStatuses.AddRangeAsync(new OrderStatus[]{
+                new OrderStatus{StatusName = "Preparing", Description = "The order is being prepared by the shop owner", IsFinal = false},
+                new OrderStatus{StatusName = "Delivering", Description = "The order is being delivered to the customer", IsFinal = false},
+                new OrderStatus{StatusName = "Completed", Description = "The order has been completed", IsFinal = true},
+                new OrderStatus{StatusName = "Cancelled", Description = "The order has been cancelled", IsFinal = true}
+            });
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task CreateOrder(CreateOrdersRequest customerInfo, KeyValuePair<string, List<CartItemOfOrder>> shopProductsPair, string customerId)
+        {
+            try {
+                if (_context.OrderStatuses == null){
+                    throw new Exception("OrderStatuses not found");
+                }
+
+                if (_context.OrderStatuses.Count() == 0){
+                    await InitStatus();
+                }
+
+                var preparingStatus = _context.OrderStatuses.FirstOrDefault(s => s.StatusName == "Preparing");
+                
+                if (preparingStatus == null){
+                    throw new Exception("Preparing status not found");
+                }
+
+                _context.Orders.Add(new Models.ShopOwners.Order
+                {
+                    ShopId = shopProductsPair.Key,
+                    CustomerId = customerId,
+                    OrderStatusId = preparingStatus.OrderStatusId,
+                    ExpectedDeliveryDate = DateTime.Now.AddDays(4),
+                    isDeleted = false,
+                    PaymentMethod = "Cash",
+                    ShippingAddress = customerInfo.ShippingAddress,
+                    Email = customerInfo.Email,
+                    Phone = customerInfo.Phone,
+                    OrderProducts = shopProductsPair.Value.Select(p => new OrderProduct
+                    {
+                        ProductId = p.ProductId,
+                        Quantity = p.Quantity,
+                        ProductsPrice = p.Price,
+                        SpecInfo = p.SpecInfo
+                    }).ToList()
+                });
+            } catch(Exception ex) {
+                throw new Exception($"Create order failed in order repo: {ex.Message}");
+            }
         }
     }
 }

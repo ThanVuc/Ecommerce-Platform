@@ -94,7 +94,7 @@ namespace EPlatform_API.Repository
         {
             var product = await _context.Products
             .Include(p => p.Inventory)
-            .FirstOrDefaultAsync(p => p.ProductId == productId);
+            .FirstOrDefaultAsync(p => p.ProductId == productId && p.IsDeleted == false && p.Inventory.IsAvailable == true && p.IsPublic == true);
 
             if (product == null)
             {
@@ -109,7 +109,7 @@ namespace EPlatform_API.Repository
             var product = await _context.Products
             .Include(p => p.Inventory)
             .Include(p => p.Category)
-            .FirstOrDefaultAsync(p => p.ProductId == productId);
+            .FirstOrDefaultAsync(p => p.ProductId == productId && p.IsDeleted == false && p.IsPublic == true && p.Inventory.IsAvailable == true);
 
             if (product == null)
             {
@@ -374,6 +374,20 @@ namespace EPlatform_API.Repository
             return cartItems;
         }
 
+        public async Task<int> GetCartItemsCount(string customerName)
+        {
+            var customerId = RetriveUserIdFromName(customerName);
+            var cartId = (await _context.Carts.FirstOrDefaultAsync(c => c.CustomerId == customerId))?.CartId;
+
+            if (cartId == null)
+            {
+                return 0;
+            }
+
+            var cartItemsCount = await _context.CartItems.Where(ci => ci.CartId == cartId).CountAsync();
+            return cartItemsCount;
+        }
+
         public string RetriveUserIdFromName(string name)
         {
             var user = _context.Users.FirstOrDefault(u => u.UserName == name);
@@ -387,6 +401,39 @@ namespace EPlatform_API.Repository
         public Task RemoveCartItems(int cartItemId){
             _context.CartItems.Remove(new CartItem { CartItemId = cartItemId });
             return Task.CompletedTask;
+        }
+    
+        public async Task MinusProductInventory(List<CartItemOfOrder> cartItemOfOrders)
+        {
+            try {
+                foreach (var cartItem in cartItemOfOrders)
+                {
+                    var product = _context.Products
+                    .Include(p => p.Inventory)
+                    .FirstOrDefault(p => p.ProductId == cartItem.ProductId);
+                    if (product == null)
+                    {
+                        throw new Exception("Product is not found");
+                    }
+
+                    if (product.Inventory == null)
+                    {
+                        throw new Exception("Product is not found");
+                    }
+                    product.Inventory.AvailableQuantity -= cartItem.Quantity;
+                    product.Inventory.SoldQuantity += cartItem.Quantity;
+
+                    if (product.Inventory.AvailableQuantity <= 0)
+                    {
+                        product.Inventory.IsAvailable = false;
+                    }
+
+                    _context.Products.Update(product);
+                }
+            } catch(Exception e) {
+                throw new Exception($"Error when minus product inventory: {e.Message}");
+            }
+            
         }
     }
 }

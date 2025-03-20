@@ -22,24 +22,29 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         private readonly ILogger<ProductController> _logger;
         private readonly ILoggingService _loggingService;
         private readonly UserRepo _userRepo;
-        private readonly IProductRepository _productRepo;
+        private readonly ProductRepository _productRepo;
         private readonly OrderRepository _orderRepository;
+        private readonly ShopRepository _shopRepository;
+        private readonly ProductInfoMongoRepository _productInfoMongoRepository;
 
         public OrderController(
             IUnitOfWork unitOfWork,
             ILogger<ProductController> logger,
             ILoggingService loggingService,
             UserRepo userRepo,
-            IProductRepository productRepo,
-            OrderRepository orderRepository
+            OrderRepository orderRepository,
+            ShopRepository shopRepository,
+            ProductInfoMongoRepository productInfoMongoRepository
         )
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _loggingService = loggingService;
             _userRepo = userRepo;
-            _productRepo = productRepo;
+            _productRepo = _unitOfWork.ProductRepo;
             _orderRepository = orderRepository;
+            _shopRepository = shopRepository;
+            _productInfoMongoRepository = productInfoMongoRepository;
         }
 
         [HttpPost("create-order")]
@@ -57,15 +62,98 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
 
-            var user = await _userRepo.GetUserByEmail(customerName);
-            
+            var userId = await _userRepo.GetUserIdByEmail(customerName);
+            if (userId == null)
+            {
+                return NotFound(new ApiResponseStandard<object>
+                {
+                    Status = 404,
+                    Message = "Not Found",
+                    Data = "User not found"
+                });
+            }
+            // products of shop
+            var shopProductDict = new Dictionary<string, List<CartItemOfOrder>>();
 
+            if (request.CartItems == null || request.CartItems.Count == 0)
+            {
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "Bad Request",
+                    Data = "Cart items is empty"
+                });
+            }
+
+            try {
+                foreach (var cartItem in request.CartItems)
+                {
+                    if (shopProductDict.ContainsKey(cartItem.ShopId))
+                    {
+                        shopProductDict[cartItem.ShopId].Add(cartItem);
+                    }
+                    else
+                    {
+                        if (!await _shopRepository.IsExist(cartItem.ShopId)){
+                            return NotFound(new ApiResponseStandard<object>
+                            {
+                                Status = 404,
+                                Message = "Not Found",
+                                Data = $"Shop with id {cartItem.ShopId} not found"
+                            });
+                        }
+
+                        shopProductDict.Add(cartItem.ShopId, new List<CartItemOfOrder> {cartItem});
+                    }
+                }
+            } catch (Exception e) {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = "Internal Server Error",
+                    Data = $"Error when create order in order controller, {e.Message}"
+                });
+            }
+            
+            await _unitOfWork.BeginTransaction();
+
+            // Minus quantity of product
+            try {
+                await _productInfoMongoRepository.MinusInventory(request.CartItems);
+                await _productRepo.MinusProductInventory(request.CartItems);
+            } catch (Exception e) {
+                await _unitOfWork.RollBackTransaction();
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = "Internal Server Error",
+                    Data = $"Error when create order in order controller, {e.Message}"
+                });
+            }
+
+            // Create order
+            try {
+                foreach (var shopProduct in shopProductDict)
+                {
+                    await _orderRepository.CreateOrder(new CreateOrdersRequest{ Email = request.Email, Phone = request.Phone, ShippingAddress = request.ShippingAddress } ,shopProduct, userId);
+                }
+            } catch (Exception e) {
+                await _unitOfWork.RollBackTransaction();
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = "Internal Server Error",
+                    Data = $"Error when create order in order controller, {e.Message}"
+                });
+            }
+
+            await _unitOfWork.CommitTransaction();
             await _unitOfWork.SaveAsync();
 
             return Ok(new ApiResponseStandard<object>
             {
                 Status = 201,
-                Message = "Create order",
+                Message = "Create order successfully",
                 Data = request
             });
         }

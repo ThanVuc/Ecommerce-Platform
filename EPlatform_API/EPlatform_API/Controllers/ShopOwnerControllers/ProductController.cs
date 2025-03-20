@@ -131,7 +131,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             }
         }
 
-        [HttpPost("carts/add-to-cart")]
+        [HttpPost("/api/v1/carts/add-to-cart")]
         [Authorize]
         public async Task<IActionResult> AddToCart([FromBody] AddItemToCart request)
         {
@@ -161,7 +161,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             });
         }
 
-        [HttpGet("carts")]
+        [HttpGet("/api/v1/carts")]
         [Authorize]
         public async Task<IActionResult> GetCartItems()
         {
@@ -202,7 +202,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             });
         }
 
-        [HttpDelete("carts/{cartId}/remove-item")]
+        [HttpDelete("/api/v1/carts/{cartId}/remove-item")]
         public async Task<IActionResult> RemoveProductFromCart(int cartId){
             try {
                 await _productRepo.RemoveCartItems(cartId);
@@ -219,6 +219,28 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             {
                 Message = "Remove item from cart",
                 Data = "remove successful"
+            });
+        }
+        
+        [HttpGet("/api/v1/carts/get-cart-number")]
+        [Authorize]
+        public async Task<IActionResult> GetCartNumber()
+        {
+            var customerName = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (customerName == null){
+                return Unauthorized(new ApiResponseStandard<object>
+                {
+                    Message = "Unauthorized",
+                    Data = "You must login to get cart items"
+                });
+            }
+
+            var cartCount = await _productRepo.GetCartItemsCount(customerName);
+            return Ok(new ApiResponseStandard<object>
+            {
+                Message = "Cart items",
+                Data = cartCount
             });
         }
 

@@ -1,12 +1,14 @@
 export interface CreateOrderModel {
     email: string
     phone: string
-    address: string
+    shippingAddress: string
     cartItems: CartItem[]
-}
-
-export interface CartItem {
-    productId: string
+  }
+  
+  export interface CartItem {
+    shopId: string
+    productId: number
     quantity: number
+    price: number
     specInfo: string
-}
+  }

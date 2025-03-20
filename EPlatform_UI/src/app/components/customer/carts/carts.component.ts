@@ -32,7 +32,7 @@ export class CartsComponent implements OnInit {
   createOrderModel: CreateOrderModel = {
     email: '',
     phone: '',
-    address: '',
+    shippingAddress: '',
     cartItems: []
   }
 
@@ -123,10 +123,11 @@ export class CartsComponent implements OnInit {
     this.buyProductComponent.getPersonalInfoEvent();
     this.createOrderModel.cartItems = this.cartItemsModel.filter((cartItem) => cartItem.isSelected).map((cartItem) => {
       return {
-        cartItemId: cartItem.cartItemId,
         quantity: cartItem.quantity,
-        productId: cartItem.productId.toString(),
-        specInfo: (cartItem.specInfo as string) || ''
+        productId: cartItem.productId,
+        specInfo: (cartItem.specInfo as string) || '',
+        shopId: cartItem.shopId,
+        price: cartItem.productPrice
       }
     });
 
@@ -139,6 +140,7 @@ export class CartsComponent implements OnInit {
 
     this.orderSVC.createOrder(this.createOrderModel).subscribe({
       next: (res) => {
+        console.log(res);
       },
       error: (err) => {
         console.log(err);

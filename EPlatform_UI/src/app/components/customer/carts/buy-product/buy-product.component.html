@@ -27,7 +27,7 @@
                 </div>
             </div>
             <app-select-address (getAddress)="getAddress($event)" ></app-select-address>
-            @if (createOrderModel.address === '') {
+            @if (createOrderModel.shippingAddress === '') {
                 <p class="err text-danger hide">Please, select the address</p>
             }
         </div>

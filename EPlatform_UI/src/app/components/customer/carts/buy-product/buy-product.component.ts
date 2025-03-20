@@ -16,7 +16,7 @@ export class BuyProductComponent {
   @Input() createOrderModel: CreateOrderModel = {
     email: '',
     phone: '',
-    address: '',
+    shippingAddress: '',
     cartItems: []
   };
 
@@ -27,7 +27,7 @@ export class BuyProductComponent {
   }
 
   getAddress(address: string){
-    this.createOrderModel.address = address;
+    this.createOrderModel.shippingAddress = address;
   }
 
 }

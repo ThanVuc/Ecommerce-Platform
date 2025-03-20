@@ -13,16 +13,24 @@
       </div>
     </div>
     <div class="bottom-header">
-      <a class="logo" href="/" >
-        <img src="/assets/img/shopping_logo.jpg" alt="">
-        <h3>TRANS</h3>
-      </a>
+
+      @if (url === '/'){
+        <a class="logo" href="/" >
+          <img src="/assets/img/shopping_logo.jpg" alt="">
+          <h3>TRANS</h3>
+        </a>
+      } @else {
+        <a class="logo" routerLink="/" >
+          <img src="/assets/img/shopping_logo.jpg" alt="">
+          <h3>TRANS</h3>
+        </a>
+      }
       <div class="search-bar">
         <input type="text" placeholder="Search for products" >
         <span class="iconamoon--search-light"></span>
       </div>
       <a routerLink="/carts" class="cart">
-        <p class="cart-number">5</p>
+        <p class="cart-number">{{ cartNum }}</p>
         <span class="mdi--cart-outline"></span>
       </a>
     </div>

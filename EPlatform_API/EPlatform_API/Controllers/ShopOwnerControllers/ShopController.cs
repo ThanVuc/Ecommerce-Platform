@@ -145,7 +145,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                     throw new Exception("User not found");
                 }
 
-                if (await _shopRepo.CheckExist(user.Id)){
+                if (await _shopRepo.IsExist(user.Id)){
                     await _unitOfWork.RollBackTransaction();
                     throw new Exception("Shop already exist");
                 }

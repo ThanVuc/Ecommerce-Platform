@@ -16,7 +16,8 @@ export class HandleErrService implements HttpInterceptor {
           console.error('Access denied');
           this.router.navigate(['/forbidden-return-to-not-found']);
         }
-        return throwError(() => new Error(error.error.message));
+        const err = error.error?.message || error.message;
+        return throwError(() => new Error(err || 'Server error'));
       })
     );
   }

@@ -7,7 +7,7 @@ namespace EPlatform_API.DTOs.ProductDTOs
 {
     public class CartItemsResponse
     {
-        public int? CartItemId { get; set; }
+        public int CartItemId { get; set; }
         public string? ProductName { get; set; }
         public decimal? ProductPrice { get; set; }
         public int AvailableQuantity { get; set; }

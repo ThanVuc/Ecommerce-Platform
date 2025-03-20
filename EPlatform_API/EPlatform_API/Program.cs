@@ -90,6 +90,7 @@ services.AddScoped<IVietnameseLocationRepository,VietnameseLocationRepository>()
 services.AddScoped<ProductInfoMongoRepository,ProductInfoMongoRepository>();
 services.AddScoped<UserRepo,UserRepo>();
 services.AddScoped<OrderRepository,OrderRepository>();
+services.AddScoped<ShopRepository,ShopRepository>();
 
 var app = builder.Build();
 
