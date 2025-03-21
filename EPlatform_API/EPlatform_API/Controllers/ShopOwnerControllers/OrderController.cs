@@ -117,12 +117,24 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             
             await _unitOfWork.BeginTransaction();
 
-            // Minus quantity of product
             try {
                 await _productInfoMongoRepository.MinusInventory(request.CartItems);
+            } catch (Exception e) {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = "Internal Server Error",
+                    Data = $"Error when create order in order controller, {e.Message}"
+                });
+            }
+
+            // Minus quantity of product
+            try {
                 await _productRepo.MinusProductInventory(request.CartItems);
+                await _unitOfWork.SaveAsync();
             } catch (Exception e) {
                 await _unitOfWork.RollBackTransaction();
+                await _productInfoMongoRepository.RollBackInventory(request.CartItems);
                 return StatusCode(500, new ApiResponseStandard<object>
                 {
                     Status = 500,
@@ -139,6 +151,21 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 }
             } catch (Exception e) {
                 await _unitOfWork.RollBackTransaction();
+                await _productInfoMongoRepository.RollBackInventory(request.CartItems);
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = "Internal Server Error",
+                    Data = $"Error when create order in order controller, {e.Message}"
+                });
+            }
+
+            // clear cart
+            try {
+                await _productRepo.ClearCart(request.CartItems);
+            } catch (Exception e) {
+                await _unitOfWork.RollBackTransaction();
+                await _productInfoMongoRepository.RollBackInventory(request.CartItems);
                 return StatusCode(500, new ApiResponseStandard<object>
                 {
                     Status = 500,
@@ -156,6 +183,29 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 Message = "Create order successfully",
                 Data = request
             });
+        }
+    
+        [HttpGet("get-orders-by-shop")]
+        [Authorize(Roles = "ShopOwner")]
+        public async Task<IActionResult> GetOrdersByShop([FromQuery] string shopId)
+        {
+            try {
+                var orders = await _orderRepository.GetOrderByShop(shopId);
+
+                return Ok(new ApiResponseStandard<object>
+                {
+                    Status = 200,
+                    Message = "Get orders by shop successfully",
+                    Data = orders
+                });
+            } catch (Exception ex) {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = "Error",
+                    Data = ex.Message
+                });
+            }
         }
     }
 }

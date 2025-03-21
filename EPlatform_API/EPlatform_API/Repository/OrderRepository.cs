@@ -7,6 +7,8 @@ using EPlatform_API.DTOs.ProductDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IServices;
 using EPlatform_API.Models.ShopOwners;
+using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
 using StackExchange.Redis;
 
 namespace EPlatform_API.Repository
@@ -49,6 +51,8 @@ namespace EPlatform_API.Repository
                     throw new Exception("Preparing status not found");
                 }
 
+                Console.WriteLine(shopProductsPair.ToJson());
+
                 _context.Orders.Add(new Models.ShopOwners.Order
                 {
                     ShopId = shopProductsPair.Key,
@@ -60,6 +64,9 @@ namespace EPlatform_API.Repository
                     ShippingAddress = customerInfo.ShippingAddress,
                     Email = customerInfo.Email,
                     Phone = customerInfo.Phone,
+                    TotalAmount = shopProductsPair.Value.Sum(p => p.Price * p.Quantity),
+                    ShipmentCost = 0,
+                    CreatedAt = DateTime.Now,
                     OrderProducts = shopProductsPair.Value.Select(p => new OrderProduct
                     {
                         ProductId = p.ProductId,
@@ -71,6 +78,31 @@ namespace EPlatform_API.Repository
             } catch(Exception ex) {
                 throw new Exception($"Create order failed in order repo: {ex.Message}");
             }
+        }
+    
+        public async Task<List<object>> GetOrderByShop(string shopId){
+            try {
+                var orders = await _context.Orders
+                .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                .Include(o => o.OrderStatus)
+                .Include(o => o.Customer)
+                .Where(o => o.ShopId == shopId && o.isDeleted == false && o.OrderStatus.IsFinal == false)
+                .Select(o => new {
+                    OrderId = o.OrderId,
+                    OrderStatus = o.OrderStatus.StatusName,
+                    OrderStatusId = o.OrderStatus.OrderStatusId,
+                    PaymentMethod = o.PaymentMethod,
+                    Customer = o.Customer.Email,
+                    Products = o.OrderProducts.Select(op => op.Product.Name).ToList(),
+                })
+                .AsNoTracking()
+                .ToListAsync();
+                return orders.Cast<object>().ToList();
+
+            } catch(Exception ex) {
+                throw new Exception($"Get order by shop failed in order repo: {ex.Message}");
+            }   
         }
     }
 }

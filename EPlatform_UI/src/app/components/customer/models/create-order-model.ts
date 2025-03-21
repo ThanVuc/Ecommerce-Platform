@@ -6,6 +6,7 @@ export interface CreateOrderModel {
   }
   
   export interface CartItem {
+    cartItemId: number
     shopId: string
     productId: number
     quantity: number

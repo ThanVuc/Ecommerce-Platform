@@ -24,10 +24,9 @@
                         <span class="material-symbols--close" (click)="hideSelectStatus($event)"></span>
                         <div class="header">Status</div>
                         <div class="status-item">
-                            <div class="status-item-content preparing">Preparing</div>
-                            <div class="status-item-content delivering">Delivering</div>
-                            <div class="status-item-content completed">Completed</div>
-                            <div class="status-item-content cancel">Cancel</div>
+                            @for (item of statusCode; track $index) {
+                                <div (click)="setNewStatus($event, item.name)" class="status-item-content {{item.name.toLocaleLowerCase()}}">{{item.name}}</div>
+                            }
                         </div>
                     </div>
                 </td>
@@ -45,10 +44,9 @@
                         <span class="material-symbols--close" (click)="hideSelectStatus($event)"></span>
                         <div class="header">Status</div>
                         <div class="status-item">
-                            <div class="status-item-content preparing">Preparing</div>
-                            <div class="status-item-content delivering">Delivering</div>
-                            <div class="status-item-content completed">Completed</div>
-                            <div class="status-item-content cancel">Cancel</div>
+                            @for (item of statusCode; track $index) {
+                                <div (click)="setNewStatus($event, item.name)" class="status-item-content {{item.name.toLocaleLowerCase()}}">{{item.name}}</div>
+                            }
                         </div>
                     </div>
                 </td>

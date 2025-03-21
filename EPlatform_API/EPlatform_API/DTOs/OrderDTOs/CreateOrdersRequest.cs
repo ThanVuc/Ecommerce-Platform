@@ -16,6 +16,7 @@ namespace EPlatform_API.DTOs.ProductDTOs
 
     public class CartItemOfOrder
     {
+        public int CartItemId { get; set; }
         public string? ShopId { get; set; }
         public int ProductId { get; set; }
         public int Quantity { get; set; }

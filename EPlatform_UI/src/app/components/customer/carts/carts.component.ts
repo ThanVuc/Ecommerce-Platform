@@ -4,20 +4,22 @@ import { CartItemModel } from '../models/cart-item-model';
 import { ProductService } from '../../services/product.service';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { OrderService } from '../../services/order.service';
 import { CreateOrderModel } from '../models/create-order-model';
 import { create } from 'domain';
+import { MessageComponent } from "../../../shares/reusable/message/message.component";
 
 @Component({
   selector: 'app-carts',
   standalone: true,
-  imports: [BuyProductComponent, FormsModule, NgClass],
+  imports: [BuyProductComponent, FormsModule, NgClass, MessageComponent],
   templateUrl: './carts.component.html',
   styleUrl: './carts.component.scss'
 })
 export class CartsComponent implements OnInit {
   @ViewChild(BuyProductComponent) buyProductComponent!: BuyProductComponent;
+  @ViewChild(MessageComponent) messager!: MessageComponent;
   ngOnInit(): void {
     this.getCartItems();
   }
@@ -25,6 +27,7 @@ export class CartsComponent implements OnInit {
   productSVC = inject(ProductService);
   activatedRoute = inject(ActivatedRoute);
   orderSVC = inject(OrderService);
+  router = inject(Router);
 
   cartItemsModel: CartItemModel[] = [];
   buyCartItemList: CartItemModel[] = [];
@@ -127,7 +130,8 @@ export class CartsComponent implements OnInit {
         productId: cartItem.productId,
         specInfo: (cartItem.specInfo as string) || '',
         shopId: cartItem.shopId,
-        price: cartItem.productPrice
+        price: cartItem.productPrice,
+        cartItemId: cartItem.cartItemId
       }
     });
 
@@ -140,9 +144,12 @@ export class CartsComponent implements OnInit {
 
     this.orderSVC.createOrder(this.createOrderModel).subscribe({
       next: (res) => {
-        console.log(res);
+        alert('Order created successfully');
+        this.getCartItems();
+        this.backToCart();
       },
       error: (err) => {
+        alert('Error occurred while creating order');
         console.log(err);
       }
     });

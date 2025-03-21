@@ -21,14 +21,38 @@ export class OrdersManagementComponent implements OnInit {
   }
 
   activatedRoute = inject(ActivatedRoute);
+  statusCode = [
+    {
+      id: "01",
+      name: "Preparing"
+    },
+    {
+      id: "02",
+      name: "Delivering"
+    },
+    {
+      id: "03",
+      name: "Completed"
+    },
+    {
+      id: "04",
+      name: "Canceled"
+    }
+  ];
   
   loadPage(page: PageModel) {
     console.log(page);
   }
 
   changeStatus(event: Event){
+    const statusBtn = (event.target as HTMLElement);
     const selectStatus = (event.target as HTMLElement).nextElementSibling;
     const selectStatusClassName = ".select-status";
+    console.log(selectStatus?.classList);
+    if (statusBtn?.classList.contains('change')){
+      statusBtn?.classList.remove('change');
+      return;
+    }
     if (selectStatusClassName) {
       this.document.querySelectorAll(selectStatusClassName).forEach((element) => {
           element.classList.remove('show-select-status');
@@ -40,5 +64,13 @@ export class OrdersManagementComponent implements OnInit {
   hideSelectStatus(event: Event){
     const selectStatus = (event.target as HTMLElement).closest('.select-status');
     selectStatus?.classList.remove('show-select-status');
+  }
+
+  setNewStatus(event: Event, status: string){
+    const statusBtn = (event.target as HTMLElement).parentElement?.parentElement?.previousElementSibling;
+    if (statusBtn) {
+        statusBtn.innerHTML = status;
+        statusBtn.className = `status-btn ${status.toLowerCase()} change`;
+    }
   }
 }

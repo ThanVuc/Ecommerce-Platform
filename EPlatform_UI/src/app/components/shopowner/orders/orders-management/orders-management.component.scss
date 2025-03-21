@@ -142,9 +142,12 @@
                 .completed{
                     background-color: #0EEF42;
                 }
-                .cancel{
+                .canceled{
                     background-color: #E60808;
                     color: white;
+                }
+                .change{
+                    box-shadow: 0 0 2px 1px white;
                 }
             }
         }

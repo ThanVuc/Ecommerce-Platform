@@ -215,7 +215,7 @@ namespace EPlatform_API.Repository
             var products = await _context.Products
             .Include(p => p.Inventory)
             // .Where(p => p.IsPublic == true && p.CreatedAt >= beginThisMonth)
-            .Where(p => p.IsPublic == true)
+            .Where(p => p.IsPublic == true && p.Inventory.IsAvailable == true && p.IsDeleted == false)
             // .OrderByDescending(p => p.Inventory.SoldQuantity)
             .OrderByDescending(p => p.CreatedAt)
             .Select(p => new
@@ -261,7 +261,7 @@ namespace EPlatform_API.Repository
             var products = await _context.Products
             .Include(p => p.Inventory)
             // .Where(p => p.IsPublic == true && p.CreatedAt >= beginThisWeek)
-            .Where(p => p.IsPublic)
+            .Where(p => p.IsPublic && p.Inventory.IsAvailable == true && p.IsDeleted == false)
             .OrderByDescending(p => p.Inventory.SoldQuantity)
             .Select(p => new
             {
@@ -434,6 +434,20 @@ namespace EPlatform_API.Repository
                 throw new Exception($"Error when minus product inventory: {e.Message}");
             }
             
+        }
+    
+        public async Task ClearCart(List<CartItemOfOrder> cartItemOfOrders)
+        {
+            foreach (var cartItem in cartItemOfOrders)
+            {
+                var cartItemEntity = await _context.CartItems
+                .FirstOrDefaultAsync(ci => ci.CartItemId == cartItem.CartItemId);
+
+                if (cartItemEntity != null)
+                {
+                    _context.CartItems.Remove(cartItemEntity);
+                }
+            }
         }
     }
 }
