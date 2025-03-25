@@ -80,29 +80,63 @@ namespace EPlatform_API.Repository
             }
         }
     
-        public async Task<List<object>> GetOrderByShop(string shopId){
+        public async Task<IQueryable<Models.ShopOwners.Order>> GetOrderByShop(string shopId, int? orderStatusId, string? searchString){
             try {
-                var orders = await _context.Orders
-                .Include(o => o.OrderProducts)
-                .ThenInclude(op => op.Product)
-                .Include(o => o.OrderStatus)
-                .Include(o => o.Customer)
-                .Where(o => o.ShopId == shopId && o.isDeleted == false && o.OrderStatus.IsFinal == false)
-                .Select(o => new {
-                    OrderId = o.OrderId,
-                    OrderStatus = o.OrderStatus.StatusName,
-                    OrderStatusId = o.OrderStatus.OrderStatusId,
-                    PaymentMethod = o.PaymentMethod,
-                    Customer = o.Customer.Email,
-                    Products = o.OrderProducts.Select(op => op.Product.Name).ToList(),
-                })
-                .AsNoTracking()
-                .ToListAsync();
-                return orders.Cast<object>().ToList();
+                IQueryable<Models.ShopOwners.Order>? orders = null;
+                
+                if (orderStatusId != null && string.IsNullOrEmpty(searchString)){
+                    orders = _context.Orders
+                    .Include(o => o.OrderProducts)
+                    .ThenInclude(op => op.Product)
+                    .Include(o => o.OrderStatus)
+                    .Include(o => o.Customer)
+                    .Where(o => o.ShopId == shopId && o.OrderStatusId == orderStatusId && o.isDeleted == false)
+                    .AsNoTracking()
+                    .AsQueryable();
 
+                } else {
+                    orders = _context.Orders
+                    .Include(o => o.OrderProducts)
+                    .ThenInclude(op => op.Product)
+                    .Include(o => o.OrderStatus)
+                    .Include(o => o.Customer)
+                    .Where(o => o.ShopId == shopId && o.isDeleted == false && o.OrderStatus.IsFinal == false)
+                    .AsNoTracking()
+                    .AsQueryable();
+                    
+                    if (!string.IsNullOrEmpty(searchString)){
+                        // find by order id before find by product name
+                        var ordersTemp = orders.Where(o => o.OrderId.ToString().Contains(searchString.Trim('#')));
+                        if (ordersTemp.Count() > 0){
+                            orders = ordersTemp;
+                        } else {
+                            orders = orders.Where(o => o.OrderProducts.Any(op => op.Product.Name.Contains(searchString)));
+                        }
+                    }
+
+                }
+
+                // Take care of with this code it can crack the app if one of the orders is null
+                // i think it null because of the shopId is null
+                if (orders == null){
+                    throw new Exception("Orders not found");
+                }
+
+                return orders;
             } catch(Exception ex) {
                 throw new Exception($"Get order by shop failed in order repo: {ex.Message}");
             }   
+        }
+    
+        public List<object> GetAllOrderStatus(){
+            try {
+                return _context.OrderStatuses.Select(s => new {
+                    s.OrderStatusId,
+                    s.StatusName
+                }).ToList<object>();
+            } catch(Exception ex) {
+                throw new Exception($"Get all order status failed in order repo: {ex.Message}");
+            }
         }
     }
 }

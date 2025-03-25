@@ -39,6 +39,7 @@ namespace EPlatform_API.Helper
         public static PageList<T> ToPageList(IQueryable<T> source, int pageNumber, int pageSize)
         {
             var count = source.Count();
+            // I think it shoulb be a Queryable type so that it will not be execute the query in database
             var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
             return new PageList<T>(items, count, pageNumber, pageSize);
         }

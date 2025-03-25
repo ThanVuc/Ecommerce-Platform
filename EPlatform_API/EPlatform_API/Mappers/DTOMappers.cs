@@ -7,6 +7,7 @@ using EPlatform_API.DTOs.AdminDTOs.Users;
 using EPlatform_API.DTOs.AuthDTOs;
 using EPlatform_API.DTOs.ProductDTOs;
 using EPlatform_API.DTOs.ShopDTOs;
+using EPlatform_API.DTOs.OrderDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.Models;
 using EPlatform_API.Models.ShopOwners;
@@ -246,6 +247,21 @@ namespace EPlatform_API.Mappers
             {
                 throw new Exception("SpecAttributes is null");
             }
+        }
+
+        public static GetAllOrderResponse ToGetAllOrderResponse(this Order order)
+        {
+            return new GetAllOrderResponse
+            {
+                OrderId = order.OrderId,
+                CustomerEmail = order.Email,
+                Payment = order.PaymentMethod,
+                ProductNames = string.Join(", ",order.OrderProducts?.Select(op => op.Product.Name).Take(3).ToList())
+                ,
+                CreateAt = order.CreatedAt,
+                OrderStatusId = order.OrderStatusId,
+                OrderStatusName = order.OrderStatus?.StatusName
+            };
         }
     }
 }

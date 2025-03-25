@@ -4,9 +4,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlatform_API.DTOs.ApiStandard;
+using EPlatform_API.DTOs.OrderDTOs;
 using EPlatform_API.DTOs.ProductDTOs;
+using EPlatform_API.Helper;
 using EPlatform_API.IRepository;
 using EPlatform_API.IServices;
+using EPlatform_API.Mappers;
+using EPlatform_API.Models.ShopOwners;
 using EPlatform_API.Repository;
 using EPlatform_API.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
@@ -185,18 +189,36 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             });
         }
     
-        [HttpGet("get-orders-by-shop")]
+        [HttpGet("/api/v1/shops/{shopId}/orders")]
         [Authorize(Roles = "ShopOwner")]
-        public async Task<IActionResult> GetOrdersByShop([FromQuery] string shopId)
+        public async Task<IActionResult> GetOrdersByShop([FromRoute] string shopId, [FromQuery] OrderManagementQueryString queryString)
         {
-            try {
-                var orders = await _orderRepository.GetOrderByShop(shopId);
+            if (string.IsNullOrEmpty(shopId))
+            {
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "Bad Request",
+                    Data = "Shop id is required"
+                });
+            }
 
+            try {
+                // 1: get all orders by shop, filter by order status id if needed
+                //  search by order id or product name if needed
+                // return type is IQueryable so it not execute query to database
+                var orders = await _orderRepository.GetOrderByShop(shopId, queryString.OrderStatusId, queryString.SearchString);
+
+                // 2: paging orders and convert to GetAllOrderResponse
+                var ordersPageList = PageList<GetAllOrderResponse>.ToPageList(orders.Select(o => o.ToGetAllOrderResponse()).AsQueryable(), queryString.PageNumber, queryString.PageSize);
+                ordersPageList.AddPagingInfoToHeader(Response);
+
+                // 3: get orders with needed fields
                 return Ok(new ApiResponseStandard<object>
                 {
                     Status = 200,
                     Message = "Get orders by shop successfully",
-                    Data = orders
+                    Data = ordersPageList
                 });
             } catch (Exception ex) {
                 return StatusCode(500, new ApiResponseStandard<object>
@@ -206,6 +228,19 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                     Data = ex.Message
                 });
             }
+        }
+    
+        [HttpGet("get-all-status")]
+        [Authorize]
+        public IActionResult GetAllOrderStatus()
+        {
+            var orderStatuses = _orderRepository.GetAllOrderStatus();
+            return Ok(new ApiResponseStandard<object>
+            {
+                Status = 200,
+                Message = "Get all order status successfully",
+                Data = orderStatuses
+            });
         }
     }
 }

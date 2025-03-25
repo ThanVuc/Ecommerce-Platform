@@ -4,6 +4,74 @@
     min-width: 100%;
     min-height: 70vh;
 
+    .tool {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+
+        .search-bar {
+            width: 60%;
+            display: flex;
+            align-items: center;
+            background-color: #143B4C;
+            padding-inline: 0.5rem;
+            border: 1px solid #ABA5A5;
+            border-radius: .5rem;
+
+            &:has(input:focus){
+                box-shadow: 0 0 0 1px #03b3ff;
+            }
+
+            span{
+                font-size: 1.5rem;
+            }
+
+            input {
+                padding: 10px;
+                border-radius: 5px;
+                background-color: inherit;
+                border: none;
+                width: 100%;
+                z-index: 0;
+                color: #fff;
+
+                &:focus {
+                    outline: none;
+                }
+
+                &::placeholder {
+                    color: rgba(#fff, .6);
+                }
+            }
+        }
+
+        .save-status {
+            border: 1px solid #ABA5A5;
+            background-color: #143B4C;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+
+            display: flex;
+            gap: 0.2rem;
+            justify-content: center;
+            align-items: center;
+
+            &:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 1px #03b3ff;
+                transition: all 0.3s;
+            }
+
+            &:active {
+                transform: scale(1);
+            }
+        }
+    }
+
     table{
         width: 100%;
 
@@ -46,6 +114,8 @@
                 }
 
                 .status-btn{
+                    font-size: 1rem;
+                    width: 6rem;
                     text-align: center;
                     font-weight: 550;
                     padding: 0.5rem;
@@ -111,7 +181,7 @@
 
                         .header{
                             color: #01FFC0;
-                            font-size: 1.1rem;
+                            font-size: 1rem;
                         }
 
                         .status-item{
@@ -142,12 +212,13 @@
                 .completed{
                     background-color: #0EEF42;
                 }
-                .canceled{
+                .cancelled{
                     background-color: #E60808;
                     color: white;
                 }
                 .change{
-                    box-shadow: 0 0 2px 1px white;
+                    background-color: rgb(216, 216, 216);
+                    color: black;
                 }
             }
         }
