@@ -7,6 +7,7 @@ import { OrderModel } from '../shopowner/orders/models/order-model';
 import { ApiResModel } from '../models/api-res-model';
 import { PageModel } from '../models/PageModel';
 import { StatusModel } from '../shopowner/orders/models/status-model';
+import { ChangeStatusModel } from '../shopowner/orders/models/change-status-model';
 
 @Injectable({
   providedIn: 'root'
@@ -34,5 +35,9 @@ export class OrderService {
 
   getAllStatuses() : Observable<ApiResModel<StatusModel[]>> {
     return this.http.get<ApiResModel<StatusModel[]>>(environment.getAllStatuses);
+  }
+
+  changeOrderStatus(OrderStatuses: ChangeStatusModel[]) : Observable<ApiResModel<object>> {
+    return this.http.put<ApiResModel<object>>(environment.changeOrderStauts, OrderStatuses);
   }
 }

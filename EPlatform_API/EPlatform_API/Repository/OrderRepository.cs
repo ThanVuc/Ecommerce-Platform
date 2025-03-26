@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlatform_API.Data;
+using EPlatform_API.DTOs.OrderDTOs;
 using EPlatform_API.DTOs.ProductDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IServices;
@@ -113,9 +114,9 @@ namespace EPlatform_API.Repository
                             orders = orders.Where(o => o.OrderProducts.Any(op => op.Product.Name.Contains(searchString)));
                         }
                     }
-
                 }
 
+                orders = orders.OrderByDescending(o => o.CreatedAt);
                 // Take care of with this code it can crack the app if one of the orders is null
                 // i think it null because of the shopId is null
                 if (orders == null){
@@ -136,6 +137,36 @@ namespace EPlatform_API.Repository
                 }).ToList<object>();
             } catch(Exception ex) {
                 throw new Exception($"Get all order status failed in order repo: {ex.Message}");
+            }
+        }
+
+        public async Task<string[]> ChangeOrderStatus(List<UpdateOrderStatusRequest> changeOrderStatuses){
+            try {
+                // note the order cannot be change
+                string[] errorOrders = new string[]{};
+                foreach (var orderStatusItem in changeOrderStatuses)
+                {
+                    var newStatus = await _context.OrderStatuses.FirstOrDefaultAsync(s => s.OrderStatusId == orderStatusItem.StatusId);
+                    if (newStatus == null){
+                        errorOrders.Append($"Order {orderStatusItem.OrderId} status not found");
+                        continue;
+                    }
+
+                    var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == orderStatusItem.OrderId);
+                    if (order == null){
+                        errorOrders.Append($"Order {orderStatusItem.OrderId} not found");
+                        continue;
+                    }
+
+                    if (order.OrderStatusId == newStatus.OrderStatusId){
+                        continue;
+                    }
+
+                    order.OrderStatusId = newStatus.OrderStatusId;
+                }
+                return errorOrders;
+            } catch(Exception ex) {
+                throw new Exception($"Change order status failed in order repo: {ex.Message}");
             }
         }
     }

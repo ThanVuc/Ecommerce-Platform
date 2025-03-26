@@ -22,14 +22,14 @@
         </thead>
         <tbody>
             @for (order of orders; track order.orderId) {
-                <tr>
+                <tr routerLink="./{{order.orderId}}">
                     <td>#{{order.orderId}}</td>
                     <td>{{order.customerEmail}}</td>
                     <td>{{order.payment}}</td>
                     <td>{{order.productNames}}</td>
                     <td>{{order.createAt | date:'MM/dd/yyyy'}}</td>
                     <td class="status">
-                        <button id="status-{{order.orderId}}" (click)="changeStatus($event, order.orderStatusName, order.orderId)" class="status-btn preparing" [ngClass]="{'change': isStatusChanged(order.orderId) }" >{{isStatusChanged(order.orderId) ? getNewStatus(order.orderId) : order.orderStatusName}}</button>
+                        <button id="status-{{order.orderId}}" (click)="changeStatus($event, order.orderStatusName, order.orderId)" class="status-btn {{getStatusClass(order.orderId)}}" [ngClass]="{'change': isStatusChanged(order.orderId) }" >{{isStatusChanged(order.orderId) ? getNewStatus(order.orderId) : order.orderStatusName}}</button>
                         <div class="select-status">
                             <span class="connector"></span>
                             <span class="material-symbols--close" (click)="hideSelectStatus($event)"></span>
@@ -45,8 +45,13 @@
             }
         </tbody>
     </table>
-    <div class="pagination">
-        <app-pagination [pageIndex]="pageIndex" [limit]="pageSize" [totalItem]="totalItem"
-            (page)="loadPage($event)"></app-pagination>
-    </div>
+    @if (orders.length !== 0) {
+        <div class="pagination">
+            <app-pagination [pageIndex]="pageIndex" [limit]="pageSize" [totalItem]="totalItem"
+                (page)="loadPage($event)"></app-pagination>
+        </div>
+    } @else {
+        <div style="font-size: 1.8; opacity: 0.5;" class="text-center mt-3">Not Found Order</div>
+    }
+
 </div>

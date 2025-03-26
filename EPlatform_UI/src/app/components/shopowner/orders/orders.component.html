@@ -5,9 +5,9 @@
     <div class="body">
         <div class="body-header">
             <div class="header-label">
-                <a (click)="navigateAnotherStatus($event,null)" class="label header-active">All Active Order</a>
+                <a routerLink="." (click)="navigateAnotherStatus($event,null)" class="label header-active">All Active Order</a>
                 @for (status of statuses; track $index) {
-                    <a (click)="navigateAnotherStatus($event, status.orderStatusId)" class="label">{{ status.statusName }}</a>
+                    <a routerLink="." (click)="navigateAnotherStatus($event, status.orderStatusId)" class="label">{{ status.statusName }}</a>
                 }
             </div>
         </div>

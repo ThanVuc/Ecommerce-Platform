@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, ViewChild, viewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PaginationComponent } from "../../../../shares/reusable/pagination/pagination.component";
 import { PageModel } from '../../../models/PageModel';
 import { DatePipe, DOCUMENT, NgClass } from '@angular/common';
@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-orders-management',
   standalone: true,
-  imports: [PaginationComponent, DatePipe, NgClass, FormsModule],
+  imports: [PaginationComponent, DatePipe, NgClass, FormsModule, RouterLink],
   templateUrl: './orders-management.component.html',
   styleUrl: './orders-management.component.scss'
 })
@@ -38,6 +38,7 @@ export class OrdersManagementComponent implements OnInit {
       this.activatedRoute.queryParams.subscribe(params => {
         this.statusId = params["status"] ? parseInt(params["status"]) : null;
       });
+      this.loadPage({pageIndex: this.pageIndex, pageSize: this.pageSize} as PageModel);
     });
   }
 
@@ -114,11 +115,14 @@ export class OrdersManagementComponent implements OnInit {
   }
 
   setNewStatus(event: Event, orderId: number, statusId: number, status: string, ){
+    this.changedStatusList = this.changedStatusList.filter(x => x.OrderId !== orderId);
+    
     this.changedStatusList.push({
       StatusId: statusId,
       Status: status,
       OrderId: orderId
     });
+    console.log(this.changedStatusList);
     const statusBtn = (event.target as HTMLElement).parentElement?.parentElement?.previousElementSibling;
     if (statusBtn) {
         statusBtn.textContent = status;
@@ -135,7 +139,22 @@ export class OrdersManagementComponent implements OnInit {
     return this.changedStatusList.some(x => x.OrderId === orderId);
   }
 
+  getStatusClass(orderId: number){
+    return this.orders.find(x => x.orderId === orderId)?.orderStatusName.toLocaleLowerCase() || "preparing";
+  }
+
   saveStatus(){
-    
+    this.orderSVC.changeOrderStatus(this.changedStatusList).subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.changedStatusList = [];
+          this.loadPage({pageIndex: this.pageIndex, pageSize: this.pageSize} as PageModel);
+          alert(res.data);
+        } else {
+          this.changedStatusList = [];
+          this.loadPage({pageIndex: this.pageIndex, pageSize: this.pageSize} as PageModel);
+        }
+      }
+    });
   }
 }

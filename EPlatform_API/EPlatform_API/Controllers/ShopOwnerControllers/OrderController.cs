@@ -20,6 +20,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
 {
     [ApiController]
     [Route("api/v1/orders")]
+    [Authorize(Roles = "ShopOwner")]
     public class OrderController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -190,7 +191,6 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         }
     
         [HttpGet("/api/v1/shops/{shopId}/orders")]
-        [Authorize(Roles = "ShopOwner")]
         public async Task<IActionResult> GetOrdersByShop([FromRoute] string shopId, [FromQuery] OrderManagementQueryString queryString)
         {
             if (string.IsNullOrEmpty(shopId))
@@ -241,6 +241,45 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 Message = "Get all order status successfully",
                 Data = orderStatuses
             });
+        }
+    
+        [HttpPut("change-order-status")]
+        public async Task<IActionResult> ChangeOrderStatus([FromBody] List<UpdateOrderStatusRequest> OrderStatusesRequest){
+            if (OrderStatusesRequest == null)
+            {
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "Bad Request",
+                    Data = "Params is not found"
+                });
+            }
+
+            try {
+                var errors = await _orderRepository.ChangeOrderStatus(OrderStatusesRequest);
+                await _unitOfWork.SaveAsync();
+                if (errors.Length > 0){
+                    return BadRequest(new ApiResponseStandard<object>
+                    {
+                        Status = 400,
+                        Message = "Bad Request",
+                        Data = errors
+                    });
+                } else {
+                    return Ok(new ApiResponseStandard<object>
+                    {
+                        Status = 200,
+                        Message = "Change order status successfully"
+                    });
+                }
+            } catch (Exception ex) {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = "Error",
+                    Data = ex.Message
+                });
+            }
         }
     }
 }

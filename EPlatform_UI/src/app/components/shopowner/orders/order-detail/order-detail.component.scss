@@ -1,0 +1,247 @@
+@import url(../../../../icon.min.scss);
+$background-color-of-element: rgba($color: #FFFFFF, $alpha: 0.05);
+
+.order-detail-container {
+    display: flex;
+    flex-direction: column;
+    padding-inline: 2rem;
+
+    .heading {
+        display: flex;
+        position: relative;
+
+        .back{
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            left: 0;
+            top: 10%;
+            transform: translateX(-100%);
+            margin-right: 0.8rem;
+
+            &:hover{
+                cursor: pointer;
+                background-color: rgba(white,0.2);
+                border-radius: 50%;
+            }
+
+           span{
+                width: 2rem;
+                height: 2rem;
+           }
+        }
+
+        .order-label {
+            margin-left: 1rem;
+            .order-info{
+                display: flex;
+                align-items: center;
+                .order-id {
+                    font-size: 2rem;
+                    margin-right: 0.8rem;
+                    font-family: 'acme', sans-serif;
+                }
+    
+                .label {
+                    font-size: 0.8rem;
+                    color: black;
+                    padding-inline: 0.4rem;
+                    padding-block: 0.1rem;
+                    border-radius: 1rem;
+                }
+
+                .preparing{
+                    background-color: #FFE710;
+                }
+                .delivering{
+                    background-color: #46F4EC;
+                }
+                .completed{
+                    background-color: #0EEF42;
+                }
+                .cancelled{
+                    background-color: #E60808;
+                    color: white;
+                }
+            }
+
+            .create-at {
+                font-family: 'Inter ExtraLight', sans-serif;
+                font-size: 0.8rem;
+            }
+        }
+
+        
+    }
+
+    .customer-information {
+        background-color: $background-color-of-element;
+        border-radius: 1rem;
+        padding-top: 0.7rem;
+        padding-inline: 1rem;
+        width: 100%;
+        margin-block: 1rem;
+        display: flex;
+        justify-content: space-between;
+        ul{
+            list-style: none;
+            width: 100%;
+        }
+        .attribute{
+            width: 100%;
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            height: auto;
+
+            .text{
+                max-width: 80%;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+        }
+
+        .customer{
+            width: 40%;
+            .head{
+                color: #09AEF6;
+                font-weight: 550;
+                font-size: 1.8rem;
+            }
+        }
+
+        .shipping-info {
+            width: 40%;
+
+            .head{
+                color: #CDC04B;
+                font-weight: 550;
+                font-size: 1.8rem;
+            }
+
+            .attribute{
+                width: 100%;
+            }
+        }
+    }
+
+    .product {
+        display: flex;
+        flex-direction: column;
+        background-color: $background-color-of-element;
+        padding-block: 0.7rem;
+        padding-inline: 1rem;
+        border-radius: 1rem;
+
+        
+        .summary{
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 2rem;
+
+            .head{
+                color: #ED7171;
+                font-weight: 550;
+                font-size: 1.8rem;
+            }
+
+            .summary-item{
+                display: flex;
+                justify-content: space-between;
+                font-size: 1.1rem;
+
+                .title{
+                    font-weight: 550;
+                }
+
+                span{
+                    padding: 0.5rem;
+                }
+
+                .price{
+                    color: #FF421D;
+                }
+
+                &:last-child{
+                    border-top: 1px solid rgba(white,0.3);
+                    margin-top: 0.5rem;
+                }
+            }
+        }
+
+        .order-items-container{
+            margin-top: 1rem;
+
+            .head{
+                color: #07DF3A;
+                font-weight: 550;
+                font-size: 1.8rem;
+            }
+
+            .order-items {
+                display: flex;
+                flex-direction: column;
+                row-gap: 1rem;
+    
+                .order-item {
+                    background-color: rgba($color: #FFFFFF, $alpha: 0.06);
+                    border-radius: 0.4rem;
+                    width: 100%;
+                    height: 14rem;
+                    padding: 1.5rem;
+                    margin-bottom: 1rem;
+                    display: flex;
+                    justify-content: space-between;
+    
+                    .order-info{
+                        display: flex;
+                        gap: 1rem;
+    
+                        img{
+                            height: 100%;
+                            width: 10rem;
+                            object-fit: contain;
+                        }
+        
+                        .order-detail{
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: space-around;
+        
+                            .product-name{
+                                font-size: 1.5rem;
+                                color: #02C0FF;
+                            }
+        
+                            .product-quantity{
+                                font-size: 1.2rem;
+                                color: #01FFC0;
+                            }
+        
+                            .cost{
+                                display: flex;
+                                gap: 1rem;
+                                font-size: 1.1rem;
+                                color: #ED7171;
+                            }
+        
+                        }
+                    }
+    
+                    .total-cost{
+                        font-size: 2rem;
+                        color: #FF421D;
+                        display: flex;
+                        align-items: end;
+                        margin-bottom: 1rem;
+                    }
+                }
+            }
+        }
+
+        
+    }
+}

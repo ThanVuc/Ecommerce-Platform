@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
 import { DataService } from '../../services/data.service';
 import { StatusModel } from './models/status-model';
 import { OrderService } from '../../services/order.service';
@@ -26,11 +26,11 @@ export class OrdersComponent implements OnInit {
     });
   }
 
-  getStatusByName(name: string){
+  getStatusByName(name: string) {
     return this.statuses.find(x => x.statusName === name);
   }
 
-  navigateAnotherStatus(event: Event ,statusId: number | null){
+  navigateAnotherStatus(event: Event, statusId: number | null) {
     const currentElement = event.currentTarget as HTMLElement;
     const parentElement = currentElement.parentElement;
     if (parentElement || currentElement) {

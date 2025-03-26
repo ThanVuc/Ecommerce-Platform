@@ -2,8 +2,6 @@
 
 .order-management-container{
     min-width: 100%;
-    min-height: 70vh;
-
     .tool {
         width: 100%;
         display: flex;
@@ -101,6 +99,11 @@
 
         tbody{
             tr{
+                &:hover{
+                    padding: 0.5rem;
+                    background-color: rgba(#9f9f9f, 0.1);
+                    cursor: pointer;
+                }
                 td{
                     position: relative;
                     padding-inline: 1rem;
