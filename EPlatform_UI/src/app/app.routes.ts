@@ -143,6 +143,11 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         loadChildren: () => [
             {
+                path: '',
+                redirectTo: 'orders',
+                pathMatch: 'full'
+            },
+            {
                 path: "products",
                 loadComponent(){
                     return import('./components/shopowner/products/products.component')

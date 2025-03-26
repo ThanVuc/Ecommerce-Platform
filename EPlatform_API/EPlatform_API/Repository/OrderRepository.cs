@@ -7,6 +7,7 @@ using EPlatform_API.DTOs.OrderDTOs;
 using EPlatform_API.DTOs.ProductDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IServices;
+using EPlatform_API.Mappers;
 using EPlatform_API.Models.ShopOwners;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
@@ -101,7 +102,7 @@ namespace EPlatform_API.Repository
                     .ThenInclude(op => op.Product)
                     .Include(o => o.OrderStatus)
                     .Include(o => o.Customer)
-                    .Where(o => o.ShopId == shopId && o.isDeleted == false && o.OrderStatus.IsFinal == false)
+                    .Where(o => o.ShopId == shopId && o.isDeleted == false)
                     .AsNoTracking()
                     .AsQueryable();
                     
@@ -167,6 +168,26 @@ namespace EPlatform_API.Repository
                 return errorOrders;
             } catch(Exception ex) {
                 throw new Exception($"Change order status failed in order repo: {ex.Message}");
+            }
+        }
+    
+        public async Task<OrderDetailResponse> GetOrderById(int orderId){
+            try {
+                var order = await _context.Orders
+                .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                .Include(o => o.OrderStatus)
+                .Include(o => o.Customer)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+                if (order == null){
+                    throw new Exception("Orders not found");
+                }
+
+                return order.ToOrderDetailResponse();
+            } catch(Exception ex) {
+                throw new Exception($"Get order by id failed in order repo: {ex.Message}");
             }
         }
     }

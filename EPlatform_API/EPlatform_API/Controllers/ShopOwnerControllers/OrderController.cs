@@ -281,5 +281,46 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
         }
+    
+        [HttpGet("{orderId}")]
+        public async Task<IActionResult> GetOrderById([FromRoute] int orderId)
+        {
+            if (orderId == 0)
+            {
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "Bad Request",
+                    Data = "Order id is required"
+                });
+            }
+
+            try {
+                var order = await _orderRepository.GetOrderById(orderId);
+                if (order == null)
+                {
+                    return NotFound(new ApiResponseStandard<object>
+                    {
+                        Status = 404,
+                        Message = "Not Found",
+                        Data = "Order not found"
+                    });
+                }
+
+                return Ok(new ApiResponseStandard<OrderDetailResponse>
+                {
+                    Status = 200,
+                    Message = "Get order by id successfully",
+                    Data = order
+                });
+            } catch (Exception ex) {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = "Error",
+                    Data = ex.Message
+                });
+            }
+        }
     }
 }

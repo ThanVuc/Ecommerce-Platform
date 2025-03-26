@@ -263,5 +263,29 @@ namespace EPlatform_API.Mappers
                 OrderStatusName = order.OrderStatus?.StatusName
             };
         }
+
+        public static OrderDetailResponse ToOrderDetailResponse(this Order order)
+        {
+            return new OrderDetailResponse
+            {
+                OrderId = order.OrderId,
+                OrderStatus = order.OrderStatus?.StatusName,
+                CreateAt = order.CreatedAt,
+                AccountName = order.Customer?.First + " " + order.Customer?.Last,
+                OrderNums = order.OrderProducts?.Count ?? 0,
+                Email = order.Email,
+                Phone = order.Customer.PhoneNumber,
+                CustomerName = order.Customer?.UserName,
+                ShippingAddress = order.ShippingAddress,
+                ShippingPhone = order.Phone,
+                Products = order.OrderProducts?.Select(op => new ProductDetail
+                {
+                    AvtImg = op.Product?.AvtImgUrl,
+                    Name = op.Product?.Name,
+                    Quantity = op.Quantity,
+                    Price = op.ProductsPrice
+                }).ToList()
+            };
+        }
     }
 }

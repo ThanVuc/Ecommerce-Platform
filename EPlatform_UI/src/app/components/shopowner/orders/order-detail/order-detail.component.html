@@ -1,14 +1,14 @@
 <div class="order-detail-container">
     <div class="heading">
-        <div routerLink=".." class="back" >
+        <div routerLink=".." (click)="navigateBackOldStatus()" class="back" >
             <span class="lets-icons--back"></span>
         </div>
         <div class="order-label">
             <div class="order-info">
-                <div class="order-id">Order ID: #123</div>
-                <div class="label preparing">Preparing</div>
+                <div class="order-id">Order ID: #{{order.orderId}}</div>
+                <div class="label {{order.orderStatus.toLocaleLowerCase()}}">{{order.orderStatus}}</div>
             </div>
-            <div class="create-at">January 1, 2025</div>
+            <div class="create-at">{{order.createAt | date:'MMMM dd, yyyy'}}</div>
         </div>
         
     </div>
@@ -18,19 +18,19 @@
             <ul>
                 <li class="attribute customer-info">
                     <span class="material-symbols--person-outline-rounded"></span>
-                    <span class="text">John Doe</span>
+                    <span class="text">{{order.accountName}}</span>
                 </li>
                 <li class="attribute customer-info">
                     <span class="lets-icons--order"></span>
-                    <span class="text">Order</span>
+                    <span class="text">{{order.orderNums}} Order</span>
                 </li>
                 <li class="attribute customer-info">
                     <span class="mdi--gmail"></span>
-                    <span class="text">Email</span>
+                    <span class="text">{{order.email}}</span>
                 </li>
                 <li class="attribute customer-info">
                     <span class="ic--outline-phone"></span>
-                    <span class="text">034787543</span>
+                    <span class="text">{{order.phone}}</span>
                 </li>
             </ul>
         </div>
@@ -38,16 +38,12 @@
             <h4 class="head">Shipping Information</h4>
             <ul>
                 <div class="attribute shipping-info">
-                    <span class="material-symbols--person-outline-rounded"></span>
-                    <span class="text">John Doe</span>
-                </div>
-                <div class="attribute shipping-info">
                     <span class="entypo--address"></span>
-                    <span class="text">to hieu, da nang</span>
+                    <span class="text">{{order.shippingAddress}}</span>
                 </div>
                 <div class="attribute shipping-info">
                     <span class="ic--outline-phone"></span>
-                    <span class="text">034787543</span>
+                    <span class="text">{{order.shippingPhone}}</span>
                 </div>
             </ul>
         </div>
@@ -57,45 +53,31 @@
             <h4 class="head">Summary</h4>
             <div class="summary-item">
                 <span class="title">Subtotal</span>
-                <span>2 items</span>
-                <span class="price">$1.00</span>
-            </div>
-            <div class="summary-item">
-                <span class="title">Shipping Cost</span>
-                <span class="price">$1.00</span>
+                <span>{{order.products.length}} product</span>
+                <span class="price">${{getTotalPrice()}}</span>
             </div>
             <div class="summary-item">
                 <span class="title">Total</span>
-                <span class="price">$1.00</span>
+                <!-- if it have discount and shipping cost, the formular will be re-caculated -->
+                <span class="price">${{getTotalPrice()}}</span>
             </div>
         </div>
         <div class="order-items-container">
             <h4 class="head">Order Items</h4>
             <div class="order-items">
-                <div class="order-item">
-                    <div class="order-info">
-                        <img src="../../../../../../assets/img/congratulation.webp" alt="Product Image">
-                        <div class="order-detail">
-                            <span class="product-name">Product Name</span>
-                            <span class="product-quantity">Quantity: 2</span>
-                            <span class="cost">Price: $50</span>
-                        </div>   
+                @for (product of order.products; track $index) {
+                    <div class="order-item">
+                        <div class="order-info">
+                            <img src="{{product.avtImg}}" alt="Product Image">
+                            <div class="order-detail">
+                                <span class="product-name">{{product.name}}</span>
+                                <span class="product-quantity">Quantity: {{product.quantity}}</span>
+                                <span class="cost">Price: ${{product.price}}</span>
+                            </div>   
+                        </div>
+                        <div class="total-cost">Total Cost: <span>${{product.quantity*product.price}}</span></div>
                     </div>
-                    <div class="total-cost">Total Cost: <span>$123</span></div>
-                </div>
-                <div class="order-item">
-                    <div class="order-info">
-                        <img src="../../../../../../assets/img/congratulation.webp" alt="Product Image">
-                        <div class="order-detail">
-                            <span class="product-name">Product Name</span>
-                            <span class="product-quantity">Quantity: 2</span>
-                            <span class="cost">Price: $50</span>
-                        </div>   
-                    </div>
-                    <div class="total-cost">Total Cost: <span>$123</span></div>
-                </div>
-            </div>
-            
+                }
         </div>
     </div>
 </div>

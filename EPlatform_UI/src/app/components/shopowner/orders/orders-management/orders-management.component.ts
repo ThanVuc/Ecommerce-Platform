@@ -26,15 +26,15 @@ export class OrdersManagementComponent implements OnInit {
   document = inject(DOCUMENT);
   ngOnInit() {
     this.dataSVC.currentMessage.subscribe(statuses => this.statuses = statuses);
-    this.dataSVC.currentStatusId.subscribe({
-      next: (statusId) => {
-        this.statusId = statusId;
-        this.loadPage({pageIndex: this.pageIndex, pageSize: this.pageSize} as PageModel);
-      }
-    });
-
     this.activatedRoute.parent?.parent?.params.subscribe(params => {
       this.shopId = params['shop_id'];
+      this.dataSVC.currentStatusId.subscribe({
+        next: (statusId) => {
+          console.log(statusId);
+          this.statusId = statusId;
+          this.loadPage({pageIndex: this.pageIndex, pageSize: this.pageSize} as PageModel);
+        }
+      });
       this.activatedRoute.queryParams.subscribe(params => {
         this.statusId = params["status"] ? parseInt(params["status"]) : null;
       });
@@ -91,6 +91,7 @@ export class OrdersManagementComponent implements OnInit {
   }
 
   changeStatus(event: Event, originalStatus: string, orderId: number){
+    event.stopPropagation();
     const statusBtn = (event.target as HTMLElement);
     const selectStatus = (event.target as HTMLElement).nextElementSibling;
     const selectStatusClassName = ".select-status";
@@ -110,11 +111,13 @@ export class OrdersManagementComponent implements OnInit {
   }
 
   hideSelectStatus(event: Event){
+    event.stopPropagation();
     const selectStatus = (event.target as HTMLElement).closest('.select-status');
     selectStatus?.classList.remove('show-select-status');
   }
 
   setNewStatus(event: Event, orderId: number, statusId: number, status: string, ){
+    event.stopPropagation();
     this.changedStatusList = this.changedStatusList.filter(x => x.OrderId !== orderId);
     
     this.changedStatusList.push({
@@ -144,6 +147,10 @@ export class OrdersManagementComponent implements OnInit {
   }
 
   saveStatus(){
+    if (this.changedStatusList.length === 0){
+      alert("Please select at least one order to change status");
+      return;
+    }
     this.orderSVC.changeOrderStatus(this.changedStatusList).subscribe({
       next: (res) => {
         if (res.data) {

@@ -4,11 +4,12 @@ import { TokenService } from '../../services/token.service';
 import { ProductService } from '../../services/product.service';
 import { RootCategoryModel } from '../models/root-category-model';
 import { ProductBriefModel } from '../models/product-brief-model';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home-customer',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './home-customer.component.html',
   styleUrl: './home-customer.component.scss'
 })
