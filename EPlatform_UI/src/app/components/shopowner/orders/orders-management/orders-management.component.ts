@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild, viewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ViewChild, viewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PaginationComponent } from "../../../../shares/reusable/pagination/pagination.component";
 import { PageModel } from '../../../models/PageModel';
@@ -8,7 +8,7 @@ import { DataService } from '../../../services/data.service';
 import { OrderModel } from '../models/order-model';
 import { OrderService } from '../../../services/order.service';
 import { PaginationInfoModel } from '../../../models/PaginationInfoModel';
-import { map } from 'rxjs';
+import { map, Subject, takeUntil } from 'rxjs';
 import { send } from 'process';
 import { StatusModel } from '../models/status-model';
 import { FormsModule } from '@angular/forms';
@@ -20,28 +20,33 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './orders-management.component.html',
   styleUrl: './orders-management.component.scss'
 })
-export class OrdersManagementComponent implements OnInit {
+export class OrdersManagementComponent implements OnInit, OnDestroy {
   @ViewChild(PaginationComponent) paginator!: PaginationComponent;
   constructor() { }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
   document = inject(DOCUMENT);
   ngOnInit() {
-    this.dataSVC.currentMessage.subscribe(statuses => this.statuses = statuses);
+    this.dataSVC.currentMessage
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(statuses => this.statuses = statuses);
     this.activatedRoute.parent?.parent?.params.subscribe(params => {
       this.shopId = params['shop_id'];
-      this.dataSVC.currentStatusId.subscribe({
+      this.dataSVC.currentStatusId
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
         next: (statusId) => {
           console.log(statusId);
           this.statusId = statusId;
           this.loadPage({pageIndex: this.pageIndex, pageSize: this.pageSize} as PageModel);
         }
       });
-      this.activatedRoute.queryParams.subscribe(params => {
-        this.statusId = params["status"] ? parseInt(params["status"]) : null;
-      });
-      this.loadPage({pageIndex: this.pageIndex, pageSize: this.pageSize} as PageModel);
     });
   }
 
+  private destroy$ = new Subject<void>();
   activatedRoute = inject(ActivatedRoute);
   dataSVC = inject(DataService);
   orderSVC = inject(OrderService);

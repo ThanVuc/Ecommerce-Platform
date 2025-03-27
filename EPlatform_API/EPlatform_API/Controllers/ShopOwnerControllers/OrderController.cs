@@ -322,5 +322,72 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
         }
+    
+        // get purchase orders
+        [HttpGet("purchase-orders")]
+        [Authorize]
+        public async Task<IActionResult> GetPurchaseOrders([FromQuery] string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "Bad Request",
+                    Data = "User id is required"
+                });
+            }
+
+            try {
+                var orders = await _orderRepository.GetPurchaseOrdersByCustomer(userId);
+
+                return Ok(new ApiResponseStandard<object>
+                {
+                    Status = 200,
+                    Message = "Get purchase orders successfully",
+                    Data = orders
+                });
+            } catch (Exception ex) {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = "Error",
+                    Data = ex.Message
+                });
+            }
+        }
+    
+        // cancel order
+        [HttpPut("cancel-order/{orderId}")]
+        public async Task<IActionResult> CancelOrder([FromRoute] int orderId)
+        {
+            if (orderId == 0)
+            {
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "Bad Request",
+                    Data = "Order id is required"
+                });
+            }
+
+            try {
+                await _orderRepository.CancelOrder(orderId);
+                await _unitOfWork.SaveAsync();
+
+                return Ok(new ApiResponseStandard<object>
+                {
+                    Status = 200,
+                    Message = "Cancel order successfully"
+                });
+            } catch (Exception ex) {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = "Error",
+                    Data = ex.Message
+                });
+            }
+        }
     }
 }

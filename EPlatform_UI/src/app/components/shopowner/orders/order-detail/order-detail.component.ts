@@ -17,10 +17,13 @@ export class OrderDetailComponent implements OnInit {
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
       this.orderId = params['order_id'];
-      this.returnStatusId = params['status_id'] ? parseInt(params['status_id']) : null;
       if (this.orderId) {
         this.getOrder();
       }
+    });
+
+    this.activatedRoute.queryParams.subscribe(params => {
+      this.returnStatusId = params['status_id'] ? parseInt(params['status_id']) : null;
     });
   }
 

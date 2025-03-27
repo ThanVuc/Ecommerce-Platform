@@ -9,6 +9,7 @@ import { PageModel } from '../models/PageModel';
 import { StatusModel } from '../shopowner/orders/models/status-model';
 import { ChangeStatusModel } from '../shopowner/orders/models/change-status-model';
 import { OrderDetailModel } from '../shopowner/orders/models/order-detail-model';
+import { GetPurchaseOrdersModel } from '../customer/models/get-purchase-orders';
 
 @Injectable({
   providedIn: 'root'
@@ -44,5 +45,14 @@ export class OrderService {
 
   getOrderById(orderId: number) : Observable<ApiResModel<OrderDetailModel>> {
     return this.http.get<ApiResModel<OrderDetailModel>>(environment.getOrderById + orderId);
+  }
+
+  getPurchaseOrders(userId: string | null) : Observable<ApiResModel<GetPurchaseOrdersModel[]>>{
+    let url = environment.getPurchaseOrders + `?userId=${userId}`;
+    return this.http.get<ApiResModel<GetPurchaseOrdersModel[]>>(url);
+  }
+
+  cancelOrder(orderId: number) : Observable<ApiResModel<object>> {
+    return this.http.put<ApiResModel<object>>(environment.cancelOrder + orderId, null);
   }
 }

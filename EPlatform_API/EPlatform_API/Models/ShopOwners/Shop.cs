@@ -56,5 +56,6 @@ namespace EPlatform_API.Models.ShopOwners
         public ICollection<Product>? Products { get; set; }
         [Required]
         public AppUser? ShopOwner {get; set;}
+        public ICollection<Order>? Orders {get; set;}
     }
 }

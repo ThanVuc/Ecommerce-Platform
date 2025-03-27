@@ -3,7 +3,7 @@
     <div class="top-header">
       <a class="left-chanel" (click)="redirectToShop()" >Shop's Owner Chanel</a>
       <div class="right">
-        <a class="notification right-item" >Purchases</a>
+        <a [routerLink]="['purchase']" [queryParams]="{userId: userId}" class="notification right-item" >Purchases</a>
         @if (tokenSVC.isAuthenicated()){
           <a class="logout right-item" (click)="signOut()" >Sign Out</a>
         } @else {

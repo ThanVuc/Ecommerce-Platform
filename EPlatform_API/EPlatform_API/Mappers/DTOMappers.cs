@@ -287,5 +287,27 @@ namespace EPlatform_API.Mappers
                 }).ToList()
             };
         }
+
+        // write mapper here with order to PurchaseOrdersResponse
+        public static PurchaseOrdersResponse ToPurchaseOrdersResponse(this Order order)
+        {
+            return new PurchaseOrdersResponse
+            {
+                OrderId = order.OrderId,
+                OrderStatus = order.OrderStatus?.StatusName,
+                CreateAt = order.CreatedAt,
+                ShopAvt = order.Shop?.LogoUrl,
+                ShopName = order.Shop?.Name,
+                PaymentName = order.PaymentMethod,
+                Products = order.OrderProducts?.Select(op => new ProductModel
+                {
+                    ProductId = op.ProductId.ToString(),
+                    ProductAvtImg = op.Product?.AvtImgUrl,
+                    ProductName = op.Product?.Name,
+                    Quantity = op.Quantity,
+                    Price = op.ProductsPrice
+                }).ToList()
+            };
+        }
     }
 }

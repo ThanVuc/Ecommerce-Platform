@@ -42,6 +42,12 @@ namespace EPlatform_API.Data
             .WithOne(p => p.Category)
             .OnDelete(DeleteBehavior.NoAction);
 
+            builder.Entity<Order>()
+            .HasOne(o => o.Shop)
+            .WithMany(s => s.Orders)
+            .HasForeignKey(o => o.ShopId)
+            .OnDelete(DeleteBehavior.NoAction);
+
             builder.Entity<AppUser>()
             .HasOne(u => u.Shop)
             .WithOne(s => s.ShopOwner)

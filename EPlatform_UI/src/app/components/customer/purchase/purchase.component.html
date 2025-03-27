@@ -1,0 +1,50 @@
+<div class="container">
+    <div class="purchase-heading">Purchase Orders</div>
+    <div class="orders">
+        @for (order of orders; track $index) {
+            <div class="order">
+                <div class="order-heading">
+                    <div class="heading-info">
+                        <div class="order-id">Order: #{{order.orderId}}</div>
+                        <div class="order-info">
+                            <div class="shop-info">
+                                <img src="{{order.shopAvt}}" alt="shop-img">
+                                <span>Shop {{order.shopName}}</span>
+                            </div>
+                            <div class="create-at">{{order.createAt | date: 'MMMM d, y'  }}</div>
+                        </div>
+                        <div class="payment">
+                            <div class="total-cost">Total: ${{getPurchaseOrderTotalCost(order.products)}}</div>
+                            <div class="payment-method">Payment Method: {{order.paymentName}}</div>
+                        </div>
+                    </div>
+                    @if (!(order.orderStatus === 'Cancelled' || order.orderStatus === 'Completed')) {
+                        <div (click)="cancelOrder(order.orderId)" class="cancel-order">
+                            <span class="uil--cancel"></span>
+                        </div>
+                    }
+                </div>
+                <div class="products">
+                    @for (product of order.products; track $index) {
+                        <div class="product">
+                            <div class="product-info">
+                                <img src="{{product.productAvtImg}}" alt="">
+                                <div class="product-details">
+                                    <p class="product-name">{{product.productName}} <span class="{{order.orderStatus.toLowerCase()}}">{{order.orderStatus}}</span> </p>
+                                    <p class="product-quantity">Quantity: {{product.quantity}}</p>
+                                    <div class="cost">
+                                        <p class="product-price">Price: ${{product.price}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="total-cost">Total Cost: ${{product.quantity*product.price}}</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        
+    </div>
+
+</div>
+

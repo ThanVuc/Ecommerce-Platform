@@ -14,7 +14,7 @@ namespace EPlatform_API.Models.ShopOwners
         public int OrderId { get; set; }
 
         [Required]
-        // [ForeignKey("Shop")]
+        [ForeignKey("Shop")]
         // [StringLength(10)]
         public string? ShopId { get; set; }
 
@@ -58,5 +58,6 @@ namespace EPlatform_API.Models.ShopOwners
         public ICollection<OrderProduct>? OrderProducts { get; set; }
         public AppUser? Customer {get; set;}
         public Shipment? Shipment {get; set;}
+        public Shop? Shop {get; set;}
     }
 }

@@ -190,5 +190,50 @@ namespace EPlatform_API.Repository
                 throw new Exception($"Get order by id failed in order repo: {ex.Message}");
             }
         }
+    
+        // get purchase orders by customer
+        public async Task<List<PurchaseOrdersResponse>> GetPurchaseOrdersByCustomer(string customerId){
+            try {
+                // get user's orders
+                var orders = await _context.Orders
+                .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                .Include(o => o.OrderStatus)
+                .Include(o => o.Shop)
+                .Where(o => o.CustomerId == customerId && o.isDeleted == false)
+                .Where(o => !(o.OrderStatus.IsFinal == true && o.CreatedAt < DateTime.Now.AddMonths(-2)))
+                .AsNoTracking()
+                .OrderByDescending(o => o.CreatedAt)
+                .Select(o => o.ToPurchaseOrdersResponse())
+                .ToListAsync();
+                
+                if (orders == null){
+                    throw new Exception("Orders not found");
+                }
+
+                return orders;
+            } catch(Exception ex) {
+                throw new Exception($"Get purchase orders by customer failed in order repo: {ex.Message}");
+            }   
+        }
+    
+        public async Task CancelOrder(int orderId){
+            try {
+                var statusId = (await _context.OrderStatuses.FirstOrDefaultAsync(s => s.StatusName == "Cancelled"))?.OrderStatusId;
+                
+                if (statusId == null){
+                    throw new Exception("Cancelled status not found");
+                }
+
+                var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == orderId);
+                if (order == null){
+                    throw new Exception("Order not found");
+                }
+
+                order.OrderStatusId = (int)statusId;
+            } catch(Exception ex) {
+                throw new Exception($"Cancel order failed in order repo: {ex.Message}");
+            }
+        }
     }
 }

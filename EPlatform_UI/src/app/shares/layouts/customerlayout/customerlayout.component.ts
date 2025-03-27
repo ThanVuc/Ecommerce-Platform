@@ -47,6 +47,15 @@ export class CustomerlayoutComponent implements OnInit {
           console.log(error);
         }
       });
+
+      this.shopSVC.getUserId().subscribe({
+        next: (data) => {
+          this.userId = data.data;
+        },
+        error: (error) => {
+          console.log(error);
+        }
+      });
     }
   }
   productSVC = inject(ProductService);
@@ -59,6 +68,7 @@ export class CustomerlayoutComponent implements OnInit {
   role: string[] | null = null;
   cartNum: number | null = null;
   url: string | null = null;
+  userId: string | null = null;
 
   redirectToShop() {
     if (!this.tokenSVC.isAuthenicated()){
@@ -67,14 +77,7 @@ export class CustomerlayoutComponent implements OnInit {
     }
 
     if (this.role && this.role.includes('ShopOwner')) {
-      const shopId = this.shopSVC.getUserId().subscribe({
-        next: (data) => {
-          this.router.navigateByUrl(`/shop-owner/${data.data}`);
-        },
-        error: (error) => {
-          console.log(error);
-        }
-      });
+      this.router.navigateByUrl(`shop-owner/${this.userId}`);
     } else {
       this.router.navigateByUrl('shop-owner/create-shop');
     }
