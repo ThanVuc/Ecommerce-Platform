@@ -39,13 +39,16 @@ $text-color: #ece8e8;
 
 @media screen and (max-height: 25rem) {
     .sidebar {
-        overflow-y: scroll;
-        z-index: 100000;
+        z-index: 100;
     }
 }
 
 .show-sidebar {
     display: block;
+}
+
+.active {
+    color: #CE23CC;
 }
 
 .container-fruid {
@@ -63,12 +66,17 @@ $text-color: #ece8e8;
 
     .sidebar {
         margin-top: 1vh;
-        width: 12.5rem;
+        width: auto;
         height: 96vh;
         position: fixed;
         box-shadow: 4px 2px 6px 2px #424242;
         background-color: $background-color;
         border-radius: 10px;
+        z-index: 10;
+
+        .notification{
+            margin-top: 1rem;
+        }
 
         .sidebar-toggle-collapse {
             position: relative;
@@ -102,8 +110,8 @@ $text-color: #ece8e8;
             padding-top: 10px;
 
             img {
-                width: 50px;
-                height: 50px;
+                width: 3rem;
+                height: 3rem;
             }
 
             .logo-name {
@@ -154,7 +162,7 @@ $text-color: #ece8e8;
                 }
             }
 
-            .dropdown-button:hover{
+            .dropdown-button{
                 cursor: pointer;
                 transform: scale(1.02);
             }
@@ -175,9 +183,6 @@ $text-color: #ece8e8;
                 display: block;
             }
 
-            .active {
-                color: #CE23CC;
-            }
         }
     }
 

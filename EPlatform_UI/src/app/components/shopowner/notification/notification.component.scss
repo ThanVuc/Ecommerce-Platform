@@ -1,0 +1,165 @@
+@import url('../../../icon.min.scss');
+
+.notification-container{
+    width: 100%;
+    position: relative;
+    text-align: center;
+    
+    .active{
+        color: #CE23CC !important;
+    }
+
+    .notification-btn{
+        width: 100%;
+        text-align: center;
+        color: white;
+        outline: none;
+        border: none;
+        background-color: transparent;
+        font-size: large;
+        font-weight: bold;
+        
+        &:hover{
+            transform: scale(1.1);
+            transition: all 0.1s ease-in-out;
+            cursor: pointer;
+        }
+    }
+
+    .show{
+        display: block !important;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .notification-frame{
+        display: none;
+        position: absolute;
+        right: 0;
+        width: 30rem;
+        height: 18rem;
+        transform: translate(100%,-50%);
+        background-color: #000000;
+        border: 1px solid rgba($color: white, $alpha: .5);
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        z-index: 100;
+
+        &::before{
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translate(-100%, -130%);
+            border-width: 8px;
+            border-style: solid;
+            border-color: transparent #ffffff transparent transparent;
+        }
+        
+        .notification-heading{
+            text-align: center;
+            font-size: 1.5rem;
+            color: yellow;
+            margin-bottom: 0.5rem;
+        }
+
+        ul{
+            width: 100%;
+            height: 80%;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: start;
+            padding: 0;
+            margin: 0;
+            overflow-y: scroll;
+
+            &::-webkit-scrollbar{
+                width: 8px;
+                background-color: transparent;
+                border-radius: 0.5rem;
+            }
+
+            &::-webkit-scrollbar-thumb{
+                background-color: #6d6d6d;
+                border-radius: 0.5rem;
+            }
+        
+
+            li{
+                text-align: left;
+                width: 100%;
+                height: auto;
+                display: flex;
+                justify-content: start;
+                align-items: center;
+                gap: 1rem;
+                overflow: visible;
+
+                .notification-content{
+                    display: flex;
+                    justify-content: start;
+                    align-items: start;
+                    padding-block: 0.5rem;
+                    
+                    .lets-icons--order{
+                        width: 2.5rem;
+                        height: 2.5rem;
+                        margin-right: 0.5rem;
+                        flex-shrink: 0;
+                        color: rgb(6, 251, 255);
+                    }
+    
+                    .content{
+                        padding-top: 0.1rem;
+                        overflow: hidden; /* Hide overflowing content */
+                        text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+                        display: -webkit-box; /* Use flexbox for multi-line truncation */
+                        -webkit-line-clamp: 2; /* Limit to 2 lines */
+                        -webkit-box-orient: vertical; /* Set the box orientation to vertical */
+                        font-size: 1rem;
+                        line-height: 1.2rem;
+                        word-wrap: break-word; /* Ensure long words break properly */
+                    }
+
+                    &:hover{
+                        background-color: #5a5a6e;
+                        cursor: pointer;
+                    }
+                }
+
+                .remove{
+                    width: 2rem;
+                    height: 2rem;
+                    color: #607060;
+
+                    &:hover{
+                        background-color: red;
+                        transition: all 0.1s ease-in-out;
+                        cursor: pointer;
+                    }
+                }
+            
+            }
+        }
+
+        .close{
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            color: rgb(255, 0, 0);
+            font-size: 1.5rem;
+            cursor: pointer;
+
+            &:hover{
+                transform: scale(1.1);
+                transition: all 0.1s ease-in-out;
+            }
+
+            &:active{
+                transform: scale(1.0);
+                transition: all 0.1s ease-in-out;
+            }
+        }
+    }
+}

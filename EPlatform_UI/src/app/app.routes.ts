@@ -160,7 +160,8 @@ export const routes: Routes = [
                 loadComponent(){
                     return import('./components/shopowner/products/products.component')
                     .then(p => p.ProductsComponent)
-                }
+                },
+                canActivate: [AuthGuard]
             },
             {
                 path: "add-product",
@@ -168,6 +169,7 @@ export const routes: Routes = [
                     return import('./components/shopowner/add-product/add-product.component')
                     .then(ap => ap.AddProductComponent)
                 },
+                canActivate: [AuthGuard]
             },
             {
                 path: 'products/:product_id',
@@ -175,6 +177,7 @@ export const routes: Routes = [
                     return import('./components/shopowner/add-product/add-product.component')
                     .then(ap => ap.AddProductComponent)
                 },
+                canActivate: [AuthGuard]
             },
             {
                 path: 'products/:product_id/update',
@@ -182,6 +185,7 @@ export const routes: Routes = [
                     return import('./components/shopowner/add-product/add-product.component')
                     .then(ap => ap.AddProductComponent)
                 },
+                canActivate: [AuthGuard]
             },
             {
                 path: 'orders',
@@ -195,14 +199,16 @@ export const routes: Routes = [
                         loadComponent() {
                             return import('./components/shopowner/orders/orders-management/orders-management.component')
                             .then(o => o.OrdersManagementComponent)
-                        }
+                        },
+                        canActivate: [AuthGuard]
                     },
                     {
                         path: ':order_id',
                         loadComponent() {
                             return import('./components/shopowner/orders/order-detail/order-detail.component')
                             .then(od => od.OrderDetailComponent)
-                        }
+                        },
+                        canActivate: [AuthGuard]
                     }
                 ]
             }

@@ -13,7 +13,7 @@
 
             <div id="orders" class="dropdown-list">
                 <button class="dropdown-button" (click)="dropDown($event)" >
-                    <div class="name">Orders</div>
+                    <div class="name order">Orders</div>
                     <span class="mingcute--down-line"></span>
                 </button>
 
@@ -22,21 +22,16 @@
 
             <div id="products" class="dropdown-list">
                 <button class="dropdown-button" (click)="dropDown($event)">
-                    <div class="name">Products</div>
+                    <div class="name product">Products</div>
                     <span class="mingcute--down-line"></span>
                 </button>
 
                 <a routerLink="/shop-owner/{{shop_id}}/products" routerLinkActive="active" class="dropdown-item">All Products</a>
                 <a routerLink="/shop-owner/{{shop_id}}/add-product" routerLinkActive="active" class="dropdown-item">Add Product</a>
             </div>
-
-            <div id="analysic" class="dropdown-list">
-                <button class="dropdown-button" (click)="dropDown($event)">
-                    <div class="name">Analysic & Statistic</div>
-                    <span class="mingcute--down-line"></span>
-                </button>
-
-                <a routerLink="/shop-owner/{{shop_id}}/statistic-revanues" routerLinkActive="active" class="dropdown-item">Revenues</a>
+            
+            <div class="notification">
+                <app-notification></app-notification>
             </div>
 
             <div class="seperator mt-4">
@@ -52,6 +47,7 @@
                 <a routerLink="/shop-owner/{{shop_id}}/shop-setting" routerLinkActive="active" class="dropdown-item">Edit Shop Profile</a>
             </div>
         </div>
+
         <div class="content">
             <button class="sidebar-toggle" (click)="showSideBar($event)" ><span class="quill--hamburger-sidebar"></span></button>
             <router-outlet></router-outlet>

@@ -1,10 +1,11 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NotificationComponent } from "../../../components/shopowner/notification/notification.component";
 
 @Component({
   selector: 'app-shopownerlayout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NotificationComponent],
   templateUrl: './shopownerlayout.component.html',
   styleUrl: './shopownerlayout.component.scss'
 })

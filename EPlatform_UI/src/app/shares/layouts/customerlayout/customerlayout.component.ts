@@ -85,5 +85,6 @@ export class CustomerlayoutComponent implements OnInit {
   
   signOut(){
     this.authSVC.signOut();
+    this.role = null;
   }
 }

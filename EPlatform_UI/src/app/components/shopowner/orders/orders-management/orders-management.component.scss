@@ -2,12 +2,14 @@
 
 .order-management-container{
     min-width: 100%;
+
     .tool {
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: space-between;
         margin-bottom: 1rem;
+
 
         .search-bar {
             width: 60%;
@@ -17,6 +19,7 @@
             padding-inline: 0.5rem;
             border: 1px solid #ABA5A5;
             border-radius: .5rem;
+            
 
             &:has(input:focus){
                 box-shadow: 0 0 0 1px #03b3ff;
@@ -24,6 +27,7 @@
 
             span{
                 font-size: 1.5rem;
+                z-index: auto;
             }
 
             input {
@@ -32,7 +36,7 @@
                 background-color: inherit;
                 border: none;
                 width: 100%;
-                z-index: 0;
+                z-index: auto;
                 color: #fff;
 
                 &:focus {
@@ -114,6 +118,7 @@
                     overflow-x: hidden;
                     text-overflow: ellipsis;
                     line-height: 1.5rem;
+                    z-index: auto;
                 }
 
                 .status-btn{
