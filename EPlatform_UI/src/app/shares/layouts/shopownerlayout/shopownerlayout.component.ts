@@ -1,22 +1,34 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { NotificationComponent } from "../../../components/shopowner/notification/notification.component";
+import { NotifyComponent } from "../../reusable/notify/notify.component";
+import { SignalRService } from '../../../components/services/signal-r.service';
 
 @Component({
   selector: 'app-shopownerlayout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, NotificationComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NotificationComponent, NotifyComponent],
   templateUrl: './shopownerlayout.component.html',
   styleUrl: './shopownerlayout.component.scss'
 })
 export class ShopownerlayoutComponent implements OnInit {
+  @ViewChild(NotifyComponent) notifier!: NotifyComponent;
+  @ViewChild(NotificationComponent) notification!: NotificationComponent;
   shop_id: string = "";
   activatedRouter = inject(ActivatedRoute);
+  message: string = "";
+  signalRService = inject(SignalRService);
 
   ngOnInit(): void {
     this.activatedRouter.params.subscribe(param => {
       this.shop_id = param["shop_id"];
     })
+
+    this.signalRService.notification$.subscribe((message: string) => {
+      this.message = message;
+      this.notifier.showNotify(this.message);
+      this.notification.notificationCount += 1;
+    });
   }
 
   dropDown(event: Event){

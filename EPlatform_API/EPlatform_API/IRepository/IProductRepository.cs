@@ -11,7 +11,7 @@ namespace EPlatform_API.IRepository
     {
         IQueryable<Product> GetProductsByShopSummerize(string shopId);
         Task AddInventoryAsync(Inventory inventory);
-        Task<Product?> GetProductByIdAsync(int productId);
+        Task<Product?> GetProductByIdAsync(int productId, string shopId);
         Task<List<GetCategoriesResponse>?> GetCategoriesAsync(int? parentCategoryId = null, string? searchString = null);
     }
 }

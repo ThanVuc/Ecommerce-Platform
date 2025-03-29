@@ -5,6 +5,7 @@ import { ProductService } from '../../services/product.service';
 import { RootCategoryModel } from '../models/root-category-model';
 import { ProductBriefModel } from '../models/product-brief-model';
 import { RouterLink } from '@angular/router';
+import { SignalRService } from '../../services/signal-r.service';
 
 @Component({
   selector: 'app-home-customer',

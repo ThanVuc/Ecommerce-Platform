@@ -56,30 +56,73 @@ $background-color: #0d0d0d;
 }
 
 .body{
-    height: 58vh;
     width: 100%;
-    overflow-y: scroll;
-    margin-bottom: 12px;
-    border: 1px solid #969696;
-    border-radius: 10px;
-    box-shadow: 4px 2px 6px 2px #424242;
-    
-    
 
     table{
-        margin: 0;
+        width: 100%;
+
+        thead{
+            box-sizing: border-box;
+            background-color: rgba(#FFFFFF, 0.1);
+            th{
+                padding-block: 0.75rem;
+                padding-inline: 1rem;
+                text-align: left;
+                background-color: inherit;
+                color: #fff;
+                font-size: 1.1rem;
+                font-weight: 600;
+
+                &:first-child{
+                    border-top-left-radius: 0.5rem;
+                    border-bottom-left-radius: 0.5rem;
+                }
+                &:last-child{
+                    border-top-right-radius: 0.5rem;
+                    border-bottom-right-radius: 0.5rem;
+                }
+            }
+        }
 
         tbody{
             td{
+                position: relative;
+                    padding-inline: 1rem;
+                    padding-block: 0.75rem;
+                    border-bottom: 1px solid #1C4E64;
+                    font-weight: 520;
+                    max-width: 10rem;
+                    overflow-x: hidden;
+                    text-overflow: ellipsis;
+                    line-height: 1.5rem;
+                    z-index: auto;
+
                 input[type="checkbox"]{
                     margin-left: 0.8rem;
                     width: 1rem;
                     height: 1rem;
                 }
+
+                &.id{
+                    font-weight: 550;
+                    font-size: 1.1rem;
+                }
+
+                &.price{
+                    font-weight: 550;
+                    font-size: 1.1rem;
+                    color: rgb(255, 77, 0);
+                }
+
+                &.product-name{
+                    font-weight: 520;
+                    font-size: 1rem;
+                    color: rgb(0, 224, 224);
+                }
             }
 
             .inventory-field{
-                padding-left: 0.5rem;
+                color: greenyellow;
             }
 
             .product-show{

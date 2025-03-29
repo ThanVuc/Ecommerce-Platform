@@ -11,6 +11,7 @@ import { ProductUpdateResponse } from '../shopowner/models/product-update-respon
 import { env } from 'node:process';
 import { ProductDetailResponse } from '../shopowner/models/product-detail-reponse';
 import { CreateShopModel } from '../shopowner/models/create-shop-model';
+import { NotificationModel } from '../shopowner/models/notification-model';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,7 @@ export class ShopService {
   }
 
   publicOrHideProduct(shopId: string, productId: number, isPublic: boolean): Observable<ApiResModel<object>> {
-    return this.http.put<ApiResModel<object>>(environment.Shop + `${shopId}/products/public-or-hide-product`, { productId: productId, isPublic: isPublic });
+    return this.http.put<ApiResModel<object>>(environment.Shop+"public-or-hide-product", { productId: productId, isPublic: isPublic });
   }
 
   addProduct(shopId: string, product: ProductCreateUpdateModel): Observable<ApiResModel<object>> {
@@ -140,6 +141,15 @@ export class ShopService {
 
 
     return this.http.post(environment.Shop + "create", formData);
+  }
+
+  getNotifications(shopId: string) : Observable<ApiResModel<NotificationModel[]>> {
+    return this.http.get<ApiResModel<NotificationModel[]>>(environment.Shop + shopId + "/get-notifications");
+
+  }
+
+  removeNotification(shopId: string ,notificationId: string) : Observable<ApiResModel<object>> {
+    return this.http.delete<ApiResModel<object>>(environment.Shop + shopId + "/notifications/" + notificationId + "/remove");
   }
 
 }

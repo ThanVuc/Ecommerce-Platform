@@ -256,5 +256,6 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             }).ToList();
             return categories;
         }
+    
     }
 }

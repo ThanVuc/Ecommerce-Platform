@@ -55,5 +55,6 @@ namespace EPlatform_API.Controllers.UtilitiesController
                 Message = "Categories cleared"
             });
         }
+
     }
 }

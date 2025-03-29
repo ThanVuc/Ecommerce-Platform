@@ -6,8 +6,8 @@
         <input id="search-input" type="text" (keydown.enter)="loadProducts()" [(ngModel)]="searchString" name="searchString" placeholder="Search Here!">
     </div>
 <div class="body">
-    <table class="table table-striped table-dark">
-        <thead>
+    <table class="product-table">
+        <thead class=""> 
             <tr>
                 <th scope="col">Id</th>
                 <th scope="col">Product</th>
@@ -18,10 +18,10 @@
             </tr>
         </thead>
         <tbody>
-            @for (product of products; track $index) {
+            @for (product of products; track product.productId) {
             <tr>
-                <th scope="row">{{ product.productId }}</th>
-                <td>
+                <td class="id">#{{ product.productId }}</td>
+                <td class="product-name">
                     <div class="product-show">
                         <img src="{{ product.avtImgUrl }}" alt="">
                         <p>{{ product.name }}</p>
@@ -34,7 +34,7 @@
                     <input (click)="switchStatus(product.productId,product.isPublic)" type="checkbox" name="" id="">
                     }
                 </td>
-                <td>{{ product.price }}</td>
+                <td class="price">${{ product.price }}</td>
                 <td class="inventory-field">{{ product.inventory.availableQuantity }}</td>
                 <td>
                     <a href="/shop-owner/{{shopId}}/products/{{product.productId}}" class="action detail">

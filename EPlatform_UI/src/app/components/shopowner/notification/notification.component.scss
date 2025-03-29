@@ -4,6 +4,21 @@
     width: 100%;
     position: relative;
     text-align: center;
+
+    @keyframes disapear{
+        0%{
+            opacity: 1;
+            transform: translateY(0);
+        }
+        100%{
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+    }
+
+    .disapear{
+        animation: disapear 0.5s ease-in-out;
+    }
     
     .active{
         color: #CE23CC !important;
@@ -39,7 +54,7 @@
         height: 18rem;
         transform: translate(100%,-50%);
         background-color: #000000;
-        border: 1px solid rgba($color: white, $alpha: .5);
+        border: 1px solid rgba($color: white, $alpha: .3);
         border-radius: 0.5rem;
         padding: 0.5rem;
         z-index: 100;
@@ -99,8 +114,10 @@
                 .notification-content{
                     display: flex;
                     justify-content: start;
-                    align-items: start;
+                    align-items: center;
                     padding-block: 0.5rem;
+                    text-decoration: none;
+                    color: white;
                     
                     .lets-icons--order{
                         width: 2.5rem;

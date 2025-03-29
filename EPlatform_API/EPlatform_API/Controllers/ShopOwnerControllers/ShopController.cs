@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlatform_API.DTOs.ApiStandard;
 using EPlatform_API.DTOs.ShopDTOs;
@@ -31,11 +32,13 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         private readonly IBlobServices _blogService;
         private readonly UserManager<AppUser> _userManager;
         private readonly IDatabase _redisDb;
+        private readonly NotificationRepo _notificationRepo;
 
         public ShopController(
             IUnitOfWork unitOfWork,
             UserManager<AppUser> userManager,
-            IConfiguration configuration
+            IConfiguration configuration,
+            NotificationRepo notificationRepo
         )
         {
             _unitOfWork = unitOfWork;
@@ -43,6 +46,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             _redisDb = RedisManager.Connection.GetDatabase();
             _blogService = new BlobServices(configuration, BlobStorage.PublicImages);
             _userManager = userManager;
+            _notificationRepo = notificationRepo;
         }
 
         [HttpGet]
@@ -55,6 +59,23 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         [HttpGet("layout/{shopId}")]
         public async Task<IActionResult> GetShopByIdLayout(string shopId)
         {
+            if (string.IsNullOrEmpty(shopId))
+            {
+                return StatusCode(400, new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "ShopId is required"
+                });
+            }
+
+            if (shopId != GetUserIdFromToken())
+            {
+                return Unauthorized(new ApiResponseStandard<object>
+                {
+                    Status = 401,
+                    Message = "Unauthorized"
+                });
+            }
             var shopLayout = await _shopRepo.GetShopByIdlayoutAsync(shopId);
 
             if (shopLayout == null)
@@ -77,6 +98,23 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         [HttpGet("{shopId}")]
         public async Task<IActionResult> GetShopById(string shopId)
         {
+            if (string.IsNullOrEmpty(shopId))
+            {
+                return StatusCode(400, new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "ShopId is required"
+                });
+            }
+
+            if (shopId != GetUserIdFromToken())
+            {
+                return Unauthorized(new ApiResponseStandard<object>
+                {
+                    Status = 401,
+                    Message = "Unauthorized"
+                });
+            }
             var shop = await _shopRepo.GetShopResponseByIdAsync(shopId);
 
             if (shop == null)
@@ -179,82 +217,12 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             }
         }
 
-        [HttpPut("{shopId}/update")]
-        public async Task<IActionResult> UpdateShop(string shopId, [FromBody] UpdateShopRequest shopRequest)
-        {
-            if (shopRequest == null)
-            {
-                return StatusCode(400, new ApiResponseStandard<object>
-                {
-                    Status = 400,
-                    Message = "Invalid request"
-                });
-            }
-
-            var shop = await _shopRepo.GetShopByIdAsync(shopId);
-            if (shop == null)
-            {
-                return StatusCode(404, new ApiResponseStandard<object>
-                {
-                    Status = 404,
-                    Message = "Shop not found"
-                });
-            }
-
-            shop.Name = shopRequest.Name ?? shop.Name;
-            shop.Email = shopRequest.Email ?? shop.Email;
-            shop.Phone = shopRequest.Phone ?? shop.Phone;
-            shop.ShopAddress = shopRequest.ShopAddress ?? shop.ShopAddress;
-            shop.TaxesCode = shopRequest.TaxesCode ?? shop.TaxesCode;
-            shop.IdentificationNumber = shopRequest.IdentificationNumber ?? shop.IdentificationNumber;
-
-            _shopRepo.Update(shop);
-            await _unitOfWork.SaveAsync();
-
-            _redisDb.KeyDelete($"shop:{shopId}");
-            _redisDb.KeyDelete($"shop-layout:{shopId}");
-
-            return Ok(new ApiResponseStandard<object>
-            {
-                Status = 200,
-                Message = "Shop updated",
-                Data = shop
-            });
-        }
-
-        [HttpDelete("{shopId}/delete")]
-        public async Task<IActionResult> DeleteShop(string shopId)
-        {
-            var shop = await _shopRepo.GetShopByIdAsync(shopId);
-            if (shop == null)
-            {
-                return StatusCode(404, new ApiResponseStandard<object>
-                {
-                    Status = 404,
-                    Message = "Shop not found"
-                });
-            }
-
-            _shopRepo.Delete(shop);
-            await _unitOfWork.SaveAsync();
-
-            _redisDb.KeyDelete($"shop:{shopId}");
-            _redisDb.KeyDelete($"shop-layout:{shopId}");
-
-            return Ok(new ApiResponseStandard<object>
-            {
-                Status = 200,
-                Message = "Shop deleted"
-            });
-        }
-
         [HttpGet("get-user-id")]
         public async Task<IActionResult> GetUserId()
         {
             try
-            {
-                var userName = User.Identity.Name;
-                var userId = await _shopRepo.GetUserIdByNameAsync(userName);
+            {;
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 return Ok(new ApiResponseStandard<object>
                 {
                     Status = 200,
@@ -270,6 +238,85 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                     Message = e.Message
                 });
             }
+        }
+    
+        [HttpGet("{shopId}/get-notifications")]
+        public async Task<IActionResult> GetNotification(string shopId)
+        {
+            if (string.IsNullOrEmpty(shopId))
+            {
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "ShopId is required"
+                });
+            }
+
+            if (shopId != GetUserIdFromToken())
+            {
+                return Unauthorized(new ApiResponseStandard<object>
+                {
+                    Status = 401,
+                    Message = "Unauthorized"
+                });
+            }
+            
+            var notifications = await _notificationRepo.GetNotificationByShopIdAsync(shopId);
+            if (notifications == null)
+            {
+                return StatusCode(404, new ApiResponseStandard<object>
+                {
+                    Status = 404,
+                    Message = "Notifications not found"
+                });
+            }
+
+            return Ok(new ApiResponseStandard<List<ShopNotification>>
+            {
+                Status = 200,
+                Message = "Notifications found",
+                Data = notifications
+            });
+        }
+
+        [HttpDelete("{shopId}/notifications/{notificationId}/remove")]
+        public async Task<IActionResult> RemoveNotification(string shopId, string notificationId)
+        {
+            if (string.IsNullOrEmpty(shopId) || string.IsNullOrEmpty(notificationId))
+            {
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "ShopId and NotificationId are required"
+                });
+            }
+
+            if (shopId != GetUserIdFromToken())
+            {
+                return Unauthorized(new ApiResponseStandard<object>
+                {
+                    Status = 401,
+                    Message = "Unauthorized"
+                });
+            }
+
+            await _notificationRepo.RemoveNotificationAsync(notificationId);
+            await _unitOfWork.SaveAsync();
+
+            return Ok(new ApiResponseStandard<object>
+            {
+                Status = 200,
+                Message = "Notification removed successfully"
+            });
+        }
+
+        private string GetUserIdFromToken(){
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new Exception("User not found");
+            }
+            return userId;
         }
     }
 }

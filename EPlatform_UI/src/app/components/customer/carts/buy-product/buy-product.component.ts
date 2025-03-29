@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { SelectAddressComponent } from "../../../../shares/reusable/select-address/select-address.component";
 import { CartItemModel } from '../../models/cart-item-model';
 import { CreateOrderModel } from '../../models/create-order-model';
@@ -21,6 +21,7 @@ export class BuyProductComponent {
   };
 
   @Output() getPersonalInfo = new EventEmitter<CreateOrderModel>();
+  
 
   getPersonalInfoEvent(){
     this.getPersonalInfo.emit(this.createOrderModel);
@@ -29,5 +30,4 @@ export class BuyProductComponent {
   getAddress(address: string){
     this.createOrderModel.shippingAddress = address;
   }
-
 }

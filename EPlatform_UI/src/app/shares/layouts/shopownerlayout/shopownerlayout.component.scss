@@ -58,6 +58,7 @@ $text-color: #ece8e8;
     height: auto;
     display: flex;
     flex-direction: row;
+    position: relative;
 
     .row {
         background-color: $background-color;

@@ -1,4 +1,6 @@
 <div class="container-fruid">
+    <app-notify [notify]="message" ></app-notify>
+
     <div class="row">
         <div class="black-curtain" (click)="hideSidebar()" ></div>
         <div class="sidebar">
@@ -31,7 +33,7 @@
             </div>
             
             <div class="notification">
-                <app-notification></app-notification>
+                <app-notification [shopId]="shop_id" ></app-notification>
             </div>
 
             <div class="seperator mt-4">

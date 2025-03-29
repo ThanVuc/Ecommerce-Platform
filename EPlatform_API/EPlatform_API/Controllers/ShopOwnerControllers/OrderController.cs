@@ -20,7 +20,6 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
 {
     [ApiController]
     [Route("api/v1/orders")]
-    [Authorize(Roles = "ShopOwner")]
     public class OrderController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -31,6 +30,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         private readonly OrderRepository _orderRepository;
         private readonly ShopRepository _shopRepository;
         private readonly ProductInfoMongoRepository _productInfoMongoRepository;
+        private readonly NotificationRepo _notificationRepo;
 
         public OrderController(
             IUnitOfWork unitOfWork,
@@ -39,7 +39,8 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             UserRepo userRepo,
             OrderRepository orderRepository,
             ShopRepository shopRepository,
-            ProductInfoMongoRepository productInfoMongoRepository
+            ProductInfoMongoRepository productInfoMongoRepository,
+            NotificationRepo notificationRepo
         )
         {
             _unitOfWork = unitOfWork;
@@ -50,6 +51,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             _orderRepository = orderRepository;
             _shopRepository = shopRepository;
             _productInfoMongoRepository = productInfoMongoRepository;
+            _notificationRepo = notificationRepo;
         }
 
         [HttpPost("create-order")]
@@ -149,10 +151,12 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             }
 
             // Create order
+            var orders = new List<Order>(); // List of orders to be created to create notification for shop owner
             try {
                 foreach (var shopProduct in shopProductDict)
                 {
-                    await _orderRepository.CreateOrder(new CreateOrdersRequest{ Email = request.Email, Phone = request.Phone, ShippingAddress = request.ShippingAddress } ,shopProduct, userId);
+                    var order = await _orderRepository.CreateOrder(new CreateOrdersRequest{ Email = request.Email, Phone = request.Phone, ShippingAddress = request.ShippingAddress } ,shopProduct, userId);
+                    orders.Add(order);
                 }
             } catch (Exception e) {
                 await _unitOfWork.RollBackTransaction();
@@ -179,8 +183,34 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
 
+            // create notification for shop owner
+
             await _unitOfWork.CommitTransaction();
             await _unitOfWork.SaveAsync();
+
+            var shopNotifications = new List<ShopNotification>();
+            foreach (var order in orders)
+            {
+                var notification = new ShopNotification
+                {
+                    ActorId = userId,
+                    CreatedAt = DateTime.UtcNow,
+                    Message = $"You have a new order #{order.OrderId} from {customerName}",
+                    ShopId = order.ShopId,
+                    ActionLink = $"/shop-owner/{order.ShopId}/orders/{order.OrderId}"
+                };
+                shopNotifications.Add(notification);
+            }
+            try {
+                await _notificationRepo.SaveNotification(shopNotifications);
+            } catch (Exception e) {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = "Internal Server Error",
+                    Data = $"Error when create order in order controller, {e.Message}"
+                });
+            }
 
             return Ok(new ApiResponseStandard<object>
             {
@@ -191,6 +221,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         }
     
         [HttpGet("/api/v1/shops/{shopId}/orders")]
+        [Authorize(Roles = "ShopOwner")]
         public async Task<IActionResult> GetOrdersByShop([FromRoute] string shopId, [FromQuery] OrderManagementQueryString queryString)
         {
             if (string.IsNullOrEmpty(shopId))
@@ -200,6 +231,16 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                     Status = 400,
                     Message = "Bad Request",
                     Data = "Shop id is required"
+                });
+            }
+
+            if (shopId != GetUserIdFromToken())
+            {
+                return Unauthorized(new ApiResponseStandard<object>
+                {
+                    Status = 401,
+                    Message = "Unauthorized",
+                    Data = "You are not authorized to access this shop"
                 });
             }
 
@@ -244,6 +285,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         }
     
         [HttpPut("change-order-status")]
+        [Authorize(Roles = "ShopOwner")]
         public async Task<IActionResult> ChangeOrderStatus([FromBody] List<UpdateOrderStatusRequest> OrderStatusesRequest){
             if (OrderStatusesRequest == null)
             {
@@ -256,7 +298,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             }
 
             try {
-                var errors = await _orderRepository.ChangeOrderStatus(OrderStatusesRequest);
+                var errors = await _orderRepository.ChangeOrderStatus(OrderStatusesRequest, GetUserIdFromToken());
                 await _unitOfWork.SaveAsync();
                 if (errors.Length > 0){
                     return BadRequest(new ApiResponseStandard<object>
@@ -283,6 +325,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         }
     
         [HttpGet("{orderId}")]
+        [Authorize(Roles = "ShopOwner")]
         public async Task<IActionResult> GetOrderById([FromRoute] int orderId)
         {
             if (orderId == 0)
@@ -296,7 +339,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             }
 
             try {
-                var order = await _orderRepository.GetOrderById(orderId);
+                var order = await _orderRepository.GetOrderById(orderId, GetUserIdFromToken());
                 if (order == null)
                 {
                     return NotFound(new ApiResponseStandard<object>
@@ -338,6 +381,16 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
 
+            if (userId != GetUserIdFromToken())
+            {
+                return Unauthorized(new ApiResponseStandard<object>
+                {
+                    Status = 401,
+                    Message = "Unauthorized",
+                    Data = "You are not authorized to access this user"
+                });
+            }
+
             try {
                 var orders = await _orderRepository.GetPurchaseOrdersByCustomer(userId);
 
@@ -372,7 +425,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             }
 
             try {
-                await _orderRepository.CancelOrder(orderId);
+                await _orderRepository.CancelOrder(orderId, GetUserIdFromToken());
                 await _unitOfWork.SaveAsync();
 
                 return Ok(new ApiResponseStandard<object>
@@ -388,6 +441,16 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                     Data = ex.Message
                 });
             }
+        }
+    
+        private string GetUserIdFromToken()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim != null)
+            {
+                return userIdClaim.Value;
+            }
+            return string.Empty;
         }
     }
 }

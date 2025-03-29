@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Bogus.DataSets;
 using EPlatform_API.DTOs.ApiStandard;
@@ -21,7 +22,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
-using MongoDB.Bson;
 
 namespace EPlatform_API.Controllers.ShopOwnerControllers
 {
@@ -65,6 +65,14 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
 
+            if (shopId != GetUserIdFromToken())
+            {
+                return StatusCode(403, new ApiResponseStandard<object>
+                {
+                    Status = 403,
+                    Message = "You are not authorized to access this resource"
+                });
+            }
 
 
             var productQueryable = _productRepo.GetProductsByShopSummerize(shopId);
@@ -98,7 +106,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             });
         }
 
-        [HttpPut("public-or-hide-product")]
+        [HttpPut("/api/v1/shops/public-or-hide-product")]
         public async Task<IActionResult> PublicOrHideProduct([FromBody] PublicOrHideProductRequest request)
         {
             if (request == null)
@@ -109,28 +117,35 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                     Message = "The request body is empty"
                 });
             }
-
-            var product = await _productRepo.GetProductByIdAsync(request.ProductId);
-
-
-            if (product == null)
-            {
-                return NotFound(new ApiResponseStandard<object>
+            
+            try {
+                var product = await _productRepo.GetProductByIdAsync(request.ProductId, GetUserIdFromToken());
+                if (product == null)
                 {
-                    Status = 404,
-                    Message = "Product not found"
+                    return NotFound(new ApiResponseStandard<object>
+                    {
+                        Status = 404,
+                        Message = "Product not found"
+                    });
+                }
+
+                product.IsPublic = request.IsPublic;
+                _productRepo.Update(product);
+                await _unitOfWork.SaveAsync();
+
+                return Ok(new ApiResponseStandard<object>
+                {
+                    Status = 200,
+                    Message = "Update product success"
+                });
+            
+            } catch (Exception ex){
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Status = 500,
+                    Message = ex.Message
                 });
             }
-
-            product.IsPublic = request.IsPublic;
-            _productRepo.Update(product);
-            await _unitOfWork.SaveAsync();
-
-            return Ok(new ApiResponseStandard<object>
-            {
-                Status = 200,
-                Message = "Update product success"
-            });
         }
 
         [HttpPost("add-product")]
@@ -151,6 +166,15 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 {
                     Status = 400,
                     Message = "The shop is empty"
+                });
+            }
+
+            if (shopId != GetUserIdFromToken())
+            {
+                return StatusCode(403, new ApiResponseStandard<object>
+                {
+                    Status = 403,
+                    Message = "You are not authorized to access this resource"
                 });
             }
 
@@ -212,7 +236,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             var productResponse = new UpdateProductResponse();
             try
             {
-                var product = await _productRepo.GetProductAllByIdAsync(productId);
+                var product = await _productRepo.GetProductAllByIdAsync(productId, GetUserIdFromToken());
                 var productSpecInfo = await _productInfoMongoRepo.GetProductSpecInfoByProductIdAsync(productId);
 
                 if (product == null || productSpecInfo == null)
@@ -277,9 +301,8 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             var productResponse = new ProductDetailResponse();
             try
             {
-                var product = await _productRepo.GetProductAllByIdAsync(productId);
+                var product = await _productRepo.GetProductAllByIdAsync(productId, GetUserIdFromToken());
                 var productSpecInfo = await _productInfoMongoRepo.GetProductSpecInfoByProductIdAsync(productId);
-
                 if (product == null || productSpecInfo == null)
                 {
                     return NotFound(new ApiResponseStandard<object>
@@ -355,12 +378,11 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
 
             // update product core to sql server
             ImageStoreModel? coverImageModel = imgDict.ContainsKey("coverImage") ? imgDict["coverImage"] : null;
-            await _productRepo.UpdateProduct(productId, updateProductModel, coverImageModel);
+            await _productRepo.UpdateProduct(productId, updateProductModel, coverImageModel, GetUserIdFromToken());
             await _unitOfWork.SaveAsync();
 
             // update product info spec to mongodb
             var productInfo = updateProductModel.ToProductSpecInfoUpdate(productId, imgDict);
-            // Console.WriteLine("ProductInfo: " + productInfo.ToJson());
             await _productInfoMongoRepo.UpdateProductInfo(productId, productInfo);
 
             return Ok(new ApiResponseStandard<object>
@@ -375,7 +397,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         public async Task<IActionResult> DeleteProductById([FromRoute] int productId)
         {
             try {
-                _productRepo.DeleteProductByIdAsync(productId);
+                _productRepo.DeleteProductByIdAsync(productId, GetUserIdFromToken());
             } catch (Exception ex){
                 return StatusCode(500, new ApiResponseStandard<object>
                 {
@@ -437,7 +459,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
 
             Dictionary<string, ImageStoreModel> imagesNameDict = new Dictionary<string, ImageStoreModel>(); // first index is cover image
             var productSpec = await _productInfoMongoRepo.GetProductSpecInfoByProductIdAsync(productId);
-            var product = await _productRepo.GetProductByIdAsync(productId);
+            var product = await _productRepo.GetProductByIdAsync(productId, GetUserIdFromToken());
 
             // upload cover image
             var timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -555,5 +577,14 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             return imagesNameDict;
         }
 
+        private string GetUserIdFromToken()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim != null)
+            {
+                return userIdClaim.Value;
+            }
+            return string.Empty;
+        }
     }
 }

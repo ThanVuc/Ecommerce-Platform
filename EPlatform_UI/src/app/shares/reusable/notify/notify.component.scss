@@ -1,0 +1,54 @@
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-1rem);
+        visibility: visible;
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+        visibility: visible;
+    }
+
+    90% {
+        opacity: 1;
+        transform: translateY(0);
+        visibility: visible;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(100%);
+        visibility: hidden;
+    }
+    
+}
+
+.fadeIn{
+    animation: fadeIn 3s ease-in-out forwards;
+}
+
+.notify{
+    visibility: hidden;
+    position: fixed;
+    top: 1rem;
+    right: 0.5rem;
+    z-index: 100;
+    width: 25rem;
+    height: 2.5rem;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255,.3);
+    color: rgb(242, 255, 0);
+    padding-inline: 0.5rem;
+    padding-block: 1rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+
+    .text{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}

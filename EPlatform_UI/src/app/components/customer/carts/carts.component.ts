@@ -9,6 +9,7 @@ import { OrderService } from '../../services/order.service';
 import { CreateOrderModel } from '../models/create-order-model';
 import { create } from 'domain';
 import { MessageComponent } from "../../../shares/reusable/message/message.component";
+import { SignalRService } from '../../services/signal-r.service';
 
 @Component({
   selector: 'app-carts',
@@ -28,6 +29,7 @@ export class CartsComponent implements OnInit {
   activatedRoute = inject(ActivatedRoute);
   orderSVC = inject(OrderService);
   router = inject(Router);
+  signalRService = inject(SignalRService);
 
   cartItemsModel: CartItemModel[] = [];
   buyCartItemList: CartItemModel[] = [];
@@ -144,7 +146,8 @@ export class CartsComponent implements OnInit {
 
     this.orderSVC.createOrder(this.createOrderModel).subscribe({
       next: (res) => {
-        alert('Order created successfully');
+        this.signalRService.sendNotification(this.cartItemsModel.filter((cartItem) => cartItem.isSelected).map((cartItem) => cartItem.shopId.toString()), `You have a new order from ${this.createOrderModel.email}`);
+        alert('Order created successfully!');
         this.getCartItems();
         this.backToCart();
       },

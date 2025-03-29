@@ -1,6 +1,7 @@
 using System.Net.NetworkInformation;
 using EPlatform_API.Data;
 using EPlatform_API.ExtensionMethods;
+using EPlatform_API.Helper;
 using EPlatform_API.IRepository;
 using EPlatform_API.IServices;
 using EPlatform_API.Repository;
@@ -75,6 +76,14 @@ services.ConfigureCORS();
 // Policy
 services.ConfigurePolicy();
 
+// Config SignalR
+services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(10);
+});
+
 // DI
 services.AddTransient<IUnitOfWork,UnitOfWork>();
 services.AddTransient<ITokenService,TokenService>();
@@ -91,6 +100,7 @@ services.AddScoped<ProductInfoMongoRepository,ProductInfoMongoRepository>();
 services.AddScoped<UserRepo,UserRepo>();
 services.AddScoped<OrderRepository,OrderRepository>();
 services.AddScoped<ShopRepository,ShopRepository>();
+services.AddScoped<NotificationRepo,NotificationRepo>();
 
 var app = builder.Build();
 
@@ -104,15 +114,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
 app.UseCors("AllowAllCORS");
 
 app.UseAuthentication();
 
 app.UseAuthorization();
 
-// app.MapGet("/gender-random-string", () => {
-//     return UtilityServices.GenerateRandomString(10);
-// });
+app.MapHub<NotificationHub>("notificationHub");
 
 app.MapControllers();
 

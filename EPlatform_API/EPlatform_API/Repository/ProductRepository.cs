@@ -90,30 +90,40 @@ namespace EPlatform_API.Repository
             return categories;
         }
 
-        public async Task<Product?> GetProductByIdAsync(int productId)
+        public async Task<Product?> GetProductByIdAsync(int productId, string shopId)
         {
             var product = await _context.Products
             .Include(p => p.Inventory)
-            .FirstOrDefaultAsync(p => p.ProductId == productId && p.IsDeleted == false && p.Inventory.IsAvailable == true && p.IsPublic == true);
+            .FirstOrDefaultAsync(p => p.ProductId == productId && p.IsDeleted == false);
 
             if (product == null)
             {
                 return null;
             }
 
+            if (product.ShopId != shopId)
+            {
+                throw new Exception("Product is not belong to this shop");
+            }
+
             return product;
         }
 
-        public async Task<Product?> GetProductAllByIdAsync(int productId)
+        public async Task<Product?> GetProductAllByIdAsync(int productId, string shopId)
         {
             var product = await _context.Products
             .Include(p => p.Inventory)
             .Include(p => p.Category)
-            .FirstOrDefaultAsync(p => p.ProductId == productId && p.IsDeleted == false && p.IsPublic == true && p.Inventory.IsAvailable == true);
+            .FirstOrDefaultAsync(p => p.ProductId == productId && p.IsDeleted == false);
 
             if (product == null)
             {
                 return null;
+            }
+
+            if (product.ShopId != shopId)
+            {
+                throw new Exception("Product is not belong to this shop");
             }
 
             return product;
@@ -123,6 +133,7 @@ namespace EPlatform_API.Repository
         {
             var products = _context.Products
             .Where(p => p.ShopId == shopId && p.IsDeleted == false)
+            .OrderByDescending(p => p.CreatedAt)
             .Select(p => new Product
             {
                 ProductId = p.ProductId,
@@ -142,7 +153,7 @@ namespace EPlatform_API.Repository
 
             return products;
         }
-        public async Task<bool> UpdateProduct(int productId, AddProductRequest updateProductModel, ImageStoreModel? imageStoreModel)
+        public async Task<bool> UpdateProduct(int productId, AddProductRequest updateProductModel, ImageStoreModel? imageStoreModel, string shopId)
         {
             var product = await _context.Products
             .Include(p => p.Inventory)
@@ -151,6 +162,11 @@ namespace EPlatform_API.Repository
             if (product == null)
             {
                 return false;
+            }
+
+            if (product.ShopId != shopId)
+            {
+                throw new Exception("Product is not belong to this shop");
             }
 
             if (product.Inventory == null)
@@ -178,7 +194,7 @@ namespace EPlatform_API.Repository
             _context.Products.Update(product);
             return true;
         }
-        public bool DeleteProductByIdAsync(int productId)
+        public bool DeleteProductByIdAsync(int productId, string shopId)
         {
             var product = _context.Products
             .FirstOrDefault(p => p.ProductId == productId);
@@ -186,6 +202,12 @@ namespace EPlatform_API.Repository
             {
                 throw new Exception("Product is not found");
             }
+
+            if (product.ShopId != shopId)
+            {
+                throw new Exception("Product is not belong to this shop");
+            }
+
             product.IsDeleted = true;
             product.DeletedAt = DateTime.Now;
             _context.Products.Update(product);

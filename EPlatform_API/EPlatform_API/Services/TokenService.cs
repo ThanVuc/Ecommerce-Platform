@@ -65,6 +65,9 @@ namespace EPlatform_API.Services
                     claims.Add(new Claim(roleClaim.ClaimType,roleClaim.ClaimValue));
                 }
             }
+
+            claims.Add(new (ClaimTypes.NameIdentifier, user.Id.ToString()));
+            
             return claims;
         }
 

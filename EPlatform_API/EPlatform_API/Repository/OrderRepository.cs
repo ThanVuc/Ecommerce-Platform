@@ -36,7 +36,7 @@ namespace EPlatform_API.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task CreateOrder(CreateOrdersRequest customerInfo, KeyValuePair<string, List<CartItemOfOrder>> shopProductsPair, string customerId)
+        public async Task<EPlatform_API.Models.ShopOwners.Order> CreateOrder(CreateOrdersRequest customerInfo, KeyValuePair<string, List<CartItemOfOrder>> shopProductsPair, string customerId)
         {
             try {
                 if (_context.OrderStatuses == null){
@@ -55,7 +55,7 @@ namespace EPlatform_API.Repository
 
                 Console.WriteLine(shopProductsPair.ToJson());
 
-                _context.Orders.Add(new Models.ShopOwners.Order
+                var order = new Models.ShopOwners.Order
                 {
                     ShopId = shopProductsPair.Key,
                     CustomerId = customerId,
@@ -76,7 +76,11 @@ namespace EPlatform_API.Repository
                         ProductsPrice = p.Price,
                         SpecInfo = p.SpecInfo
                     }).ToList()
-                });
+                };
+
+                _context.Orders.Add(order);
+
+                return order;
             } catch(Exception ex) {
                 throw new Exception($"Create order failed in order repo: {ex.Message}");
             }
@@ -141,7 +145,7 @@ namespace EPlatform_API.Repository
             }
         }
 
-        public async Task<string[]> ChangeOrderStatus(List<UpdateOrderStatusRequest> changeOrderStatuses){
+        public async Task<string[]> ChangeOrderStatus(List<UpdateOrderStatusRequest> changeOrderStatuses, string shopId){
             try {
                 // note the order cannot be change
                 string[] errorOrders = new string[]{};
@@ -154,9 +158,14 @@ namespace EPlatform_API.Repository
                     }
 
                     var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == orderStatusItem.OrderId);
+                    
                     if (order == null){
                         errorOrders.Append($"Order {orderStatusItem.OrderId} not found");
                         continue;
+                    }
+
+                    if (order.ShopId != shopId){
+                        throw new Exception($"Order {orderStatusItem.OrderId} not belong to shop {shopId}");
                     }
 
                     if (order.OrderStatusId == newStatus.OrderStatusId){
@@ -171,7 +180,7 @@ namespace EPlatform_API.Repository
             }
         }
     
-        public async Task<OrderDetailResponse> GetOrderById(int orderId){
+        public async Task<OrderDetailResponse> GetOrderById(int orderId, string shopId){
             try {
                 var order = await _context.Orders
                 .Include(o => o.OrderProducts)
@@ -180,6 +189,10 @@ namespace EPlatform_API.Repository
                 .Include(o => o.Customer)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+                if (order.ShopId != shopId){
+                    throw new Exception($"Order {orderId} not belong to shop {shopId}");
+                }
 
                 if (order == null){
                     throw new Exception("Orders not found");
@@ -217,7 +230,7 @@ namespace EPlatform_API.Repository
             }   
         }
     
-        public async Task CancelOrder(int orderId){
+        public async Task CancelOrder(int orderId, string shopId){
             try {
                 var statusId = (await _context.OrderStatuses.FirstOrDefaultAsync(s => s.StatusName == "Cancelled"))?.OrderStatusId;
                 
@@ -228,6 +241,10 @@ namespace EPlatform_API.Repository
                 var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == orderId);
                 if (order == null){
                     throw new Exception("Order not found");
+                }
+
+                if (order.ShopId != shopId){
+                    throw new Exception($"Order {orderId} not belong to shop {shopId}");
                 }
 
                 order.OrderStatusId = (int)statusId;
