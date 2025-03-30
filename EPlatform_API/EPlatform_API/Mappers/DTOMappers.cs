@@ -288,7 +288,6 @@ namespace EPlatform_API.Mappers
             };
         }
 
-        // write mapper here with order to PurchaseOrdersResponse
         public static PurchaseOrdersResponse ToPurchaseOrdersResponse(this Order order)
         {
             return new PurchaseOrdersResponse
@@ -307,6 +306,21 @@ namespace EPlatform_API.Mappers
                     Quantity = op.Quantity,
                     Price = op.ProductsPrice
                 }).ToList()
+            };
+        }
+    
+        // map product to search product response
+        public static SearchProductsReponse ToSearchProductResponse(this Product product)
+        {
+            return new SearchProductsReponse()
+            {
+                CategoryId = product.CategoryId,
+                ProductId = product.ProductId,
+                Name = product.Name,
+                Price = product.Price,
+                AvtImgUrl = product.AvtImgUrl,
+                SoldQuantity = product.Inventory.SoldQuantity ?? 0,
+                Slug = product.Slug
             };
         }
     }

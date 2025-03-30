@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EPlatform_API.DTOs.ApiStandard;
 using EPlatform_API.DTOs.ProductDTOs;
 using EPlatform_API.ExtensionMethods;
+using EPlatform_API.Helper;
 using EPlatform_API.IServices;
 using EPlatform_API.Repository;
 using EPlatform_API.Services;
@@ -256,6 +257,36 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             }).ToList();
             return categories;
         }
-    
+
+        [HttpGet("/api/v1/products/search")]
+        public async Task<IActionResult> SearchProducts([FromQuery] SearchProductQueryDTO query)
+        {
+            try {
+                // search products by name and select by category id
+                var products = _productRepo.SearchProducts(query.SearchString, query.CategoryId);
+                if (products == null || products.Count() == 0) {
+                    return Ok(new ApiResponseStandard<object>
+                    {
+                        Message = "Products",
+                        Data = products
+                    });
+                }
+                // pagination
+                var productsRes = PageList<SearchProductsReponse>.ToPageList(products, query.PageNumber, query.PageSize);
+                productsRes.AddPagingInfoToHeader(Response);
+
+                return Ok(new ApiResponseStandard<object>
+                {
+                    Message = "Products",
+                    Data = productsRes
+                });
+            } catch (Exception ex) {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Message = "Error",
+                    Data = ex.Message
+                });
+            }
+        }
     }
 }

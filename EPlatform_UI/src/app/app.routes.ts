@@ -64,6 +64,13 @@ export const routes: Routes = [
                     .then(p => p.PurchaseComponent)
                 },
                 canActivate: [AuthGuard]
+            },
+            {
+                path: 'search',
+                loadComponent() {
+                    return import('./components/customer/search/search.component')
+                    .then(s => s.SearchComponent)
+                }
             }
         ]
     },

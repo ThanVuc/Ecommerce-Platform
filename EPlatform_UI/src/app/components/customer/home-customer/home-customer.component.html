@@ -8,7 +8,7 @@
 
         <div class="categories">
             @for (item of categories.categoiesInHome.slice(categories.start,categories.start + categories.showCount); track $index) {
-                <a class="item">
+                <a [routerLink]="['/search']" [queryParams]="{CategoryId: item.categoryId, Name: item.name}" class="item">
                     <img src="{{item.imgUrl}}" alt="Clothes">
                     <p>{{item.name}}</p>
                 </a>

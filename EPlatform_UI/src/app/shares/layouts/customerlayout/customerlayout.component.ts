@@ -5,11 +5,12 @@ import { TokenService } from '../../../components/services/token.service';
 import { ShopService } from '../../../components/services/shop.service';
 import { AuthService } from '../../../components/services/auth.service';
 import { ProductService } from '../../../components/services/product.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-customerlayout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, FormsModule],
   templateUrl: './customerlayout.component.html',
   styleUrl: './customerlayout.component.scss'
 })
@@ -69,6 +70,11 @@ export class CustomerlayoutComponent implements OnInit {
   cartNum: number | null = null;
   url: string | null = null;
   userId: string | null = null;
+  searchString: string | null = null;
+
+  searchProduct() {
+    this.router.navigateByUrl(`/search?SearchString=${this.searchString}`);
+  }
 
   redirectToShop() {
     if (!this.tokenSVC.isAuthenicated()){

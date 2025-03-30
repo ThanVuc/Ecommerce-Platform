@@ -471,5 +471,43 @@ namespace EPlatform_API.Repository
                 }
             }
         }
+    
+        // SearchProducts
+        public IQueryable<SearchProductsReponse>? SearchProducts(string? searchString, int categoryId)
+        {
+            try {
+                var products = _context.Products
+                .Include(p => p.Inventory)
+                .Include(p => p.Category)
+                .Where(p => p.IsPublic == true && p.IsDeleted == false)
+                .OrderByDescending(p => p.CreatedAt)
+                .Select(p => p.ToSearchProductResponse())
+                .AsNoTracking()
+                .AsQueryable();
+
+                if (products == null)
+                {
+                    return null;
+                }
+
+                if (searchString != null)
+                {
+                    products = products.AsEnumerable()
+                        .Where(p => p.Name != null && p.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                        .AsQueryable();
+                }
+
+                if (categoryId != 0)
+                {
+                    products = products
+                    .AsEnumerable() 
+                    .Where(p => p.CategoryId == categoryId).AsQueryable();
+                }
+
+                return products;
+            } catch(Exception e) {
+                throw new Exception($"Error when search products: {e.Message}");
+            }
+        }
     }
 }

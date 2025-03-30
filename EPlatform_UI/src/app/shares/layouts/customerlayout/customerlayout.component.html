@@ -29,7 +29,7 @@
         </a>
       }
       <div class="search-bar">
-        <input type="text" placeholder="Search for products" >
+        <input type="text" [(ngModel)]="searchString" (keydown.enter)="searchProduct()" placeholder="Search for products" >
         <span class="iconamoon--search-light"></span>
       </div>
       <a routerLink="/carts" class="cart">

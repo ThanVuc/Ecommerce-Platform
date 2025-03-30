@@ -1,0 +1,26 @@
+<div class="search-container">
+    <div class="search-header">
+        @if (categoryId != 0) {
+            <p class="search-title">Category is: "{{categoryName}}"</p>
+        } @else {
+            <p class="search-title">Search in : "{{searchString}}"</p>
+        }
+    </div>
+    <div class="products">
+        @for (product of products; track $index) {
+            <a [routerLink]="['/products',product.slug]" [queryParams]="{product_id: product.productId}"  class="product">
+                <img src="{{product.avtImgUrl}}" alt="">
+                <div class="product-info">
+                    <p class="product-name">{{product.name}}</p>
+                    <div class="product-price-sold">
+                        <p class="product-price">${{product.price}}</p>
+                        <p class="product-sold">sold {{product.soldQuantity}}</p>
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+    <div class="pagination">
+        <app-pagination (page)="loadProducts($event)" [limit]="pageSize" [pageIndex]="pageIndex" [totalItem]="totalItem" ></app-pagination>
+    </div>
+</div>

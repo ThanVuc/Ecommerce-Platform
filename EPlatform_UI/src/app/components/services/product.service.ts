@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
@@ -9,6 +9,7 @@ import { ProductDetailComponent } from '../customer/product-detail/product-detai
 import { ProductDetailModel } from '../customer/models/product-detail-model';
 import { AddToCartModel } from '../customer/models/add-to-cart-model';
 import { CartItemModel } from '../customer/models/cart-item-model';
+import { searchProductModel } from '../customer/models/search-product-model';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,11 @@ export class ProductService {
 
   getCartNum() : Observable<ApiResModel<number>> {
     return this.http.get<ApiResModel<number>>(environment.getCartNum);
+  }
+
+  searchProduct(pageIndex: number, pageSize: number, searchString: string = "", categoryId: number) : Observable<HttpResponse<ApiResModel<searchProductModel[]>>> {
+    let url = environment.searchProduct+`?PageNumber=${pageIndex}&PageSize=${pageSize}&SearchString=${searchString}&CategoryId=${categoryId}`;
+    return this.http.get<ApiResModel<searchProductModel[]>>(url,{observe: 'response'});
   }
 }
 
