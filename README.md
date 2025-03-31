@@ -1,10 +1,10 @@
 # Ecommerce-Platform
-&emsp;## How to config and run project:
- &emsp;&emsp;### 1. Install MongoDb, Redis, Sql Server Database, Asp.Net 8.0.3, Angular CLI: 18.2.10, Node: 22.13.1, Package Manager: npm 11.1.0, OS: win32 x64
- &emsp;&emsp;### 2. In API, let's paste file appsettings.json, appsettings.Development.json and folder Properties contain launchSettings.json in main folder + cmd: dotnet restore
- &emsp;&emsp;### 3. In UI: let's paste folder environment contain environment.development.ts and environment.ts into /src + cmd: npm install
- &emsp;&emsp;### 4. Cmd: "dotnet watch run" in API and "ng s" in UI
-&emsp;## How to generate the random data:
+ ## How to config and run project:
+ ### 1. Install MongoDb, Redis, Sql Server Database, Asp.Net 8.0.3, Angular CLI: 18.2.10, Node: 22.13.1, Package Manager: npm 11.1.0, OS: win32 x64
+ ### 2. In API, let's paste file appsettings.json, appsettings.Development.json and folder Properties contain launchSettings.json in main folder + cmd: dotnet restore
+ ### 3. In UI: let's paste folder environment contain environment.development.ts and environment.ts into /src + cmd: npm install
+ ### 4. Cmd: "dotnet watch run" in API and "ng s" in UI
+## How to generate the random data:
  ### 1. In SeedData (Swagger), seed data for order: roles -> users -> categories -> warehouse -> shops -> VietNam location
  ### 2. Admin account: sinhhahaha1@gmail.com - string
  
