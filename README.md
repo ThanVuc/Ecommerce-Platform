@@ -25,6 +25,7 @@
  ## Drop-in Customer
    ### Home
    ### Search
-###  It's the first app that i do it myself, so that through each part the code style, UI maybe change a little. And, i do this app with the crucial target learns the programming so that i have tried quite a lot technique and technologies, therefore my code maybe is quite complicated and hard to read becauase the begin and middle phases i almost don't use the command
+# Conclusion
+ ###  It's the first app that i do it myself from scratch, so that through each part the code style, UI maybe change a little. And, i do this app with the crucial target learns the programming so that i have tried quite a lot technique and technologies, therefore my code maybe is quite complicated and hard to read becauase the begin and middle phases i almost don't use the command
 # Thanks for reading :))
 ### PS: My english is not good, sorry for that :))
