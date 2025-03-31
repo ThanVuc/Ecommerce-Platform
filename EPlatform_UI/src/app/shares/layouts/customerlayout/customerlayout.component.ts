@@ -6,6 +6,7 @@ import { ShopService } from '../../../components/services/shop.service';
 import { AuthService } from '../../../components/services/auth.service';
 import { ProductService } from '../../../components/services/product.service';
 import { FormsModule } from '@angular/forms';
+import { SuggestionModel } from '../../../components/customer/models/suggestion-model';
 
 @Component({
   selector: 'app-customerlayout',
@@ -70,10 +71,50 @@ export class CustomerlayoutComponent implements OnInit {
   cartNum: number | null = null;
   url: string | null = null;
   userId: string | null = null;
-  searchString: string | null = null;
+  searchString: string = "";
+  timer!: NodeJS.Timeout | null;
+  suggestions: SuggestionModel[] = [];
 
-  searchProduct() {
+  searchProduct(suggestion: string | null = null) {
+    if (suggestion){
+      this.searchString = suggestion;
+    }
     this.router.navigateByUrl(`/search?SearchString=${this.searchString}`);
+  }
+
+  debounce(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.timer = null;
+    this.timer = setTimeout(() => {
+      // call api get suggestions
+      this.productSVC.getSuggestions(this.searchString).subscribe({
+        next: (res) => {
+          this.suggestions = res.data;
+          this.showSuggestions(event);
+        },
+        error: (error) => {
+          console.log(error);
+        }
+      });
+          
+    }, 300);
+  }
+
+  showSuggestions(event: Event){
+    event.preventDefault();
+    event.stopPropagation();
+    const suggestions = (event.target as HTMLInputElement).parentElement?.nextElementSibling as HTMLElement;
+    if (suggestions){
+      suggestions.classList.add('show');
+
+      this.document.addEventListener('click', (e) => {
+        if (e.target !== suggestions && e.target !== event.target){
+          suggestions.classList.remove('show');
+        }
+      });
+    }
   }
 
   redirectToShop() {

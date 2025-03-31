@@ -27,13 +27,15 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         private readonly ILogger<ProductController> _logger;
         private readonly ProductInfoMongoRepository _productInfoMongoRepo;
         private readonly ILoggingService _loggingService;
+        private readonly SearchMongoRepo _searchMongoRepo;
 
         public ProductController(
             IUnitOfWork unitOfWork,
             IConfiguration configuration,
             ILogger<ProductController> logger,
             ILoggingService loggingService,
-            ProductInfoMongoRepository productInfoMongoRepository
+            ProductInfoMongoRepository productInfoMongoRepository,
+            SearchMongoRepo searchMongoRepo
         )
         {
             _unitOfWork = unitOfWork;
@@ -42,6 +44,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             _logger = logger;
             _loggingService = loggingService;
             _productInfoMongoRepo = productInfoMongoRepository;
+            _searchMongoRepo = searchMongoRepo;
         }
 
         [HttpGet("/api/v1/categories-in-home")]
@@ -274,6 +277,11 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 // pagination
                 var productsRes = PageList<SearchProductsReponse>.ToPageList(products, query.PageNumber, query.PageSize);
                 productsRes.AddPagingInfoToHeader(Response);
+                // increase search frequences
+                // contition quite redundant, but for the sake of clarity, we keep it here
+                if (query.SearchString != null && query.SearchString.Length > 0 && query.CategoryId == 0) {
+                    await IncreaseSearchFrequences(query.SearchString);   
+                }
 
                 return Ok(new ApiResponseStandard<object>
                 {
@@ -288,5 +296,37 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
                 });
             }
         }
+
+        [HttpGet("/api/v1/products/autocomplete")]
+        public async Task<IActionResult> GetAutoCompleteProducts([FromQuery] string prefix)
+        {
+            try {
+                var products = await _searchMongoRepo.GetAllProductsForAutocomplete(prefix);
+                return Ok(new ApiResponseStandard<object>
+                {
+                    Message = "Products",
+                    Data = products.Select(p => new
+                    {
+                        p.Name
+                    }).ToList()
+                });
+            } catch (Exception ex) {
+                return StatusCode(500, new ApiResponseStandard<object>
+                {
+                    Message = "Error",
+                    Data = ex.Message
+                });
+            }
+        }
+
+        private async Task IncreaseSearchFrequences(string productName)
+        {
+            try {
+                var result = await _searchMongoRepo.InsertOrUpdateSearchProductAnalysic(productName);
+            } catch (Exception ex) {
+                throw new Exception(ex.Message);
+            }
+        }
+
     }
 }

@@ -20,5 +20,8 @@ namespace EPlatform_API.Models.ShopOwners
         [BsonRequired]
         [BsonElement("frequences")]
         public int Frequences { get; set; } = 0;
+
+        [BsonElement("nearest-access")]
+        public DateTime NearestAccess { get; set; } = DateTime.UtcNow;
     }
 }

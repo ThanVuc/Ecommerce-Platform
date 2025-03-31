@@ -7,6 +7,10 @@ using EPlatform_API.IServices;
 using EPlatform_API.Repository;
 using EPlatform_API.Services;
 using EPlatform_API.UnitOfWork;
+using Hangfire;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies;
+using Hangfire.Mongo.Migration.Strategies.Backup;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
@@ -84,6 +88,20 @@ services.AddSignalR(options =>
     options.KeepAliveInterval = TimeSpan.FromSeconds(10);
 });
 
+// Config Handfire
+services.AddHangfire(config => {
+    config.UseMongoStorage(configuration.GetConnectionString("MongoDBLocal"), configuration["MongoDB:Database"], new MongoStorageOptions
+    {
+        MigrationOptions = new MongoMigrationOptions
+        {
+            MigrationStrategy = new MigrateMongoMigrationStrategy(), // Automatically migrate the schema
+            BackupStrategy = new CollectionMongoBackupStrategy() // Backup existing data before migration
+        },
+        CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection
+    });
+});
+services.AddHangfireServer();
+
 // DI
 services.AddTransient<IUnitOfWork,UnitOfWork>();
 services.AddTransient<ITokenService,TokenService>();
@@ -101,6 +119,8 @@ services.AddScoped<UserRepo,UserRepo>();
 services.AddScoped<OrderRepository,OrderRepository>();
 services.AddScoped<ShopRepository,ShopRepository>();
 services.AddScoped<NotificationRepo,NotificationRepo>();
+services.AddScoped<SearchMongoRepo,SearchMongoRepo>();
+services.AddSingleton<ISynchronizationService, SynchronizationService>();
 
 var app = builder.Build();
 
@@ -114,6 +134,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseHangfireDashboard(); // Enable the Hangfire dashboard
+
 app.UseRouting();
 
 app.UseCors("AllowAllCORS");
@@ -123,6 +145,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapHub<NotificationHub>("notificationHub");
+RecurringJob.AddOrUpdate<ISynchronizationService>(
+    "UpdateAutocompleteData",
+    service => service.UpdateAutocompleteData(),
+    Cron.Daily // Run every day
+);
 
 app.MapControllers();
 

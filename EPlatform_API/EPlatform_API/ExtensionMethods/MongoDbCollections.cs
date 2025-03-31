@@ -10,5 +10,7 @@ namespace EPlatform_API.ExtensionMethods
         public const string ProductSpecInfo = "ProductSpecInfo";
         public const string ShopNotification = "ShopNotification";
         public const string FAQChat = "FAQChat";
+        public const string AutoComplete = "AutoCompleteProduct";
+        public const string SearchProductAnalysic = "SearchProductAnalysic";
     }
 }

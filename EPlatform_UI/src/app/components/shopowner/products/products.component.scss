@@ -57,6 +57,8 @@ $background-color: #0d0d0d;
 
 .body{
     width: 100%;
+    min-height: 65vh;
+    margin-bottom: 1rem;
 
     table{
         width: 100%;
@@ -174,7 +176,7 @@ $background-color: #0d0d0d;
 }
 
 .pagination{
-
+    margin-bottom: 1rem;
     app-pagination{
         width: 100%;
     }

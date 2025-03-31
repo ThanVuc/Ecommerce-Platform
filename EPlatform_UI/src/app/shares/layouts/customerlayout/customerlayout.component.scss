@@ -84,30 +84,75 @@
                 }
             }
 
-            .search-bar{
+            .search{
                 width: 50%;
                 height: 45%;
-                background-color: white;
-                display: flex;
-                border: 2px solid #54B9DB;
-                border-radius: 10px;
-                align-items: center;
+                position: relative;
 
-                .iconamoon--search-light{
-                    background-color: #000000;
-                    font-size: 1.5rem;
+                .search-bar{
+                    width: 100%;
+                    height: 100%;
+
+                    &:focus-within{
+                        outline: 3px solid #00b012;
+                        border: none;
+                    }
+
+                    padding-block: 0.3rem;
+                    background-color: white;
+                    display: flex;
+                    border: 2px solid #54B9DB;
+                    border-radius: 10px;
+                    align-items: center;
+    
+                    .iconamoon--search-light{
+                        background-color: #000000;
+                        font-size: 1.5rem;
+                    }
+    
+                    input{
+                        width: 95%;
+                        height: 100%;
+                        border: none;
+                        outline: none;
+                        padding-left: 1rem;
+                        font-size: 1rem;
+                        border-radius: 10px;
+                    }
+                }
+                
+                .show{
+                    display: block !important;
                 }
 
-                input{
-                    width: 95%;
-                    height: 100%;
-                    border: none;
-                    outline: none;
-                    padding-left: 1rem;
-                    font-size: 1rem;
+                .suggestions{
+                    display: none;
+                    list-style: none;
+                    width: 100%;
+                    height: auto;
+                    background-color: white;
+                    z-index: 1000;
                     border-radius: 10px;
+                    padding: 0;
+                    padding-block: 1rem;
+                    
+                    li{
+                        padding-left: 1rem;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        line-height: 1.2rem;
+                        padding-block: 0.4rem;
+                        font-size: 1rem;
+                        white-space: nowrap;
+
+                        &:hover{
+                            background-color: rgba($color: #000000, $alpha: .1);
+                            cursor: pointer;
+                        }
+                    }
                 }
             }
+            
 
             .cart{
                 position: relative;

@@ -28,10 +28,18 @@
           <h3>TRANS</h3>
         </a>
       }
-      <div class="search-bar">
-        <input type="text" [(ngModel)]="searchString" (keydown.enter)="searchProduct()" placeholder="Search for products" >
-        <span class="iconamoon--search-light"></span>
+      <div class="search">
+        <div class="search-bar">
+          <input type="text" (input)="debounce($event)" [(ngModel)]="searchString" (keydown.enter)="searchProduct()" placeholder="Search for products" >
+          <span class="iconamoon--search-light"></span>
+        </div>
+        <ul id="suggestions" class="suggestions">
+          @for (suggestion of suggestions; track $index) {
+          <li (click)="searchProduct(suggestion.name)">{{suggestion.name}}</li>
+        }
+        </ul>
       </div>
+     
       <a routerLink="/carts" class="cart">
         <p class="cart-number">{{ cartNum }}</p>
         <span class="mdi--cart-outline"></span>

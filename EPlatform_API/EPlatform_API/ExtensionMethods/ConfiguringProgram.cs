@@ -151,7 +151,6 @@ namespace EPlatform_API.ExtensionMethods
         }
     
         public static void ConfigureMongoDB(this IServiceCollection services, IConfiguration configuration){
-            Console.WriteLine(configuration.GetConnectionString("MongoDBLocal"));
             services.AddSingleton<IMongoClient,MongoClient>(sp => {
                 return new MongoClient(configuration.GetConnectionString("MongoDBLocal"));
             });

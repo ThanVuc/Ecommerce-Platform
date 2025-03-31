@@ -12,6 +12,7 @@ import { DOCUMENT } from '@angular/common';
 })
 
 export class PaginationComponent implements OnInit, OnChanges {
+  
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["totalItem"] || changes["limit"] || changes["pageIndex"]){
       this.totalPage = Math.ceil(this.totalItem/this.limit);

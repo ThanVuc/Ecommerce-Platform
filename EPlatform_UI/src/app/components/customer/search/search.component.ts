@@ -3,7 +3,7 @@ import { PaginationComponent } from "../../../shares/reusable/pagination/paginat
 import { ProductService } from '../../services/product.service';
 import { searchProductModel } from '../models/search-product-model';
 import { PaginationInfoModel } from '../../models/PaginationInfoModel';
-import { map } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs';
 import { PageModel } from '../../models/PageModel';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
@@ -16,15 +16,30 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 })
 export class SearchComponent implements OnInit {
   ngOnInit(): void {
-    this.activatedRoute.queryParams.subscribe({
+    this.activatedRoute.queryParams
+    .pipe(distinctUntilChanged())
+    .subscribe({
       next: (params) => {
-        this.searchString = params['SearchString'] || "";
-        this.categoryId = params['CategoryId'] || 0;
-        this.categoryName = params['Name'] || "";
-        this.loadProducts({
-          pageIndex: this.pageIndex,
-          pageSize: this.pageSize
-        });
+        const searchString = params['SearchString'] || "";
+        const categoryId = params['CategoryId'] || 0;
+        const categoryName = params['Name'] || "";
+        if (
+          searchString !== this.searchString ||
+          categoryId !== this.categoryId ||
+          categoryName !== this.categoryName
+        ) {
+          this.searchString = searchString;
+          this.categoryId = categoryId;
+          this.categoryName = categoryName;
+          if (this.isInit){
+            this.loadProducts({
+              pageIndex: this.pageIndex,
+              pageSize: this.pageSize
+            });
+          }
+          this.isInit = true;
+        }
+
       },
       error: (error) => {
         console.log(error);
@@ -40,8 +55,9 @@ export class SearchComponent implements OnInit {
   pageSize: number = 42;
   totalItem: number = 0;
   activatedRoute = inject(ActivatedRoute);
+  isInit: boolean = false;
 
-  loadProducts(pageModel: PageModel) {
+  loadProducts(pageModel: PageModel, isInit: boolean = false) {
     this.pageIndex = pageModel.pageIndex;
     this.pageSize = pageModel.pageSize;
     this.productSVC.searchProduct(this.pageIndex,this.pageSize,this.searchString, this.categoryId)

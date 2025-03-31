@@ -21,7 +21,7 @@ export class SearchService {
       suggestions.style.display = "block";
 
       this.document.addEventListener("click", (event) => {
-        if (!suggestions?.contains(event.target as Node) && searchInput !== suggestions) {
+        if (!suggestions?.contains(event.target as Node)) {
           this.hideSuggestions();
         }
       });

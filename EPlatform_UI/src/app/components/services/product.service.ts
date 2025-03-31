@@ -10,6 +10,7 @@ import { ProductDetailModel } from '../customer/models/product-detail-model';
 import { AddToCartModel } from '../customer/models/add-to-cart-model';
 import { CartItemModel } from '../customer/models/cart-item-model';
 import { searchProductModel } from '../customer/models/search-product-model';
+import { SuggestionModel } from '../customer/models/suggestion-model';
 
 @Injectable({
   providedIn: 'root'
@@ -53,6 +54,10 @@ export class ProductService {
   searchProduct(pageIndex: number, pageSize: number, searchString: string = "", categoryId: number) : Observable<HttpResponse<ApiResModel<searchProductModel[]>>> {
     let url = environment.searchProduct+`?PageNumber=${pageIndex}&PageSize=${pageSize}&SearchString=${searchString}&CategoryId=${categoryId}`;
     return this.http.get<ApiResModel<searchProductModel[]>>(url,{observe: 'response'});
+  }
+
+  getSuggestions(prefix: string) : Observable<ApiResModel<SuggestionModel[]>> {
+    return this.http.get<ApiResModel<SuggestionModel[]>>(environment.getSuggestions + `?prefix=${prefix}`);
   }
 }
 
