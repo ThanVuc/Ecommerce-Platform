@@ -9,7 +9,7 @@
  ### 2. Admin account: sinhhahaha1@gmail.com - string
  
 #  Actor
- ## Admin, Customer, Shop's Owner, Drop-in Customer
+ ### Admin, Customer, Shop's Owner, Drop-in Customer
  
 #  Main Functional
  ## Authentication(JWT) - Authorization(JWT, Identity Framework)
