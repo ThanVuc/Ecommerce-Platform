@@ -135,7 +135,7 @@ namespace EPlatform_API.ExtensionMethods
             ConfigurationOptions redisConfig = new ConfigurationOptions{
                 EndPoints = { {redisConnectionString, 19350} },
                 User = "default",
-                Password = "j90k2aflZymhUschvjHo1HThVAVXwDj9", // Replace with your Redis password if needed
+                Password = configuration["Redis:Password"], // Replace with your Redis password if needed
                 AbortOnConnectFail = false
             };
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConfig));
