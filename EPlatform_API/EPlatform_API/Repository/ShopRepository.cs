@@ -22,11 +22,14 @@ namespace EPlatform_API.Repository
         private readonly DbSet<AppUser> _userTable;
         private readonly IDatabase _redisDb;
 
-        public ShopRepository(AppDbContext context, IConfiguration configuration, ILoggingService loggingService) : base(context, configuration, loggingService)
+        public ShopRepository(AppDbContext context,
+         IConfiguration configuration,
+          ILoggingService loggingService,
+          IConnectionMultiplexer redis) : base(context, configuration, loggingService)
         {
             _shopTable = context.Shops;
             _userTable = context.Users;
-            _redisDb = RedisManager.Connection.GetDatabase();
+            _redisDb = redis.GetDatabase();
         }
 
         public Task<IEnumerable<Shop>> GetAllShopsAsync()

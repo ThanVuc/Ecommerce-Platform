@@ -16,19 +16,22 @@ namespace EPlatform_API.Services
     {
         private readonly AppDbContext _dbContext;
         private readonly IRedisServices _redisService;
+        private readonly IConnectionMultiplexer _redisConnection;
 
         public QueryingServices(
             AppDbContext appDbContext,
-            IRedisServices redisServices
+            IRedisServices redisServices,
+            IConnectionMultiplexer redisConnection
         )
         {
             _dbContext = appDbContext;
             _redisService = redisServices;
+            _redisConnection = redisConnection;
         }
 
         public async Task<List<string>?> GetUserSuggestionAsync(string searchTerm)
         {
-            var redis_db = RedisManager.Connection.GetDatabase();
+            var redis_db = _redisConnection.GetDatabase();
             var usersString = await redis_db.StringGetAsync($"search_user:{searchTerm}");
             var usersSuggestionString = await redis_db.StringGetAsync($"search_user_suggest:{searchTerm}");
 
@@ -53,7 +56,7 @@ namespace EPlatform_API.Services
         {
             await _redisService.IncreaseSearchTermCount(searchTerm);
 
-            var redis_db = RedisManager.Connection.GetDatabase();
+            var redis_db = _redisConnection.GetDatabase();
             var usersString = await redis_db.StringGetAsync($"search_user:{searchTerm}");
 
             if (usersString.HasValue){

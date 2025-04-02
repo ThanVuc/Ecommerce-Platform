@@ -8,6 +8,7 @@ using EPlatform_API.IServices;
 using EPlatform_API.Models;
 using EPlatform_API.Repository;
 using EPlatform_API.Services;
+using StackExchange.Redis;
 
 namespace EPlatform_API.UnitOfWork
 {
@@ -18,10 +19,11 @@ namespace EPlatform_API.UnitOfWork
         private ProductRepository _productRepo;
         private readonly ILoggingService _loggingService;
         private readonly IConfiguration _configuration;
+        private readonly IConnectionMultiplexer _redisConnection;
         public ShopRepository ShopRepo {
             get{
                 if (_shopRepo == null){
-                    _shopRepo = new ShopRepository(_context, _configuration, _loggingService);
+                    _shopRepo = new ShopRepository(_context, _configuration, _loggingService, _redisConnection);
                 }
 
                 return _shopRepo;
@@ -31,7 +33,7 @@ namespace EPlatform_API.UnitOfWork
         public ProductRepository ProductRepo{
             get{
                 if (_productRepo == null){
-                    _productRepo = new ProductRepository(_context,_configuration,_loggingService);
+                    _productRepo = new ProductRepository(_context,_configuration,_loggingService,_redisConnection);
                 }
                 return _productRepo;
             }
@@ -40,12 +42,14 @@ namespace EPlatform_API.UnitOfWork
         public UnitOfWork(
             AppDbContext context,
             IConfiguration configuration,
-            ILoggingService loggingService
+            ILoggingService loggingService,
+            IConnectionMultiplexer redisConnection
         )
         {
             _context = context;
             _configuration = configuration;
             _loggingService = loggingService;
+            _redisConnection = redisConnection;
         }
 
         private bool disposed = false;

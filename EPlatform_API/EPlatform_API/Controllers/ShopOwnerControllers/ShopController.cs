@@ -38,12 +38,13 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
             IUnitOfWork unitOfWork,
             UserManager<AppUser> userManager,
             IConfiguration configuration,
-            NotificationRepo notificationRepo
+            NotificationRepo notificationRepo,
+            IConnectionMultiplexer redis
         )
         {
             _unitOfWork = unitOfWork;
             _shopRepo = _unitOfWork.ShopRepo;
-            _redisDb = RedisManager.Connection.GetDatabase();
+            _redisDb = redis.GetDatabase();
             _blogService = new BlobServices(configuration, BlobStorage.PublicImages);
             _userManager = userManager;
             _notificationRepo = notificationRepo;

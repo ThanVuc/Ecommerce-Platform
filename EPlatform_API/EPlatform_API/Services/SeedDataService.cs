@@ -63,7 +63,7 @@ namespace EPlatform_API.Services
                 // Admin shop
                 var shop = new Shop
                 {
-                    ShopId = "1111111111",
+                    ShopId = admin.Id,
                     Name = "Sinh Nguyen" + "@fake-data",
                     Description = faker.Company.CatchPhrase(),
                     LogoUrl = faker.Image.PicsumUrl(),
@@ -78,7 +78,7 @@ namespace EPlatform_API.Services
                     Email = faker.Internet.Email(),
                     TaxesCode = faker.Random.String2(10, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
                     IdentificationNumber = faker.Random.String2(12, "0123456789"),
-                    ShopOwner = null // Assuming you will set this later
+                    ShopOwner = admin // Assuming you will set this later
                 };
 
                 await _userManager.AddToRoleAsync(admin, RoleStorage.ShopOwner);
@@ -202,16 +202,19 @@ namespace EPlatform_API.Services
         public async Task SeedRoleData()
         {
             var faker = new Faker();
-            var adminRole = await _roleManager.FindByNameAsync("Admin");
-            var customerRole = await _roleManager.FindByNameAsync("Customer");
+            var adminRole = await _roleManager.FindByNameAsync(RoleStorage.Admin);
+            var customerRole = await _roleManager.FindByNameAsync(RoleStorage.Customer);
+            var shopOwner = await _roleManager.FindByNameAsync(RoleStorage.ShopOwner);
 
             if (adminRole != null) await _roleManager.DeleteAsync(adminRole);
             if (customerRole != null) await _roleManager.DeleteAsync(customerRole);
+            if (shopOwner != null) await _roleManager.DeleteAsync(shopOwner);
 
             var roles = new List<IdentityRole>
             {
-                new IdentityRole { Id = faker.Random.Guid().ToString(), Name = "Admin", NormalizedName = "ADMIN" },
-                new IdentityRole { Id = faker.Random.Guid().ToString(), Name = "Customer", NormalizedName = "CUSTOMER" }
+                new IdentityRole { Id = faker.Random.Guid().ToString(), Name = RoleStorage.Admin, NormalizedName = RoleStorage.Admin.ToUpper() },
+                new IdentityRole { Id = faker.Random.Guid().ToString(), Name = RoleStorage.Customer, NormalizedName = RoleStorage.Customer.ToUpper() },
+                new IdentityRole { Id = faker.Random.Guid().ToString(), Name = RoleStorage.ShopOwner, NormalizedName = RoleStorage.ShopOwner.ToUpper() },
             };
 
             _context.Roles.AddRange(roles);

@@ -19,10 +19,13 @@ namespace EPlatform_API.Repository
     {
         private readonly AppDbContext _context;
         private readonly IDatabase _redis;
-        public OrderRepository(AppDbContext context, IConfiguration configuration, ILoggingService loggingService) : base(context, configuration, loggingService)
+        public OrderRepository(AppDbContext context, 
+        IConfiguration configuration, 
+        ILoggingService loggingService,
+        IConnectionMultiplexer redis) : base(context, configuration, loggingService)
         {
             _context = context;
-            _redis = RedisManager.Connection.GetDatabase();
+            _redis = redis.GetDatabase();
         }
 
         public async Task InitStatus(){

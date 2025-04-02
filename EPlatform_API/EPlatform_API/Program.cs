@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -89,7 +90,8 @@ services.AddSignalR(options =>
 });
 
 // Config Handfire
-services.AddHangfire(config => {
+services.AddHangfire(config =>
+{
     config.UseMongoStorage(configuration.GetConnectionString("MongoDBLocal"), configuration["MongoDB:Database"], new MongoStorageOptions
     {
         MigrationOptions = new MongoMigrationOptions
@@ -103,24 +105,25 @@ services.AddHangfire(config => {
 services.AddHangfireServer();
 
 // DI
-services.AddTransient<IUnitOfWork,UnitOfWork>();
-services.AddTransient<ITokenService,TokenService>();
-services.AddTransient<IPasswordHasher,PasswordHasher>();
-services.AddSingleton<ISendMailService,SendMailService>();
-services.AddScoped<ISeedDataService,SeedDataService>();
-services.AddScoped<IQueryingServices,QueryingServices>();
+services.AddTransient<IUnitOfWork, UnitOfWork>();
+services.AddTransient<ITokenService, TokenService>();
+services.AddTransient<IPasswordHasher, PasswordHasher>();
+services.AddSingleton<ISendMailService, SendMailService>();
+services.AddScoped<ISeedDataService, SeedDataService>();
+services.AddScoped<IQueryingServices, QueryingServices>();
 services.AddScoped<IRedisServices, RedisServices>();
 services.AddSingleton<ILoggingService, LoggingService>();
 services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
 services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
-services.AddScoped<IVietnameseLocationRepository,VietnameseLocationRepository>();
-services.AddScoped<ProductInfoMongoRepository,ProductInfoMongoRepository>();
-services.AddScoped<UserRepo,UserRepo>();
-services.AddScoped<OrderRepository,OrderRepository>();
-services.AddScoped<ShopRepository,ShopRepository>();
-services.AddScoped<NotificationRepo,NotificationRepo>();
-services.AddScoped<SearchMongoRepo,SearchMongoRepo>();
+services.AddScoped<IVietnameseLocationRepository, VietnameseLocationRepository>();
+services.AddScoped<ProductInfoMongoRepository, ProductInfoMongoRepository>();
+services.AddScoped<UserRepo, UserRepo>();
+services.AddScoped<OrderRepository, OrderRepository>();
+services.AddScoped<ShopRepository, ShopRepository>();
+services.AddScoped<NotificationRepo, NotificationRepo>();
+services.AddScoped<SearchMongoRepo, SearchMongoRepo>();
 services.AddSingleton<ISynchronizationService, SynchronizationService>();
+services.AddScoped<RedisServices, RedisServices>();
 
 var app = builder.Build();
 
@@ -145,6 +148,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapHub<NotificationHub>("notificationHub");
+
+// setup Hangfire recurring job to update autocomplete data
 RecurringJob.AddOrUpdate<ISynchronizationService>(
     "UpdateAutocompleteData",
     service => service.UpdateAutocompleteData(),

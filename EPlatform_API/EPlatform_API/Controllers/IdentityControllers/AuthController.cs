@@ -13,12 +13,13 @@ using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IServices;
 using EPlatform_API.Mappers;
 using EPlatform_API.Models;
+using EPlatform_API.Services;
 using EPlatform_API.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
+using Org.BouncyCastle.Asn1.Cms;
 using StackExchange.Redis;
 
 namespace EPlatform_API.Controllers.Identity
@@ -28,19 +29,17 @@ namespace EPlatform_API.Controllers.Identity
     public class AuthController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;
-        private readonly IDistributedCache _cache;
+        private readonly RedisServices _redisServices;
         private readonly ITokenService _tokenService;
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly ISendMailService _sendMailService;
-        private readonly DistributedCacheEntryOptions cacheOption;
         private readonly AppDbContext _dbContext;
         private readonly ILoggingService _loggingService;
         public AuthController(
             ILogger<AuthController> logger, 
-            IDistributedCache cache,
             ITokenService tokenService,
             IPasswordHasher passwordHasher,
             IConfiguration configuration,
@@ -49,11 +48,11 @@ namespace EPlatform_API.Controllers.Identity
             UserManager<AppUser> userManager,
             RoleManager<IdentityRole> roleManager,
             AppDbContext appDbContext,
-            ILoggingService loggingService
+            ILoggingService loggingService,
+            RedisServices redisServices
         )
         {
             _logger = logger;
-            _cache = cache;
             _tokenService = tokenService;
             _configuration = configuration;
             _sendMailService = sendMailService;
@@ -62,8 +61,7 @@ namespace EPlatform_API.Controllers.Identity
             _roleManager = roleManager;
             _dbContext = appDbContext;
             _loggingService = loggingService;
-            cacheOption = new DistributedCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromDays(7));
+            _redisServices = redisServices;
         }
 
         [HttpPost("login")]
@@ -110,10 +108,10 @@ namespace EPlatform_API.Controllers.Identity
             JwtTokenReponseModel tokenResponse = new JwtTokenReponseModel();
             tokenResponse.AccessToken = await _tokenService.GenerateAccessToken(user);
             tokenResponse.RefreshToken = _tokenService.GenerateRefreshToken();
-            await _cache.SetAsync<string>(
+            await _redisServices.SetString(
                 _configuration["JWT:RefreshKey"]+user.Id,
                 tokenResponse.RefreshToken,
-                cacheOption
+                TimeSpan.FromDays(7)
             );
 
             ApiResponseStandard<JwtTokenReponseModel> response = new ApiResponseStandard<JwtTokenReponseModel>(){
@@ -149,7 +147,7 @@ namespace EPlatform_API.Controllers.Identity
             var verifyCode = GenerateVerifyCode();
             await _sendMailService.SendEmailAsync(registerModel.Username,"OTP From TRANS to Sign Up",$"<h3>Verify Code is: {verifyCode}</h3>");
 
-            await _cache.SetAsync<string>($"VerifyCode:{registerModel.Username}",verifyCode,new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+            await _redisServices.SetString($"VerifyCode:{registerModel.Username}",verifyCode,TimeSpan.FromMinutes(5));
 
             return StatusCode(200, new ApiResponseStandard<object>{
                 Status = 200,
@@ -162,8 +160,7 @@ namespace EPlatform_API.Controllers.Identity
             if (!ModelState.IsValid){
                 return BadRequest();
             }
-            string verifyCode = "";
-            _cache.TryGetValue<string>($"VerifyCode:{registerModel.Username}",out verifyCode);
+            var verifyCode = await _redisServices.GetString($"VerifyCode:{registerModel.Username}");
             _logger.LogCritical($"VerifyCode: {verifyCode} -- ClientOTP: {registerModel.VerifyCode}");
             if (verifyCode != registerModel.VerifyCode){
                 return BadRequest(new ApiResponseStandard<object>{
@@ -218,10 +215,10 @@ namespace EPlatform_API.Controllers.Identity
                 JwtTokenReponseModel tokenResponse = new JwtTokenReponseModel();
                 tokenResponse.AccessToken = await _tokenService.GenerateAccessToken(userExist);
                 tokenResponse.RefreshToken = _tokenService.GenerateRefreshToken();
-                await _cache.GetOrSetAsync<string>(
+                await _redisServices.GetOrSetString(
                     _configuration["JWT:RefreshKey"]+user.Id,
                     tokenResponse.RefreshToken,
-                    cacheOption
+                    TimeSpan.FromDays(7)
                 );
 
                 ApiResponseStandard<JwtTokenReponseModel> response = new ApiResponseStandard<JwtTokenReponseModel>(){
@@ -307,7 +304,7 @@ namespace EPlatform_API.Controllers.Identity
             }
             var verifyCode = GenerateVerifyCode();
             await _sendMailService.SendEmailAsync(user.Email,"Verify Code From TRANS To Recovery Account",$"<h3>The verify code is: {verifyCode}</h3>");
-            await _cache.SetAsync<string>($"AuthVerifyCode:{user.Email}",verifyCode,new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+            await _redisServices.SetString($"AuthVerifyCode:{user.Email}",verifyCode,TimeSpan.FromMinutes(5));
             return Ok(new ApiResponseStandard<object>{
                 Status = 200,
                 Message = "Please, Verify To Recovery Account"
@@ -327,8 +324,7 @@ namespace EPlatform_API.Controllers.Identity
                     Message = "The email doesn't exist"
                 });
             }
-            var verifyCode = "";
-            _cache.TryGetValue<string>($"AuthVerifyCode:{user.UserName}", out verifyCode);
+            var verifyCode = await _redisServices.GetString($"AuthVerifyCode:{user.UserName}");
             if (verifyCode != forgotPasswordModel.VerifyCode){
                 return BadRequest(new ApiResponseStandard<object>{
                     Status = 400,
@@ -341,10 +337,10 @@ namespace EPlatform_API.Controllers.Identity
                 AccessToken = await _tokenService.GenerateAccessToken(user),
                 RefreshToken = _tokenService.GenerateRefreshToken()
             };
-            await _cache.SetAsync<string>(
+            await _redisServices.SetString(
                 _configuration["JWT:RefreshKey"],
                 jwtToken.RefreshToken,
-                cacheOption
+                TimeSpan.FromDays(7)
             );
 
             await _loggingService.WriteAccountLog(@$"recovery-password---account:{user.UserName}---id:{user.Id}---time:{DateTime.Now}");

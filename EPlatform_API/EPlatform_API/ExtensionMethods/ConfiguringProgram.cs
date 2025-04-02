@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace EPlatform_API.ExtensionMethods
 {
@@ -22,11 +23,11 @@ namespace EPlatform_API.ExtensionMethods
     {
         public static void AddSqlDBContext(this IServiceCollection services, IConfiguration configuration){
             services.AddDbContext<AppDbContext>(options => {
-                options.UseSqlServer(configuration.GetConnectionString("Default"));
+                options.UseSqlServer(configuration.GetConnectionString("Cloud_EcommercePlatformMSSQL"));
             });
 
             services.AddDbContext<VietnameseLocationContext>(options => {
-                options.UseSqlServer(configuration.GetConnectionString("VietNamDB"));
+                options.UseSqlServer(configuration.GetConnectionString("Cloud_VietNamDB"));
             });
         }
 
@@ -130,13 +131,14 @@ namespace EPlatform_API.ExtensionMethods
         }
 
         public static void ConfigRedisCatching(this IServiceCollection services, IConfiguration configuration){
-            services.AddStackExchangeRedisCache(options => {
-                options.Configuration = configuration.GetConnectionString("RedisDBLocal");
-                options.ConfigurationOptions = new StackExchange.Redis.ConfigurationOptions(){
-                    AbortOnConnectFail = true,
-                    EndPoints = {options.Configuration}
-                };
-            });
+            var redisConnectionString = configuration.GetConnectionString("Cloud_RedisDB");
+            ConfigurationOptions redisConfig = new ConfigurationOptions{
+                EndPoints = { {redisConnectionString, 19350} },
+                User = "default",
+                Password = "j90k2aflZymhUschvjHo1HThVAVXwDj9", // Replace with your Redis password if needed
+                AbortOnConnectFail = false
+            };
+            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConfig));
         }
 
         public static void ConfigurePolicy(this IServiceCollection services){
@@ -152,7 +154,7 @@ namespace EPlatform_API.ExtensionMethods
     
         public static void ConfigureMongoDB(this IServiceCollection services, IConfiguration configuration){
             services.AddSingleton<IMongoClient,MongoClient>(sp => {
-                return new MongoClient(configuration.GetConnectionString("MongoDBLocal"));
+                return new MongoClient(configuration.GetConnectionString("Cloud_MongoDB"));
             });
 
             services.AddSingleton(sp => {

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using EPlatform_API.Data;
 using EPlatform_API.DTOs.AdminDTOs.Roles;
 using EPlatform_API.DTOs.ApiStandard;
+using EPlatform_API.ExtensionMethods;
 using EPlatform_API.Helper;
 using EPlatform_API.IServices;
 using EPlatform_API.Mappers;
@@ -184,6 +185,15 @@ namespace EPlatform_API.Controllers.Identity
         public async Task<IActionResult> DeleteRole([FromRoute] string id)
         {
             var deleteRole = await _roleManager.FindByIdAsync(id);
+            // Cannot delete default role
+            if (deleteRole == null || deleteRole.Name == RoleStorage.Admin || deleteRole.Name == RoleStorage.Customer || deleteRole.Name == RoleStorage.ShopOwner)
+            {
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "Not found the role or this role is default role"
+                });
+            }
             if (deleteRole == null)
             {
                 return BadRequest(new ApiResponseStandard<object>
@@ -224,6 +234,16 @@ namespace EPlatform_API.Controllers.Identity
             }
 
             var updateRole = await _roleManager.FindByIdAsync(id);
+
+            // Cannot update default role
+            if (updateRole == null || updateRole.Name == RoleStorage.Admin || updateRole.Name == RoleStorage.Customer || updateRole.Name == RoleStorage.ShopOwner)
+            {
+                return BadRequest(new ApiResponseStandard<object>
+                {
+                    Status = 400,
+                    Message = "Not found the role or this role is default role"
+                });
+            }
 
             if (updateRole == null)
             {

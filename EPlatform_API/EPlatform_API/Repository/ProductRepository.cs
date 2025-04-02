@@ -27,12 +27,13 @@ namespace EPlatform_API.Repository
         public ProductRepository(
             AppDbContext context, 
             IConfiguration configuration, 
-            ILoggingService loggingService
+            ILoggingService loggingService,
+            IConnectionMultiplexer redis
         ) : base(context, configuration, loggingService)
         {
             _blobServices = new BlobServices(configuration, BlobStorage.PublicImages);
             _context = context;
-            _redis = RedisManager.Connection.GetDatabase();
+            _redis = redis.GetDatabase();
         }
 
         public async Task AddInventoryAsync(Inventory inventory)
