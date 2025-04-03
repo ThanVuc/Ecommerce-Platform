@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate{
     }
     const isRefresh = await this.tryRefreshToken(accessToken);
     if (!isRefresh) {
-      this.router.navigate(["auth"], { queryParams: {"returnUrl": this.router.url} , replaceUrl: true});
+      this.router.navigate(["auth"], { queryParams: {"returnUrl": "/"} , replaceUrl: true});
     }
     return isRefresh;
   }

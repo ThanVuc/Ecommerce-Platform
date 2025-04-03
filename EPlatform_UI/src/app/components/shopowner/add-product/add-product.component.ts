@@ -12,7 +12,7 @@ import { spec } from 'node:test/reporters';
 import { selectModel } from '../../../shares/reusable/common-model/select-model';
 import { UtilitiesServiceService } from '../../services/utilities-service.service';
 import { ShopService } from '../../services/shop.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MessageComponent } from "../../../shares/reusable/message/message.component";
 import { Title } from '@angular/platform-browser';
 import { ProductCreateUpdateModel } from '../models/product-create-update-model';
@@ -22,7 +22,7 @@ import { error } from 'console';
 @Component({
   selector: 'app-add-product',
   standalone: true,
-  imports: [FormsModule, SelectCategoryComponent, UploadImagesComponent, SelectTagComponent, MessageComponent],
+  imports: [FormsModule,RouterLink, SelectCategoryComponent, UploadImagesComponent, SelectTagComponent, MessageComponent],
   templateUrl: './add-product.component.html',
   styleUrl: './add-product.component.scss'
 })

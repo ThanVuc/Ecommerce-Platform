@@ -17,9 +17,9 @@ namespace EPlatform_API.Services
         public SynchronizationService(IConfiguration configuration)
         {
             _configuration = configuration;
-            var connectionString = configuration.GetConnectionString("MongoDBLocal");
+            var connectionString = configuration.GetConnectionString("Cloud_MongoDB");
             var client = new MongoClient(connectionString);
-            var database = client.GetDatabase("EcommercePlatform");
+            var database = client.GetDatabase(configuration["MongoDB:Database"]);
 
             _searchProductAnalysicCollection = database.GetCollection<AutocompleteProduct>(ExtensionMethods.MongoDbCollections.SearchProductAnalysic);
             _autocompleteProductCollection = database.GetCollection<AutocompleteProduct>(ExtensionMethods.MongoDbCollections.AutoComplete);

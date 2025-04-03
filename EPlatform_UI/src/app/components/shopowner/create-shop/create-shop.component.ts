@@ -5,12 +5,13 @@ import { SelectAddressComponent } from "../../../shares/reusable/select-address/
 import { CreateShopModel } from '../models/create-shop-model';
 import { FormsModule } from '@angular/forms';
 import { PhoneDirective } from '../../validator/PhoneValidator';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-create-shop',
   standalone: true,
-  imports: [SelectAddressComponent, FormsModule, PhoneDirective],
+  imports: [SelectAddressComponent, FormsModule, PhoneDirective, RouterLink],
   templateUrl: './create-shop.component.html',
   styleUrl: './create-shop.component.scss'
 })
@@ -23,6 +24,7 @@ export class CreateShopComponent implements OnInit {
   document = inject(DOCUMENT);
   shopSVC = inject(ShopService);
   router = inject(Router);
+  authSVC = inject(AuthService);
   createShopModel: CreateShopModel = {
     ShopId: "",
     Name: "",
@@ -88,6 +90,7 @@ export class CreateShopComponent implements OnInit {
   createShop(){
     this.shopSVC.createShop(this.createShopModel).subscribe({
       next: (res) => {
+        this.authSVC.signOut();
         this.router.navigateByUrl(`/shop-owner/${this.createShopModel.ShopId}`);
       },
       error: (err) => {

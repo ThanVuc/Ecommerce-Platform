@@ -1,4 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
+@import './app/icon.min.scss';
+
+body{
+    background-color: #0C0C0F;
+    color: white;
+}
+
 @media screen and (max-width: 768px){
     html{
         font-size: 10px;

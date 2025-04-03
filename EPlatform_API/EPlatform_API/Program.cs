@@ -20,6 +20,8 @@ using StackExchange.Redis;
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
+
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -92,15 +94,15 @@ services.AddSignalR(options =>
 // Config Handfire
 services.AddHangfire(config =>
 {
-    config.UseMongoStorage(configuration.GetConnectionString("MongoDBLocal"), configuration["MongoDB:Database"], new MongoStorageOptions
-    {
-        MigrationOptions = new MongoMigrationOptions
-        {
-            MigrationStrategy = new MigrateMongoMigrationStrategy(), // Automatically migrate the schema
-            BackupStrategy = new CollectionMongoBackupStrategy() // Backup existing data before migration
-        },
-        CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection
-    });
+   config.UseMongoStorage(configuration.GetConnectionString("Cloud_MongoDB"), configuration["MongoDB:Database"], new MongoStorageOptions
+   {
+       MigrationOptions = new MongoMigrationOptions
+       {
+           MigrationStrategy = new MigrateMongoMigrationStrategy(), // Automatically migrate the schema
+           BackupStrategy = new CollectionMongoBackupStrategy() // Backup existing data before migration
+       },
+       CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection
+   });
 });
 services.AddHangfireServer();
 
@@ -128,12 +130,14 @@ services.AddScoped<RedisServices, RedisServices>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    // app.ApplyMigrations();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//    // app.ApplyMigrations();
+//}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
@@ -151,9 +155,9 @@ app.MapHub<NotificationHub>("notificationHub");
 
 // setup Hangfire recurring job to update autocomplete data
 RecurringJob.AddOrUpdate<ISynchronizationService>(
-    "UpdateAutocompleteData",
-    service => service.UpdateAutocompleteData(),
-    Cron.Daily // Run every day
+   "UpdateAutocompleteData",
+   service => service.UpdateAutocompleteData(),
+   Cron.Daily // Run every day
 );
 
 app.MapControllers();

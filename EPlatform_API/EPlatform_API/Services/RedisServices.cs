@@ -56,5 +56,11 @@ namespace EPlatform_API.Services
             }
             return stringValue.ToString();
         }
+
+        // remove
+        public async Task RemoveString(string key)
+        {
+            await _redisDatabase.KeyDeleteAsync(key);
+        }
     }
 }

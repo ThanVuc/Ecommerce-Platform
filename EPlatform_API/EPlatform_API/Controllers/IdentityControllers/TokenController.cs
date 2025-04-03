@@ -7,6 +7,7 @@ using EPlatform_API.DTOs.AuthDTOs;
 using EPlatform_API.ExtensionMethods;
 using EPlatform_API.IServices;
 using EPlatform_API.Models;
+using EPlatform_API.Services;
 using EPlatform_API.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,18 +20,17 @@ namespace EPlatform_API.Controllers.Identity
     public class TokenController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IDistributedCache _cache;
+        private readonly RedisServices _redisServices;
         private readonly ITokenService _tokenService;
         private readonly UserManager<AppUser> _userManager; 
         private readonly ILogger<TokenController> _logger;
-        private readonly DistributedCacheEntryOptions cacheOption;
         private readonly IConfiguration _configuration;
 
 
         public TokenController(
             IUnitOfWork unitOfWork,
             ILogger<TokenController> logger,
-            IDistributedCache cache,
+            RedisServices redisServices,
             ITokenService tokenService,
             IConfiguration configuration,
             UserManager<AppUser> userManager
@@ -38,12 +38,10 @@ namespace EPlatform_API.Controllers.Identity
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
-            _cache = cache;
+            _redisServices = redisServices;
             _tokenService = tokenService;
             _configuration = configuration;
             _userManager = userManager;
-            cacheOption = new DistributedCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromDays(7));
         }
 
         [HttpPost("refresh")]
@@ -73,10 +71,9 @@ namespace EPlatform_API.Controllers.Identity
 
             var user = await _userManager.FindByNameAsync(userName);
             var currentRefreshKey = _configuration["JWT:RefreshKey"] + user.Id;
-            string currentRefreshToken;
-            var rs = _cache.TryGetValue<string>(currentRefreshKey, out currentRefreshToken);
+            string currentRefreshToken = await _redisServices.GetString(currentRefreshKey);
             // if the refresh token is expired, the redis will delete it, Needless to check
-            if (!rs)
+            if (string.IsNullOrEmpty(currentRefreshToken))
             {
                 return StatusCode(404, new ApiResponseStandard<JwtTokenRequestModel>
                 {
@@ -97,10 +94,10 @@ namespace EPlatform_API.Controllers.Identity
             var newAccessToken = await _tokenService.GenerateAccessToken(user);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-            await _cache.SetAsync<string>(
+            await _redisServices.SetString(
                 currentRefreshKey,
                 newRefreshToken,
-                cacheOption
+                TimeSpan.FromDays(7)
             );
 
             return Ok(new ApiResponseStandard<JwtTokenReponseModel>
@@ -129,7 +126,7 @@ namespace EPlatform_API.Controllers.Identity
                 });
             }
             var refreshKey = _configuration["JWT:RefreshKey"] + user.Id;
-            await _cache.RemoveAsync(refreshKey);
+            await _redisServices.RemoveString(refreshKey);
             return NoContent();
         }
     }

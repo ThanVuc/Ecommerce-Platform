@@ -13,18 +13,8 @@ import { PassDataService } from '../../../components/services/pass-data.service'
   templateUrl: './authlayout.component.html',
   styleUrl: './authlayout.component.scss'
 })
-export class AuthlayoutComponent implements OnInit {
-  document: Document = inject(DOCUMENT);
+export class AuthlayoutComponent {
   constructor(){
     
-  }
-  ngOnInit(): void {
-    this.document.body.style.cssText = `
-      background-color: #0d0d0d;
-        color: #ffffff;
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-    `;
   }
 }

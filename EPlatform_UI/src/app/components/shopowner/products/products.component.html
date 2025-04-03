@@ -37,10 +37,10 @@
                 <td class="price">${{ product.price }}</td>
                 <td class="inventory-field">{{ product.inventory.availableQuantity }}</td>
                 <td>
-                    <a href="/shop-owner/{{shopId}}/products/{{product.productId}}" class="action detail">
+                    <a routerLink="/shop-owner/{{shopId}}/products/{{product.productId}}" class="action detail">
                         <span class="icon-park-outline--view-grid-detail"></span>
                     </a>
-                    <a href="/shop-owner/{{shopId}}/products/{{product.productId}}/update" class="action edit">
+                    <a routerLink="/shop-owner/{{shopId}}/products/{{product.productId}}/update" class="action edit">
                         <span class="flowbite--edit-outline"></span>
                     </a>
                     <button (click)="deleteProduct(product.productId)" class="action delete">

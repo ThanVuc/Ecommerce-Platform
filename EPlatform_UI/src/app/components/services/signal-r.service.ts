@@ -23,7 +23,7 @@ export class SignalRService {
   startConnection() {
     if (isPlatformBrowser(this.platformId)) {
       this.hubConnection = new HubConnectionBuilder()
-      .withUrl('http://localhost:5119/notificationHub', {
+      .withUrl('https://eplatformapi-hbfrdue7g9gkg7f7.eastasia-01.azurewebsites.net/notificationHub', {
         accessTokenFactory: () => localStorage.getItem('AccessToken') || '',
         transport: HttpTransportType.WebSockets,
         skipNegotiation: true,

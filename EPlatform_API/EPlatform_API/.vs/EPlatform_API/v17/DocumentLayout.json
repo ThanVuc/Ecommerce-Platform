@@ -3,7 +3,36 @@
   "WorkspaceRootPath": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\dotnet\\sdk\\8.0.300\\Sdks\\Microsoft.NET.Sdk.Publish\\targets\\PublishTargets\\Microsoft.NET.Sdk.Publish.ZipDeploy.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|d:\\ecommerce-project\\ecommerce-platform\\eplatform_api\\eplatform_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|d:\\ecommerce-project\\ecommerce-platform\\eplatform_api\\eplatform_api\\eplatform_api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|solutionrelative:eplatform_api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|d:\\ecommerce-project\\ecommerce-platform\\eplatform_api\\eplatform_api\\services\\blobservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|solutionrelative:services\\blobservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|d:\\ecommerce-project\\ecommerce-platform\\eplatform_api\\eplatform_api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|d:\\ecommerce-project\\ecommerce-platform\\eplatform_api\\eplatform_api\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|solutionrelative:dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|d:\\ecommerce-project\\ecommerce-platform\\eplatform_api\\eplatform_api\\controllers\\shopownercontrollers\\productmanagementcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|solutionrelative:controllers\\shopownercontrollers\\productmanagementcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|d:\\ecommerce-project\\ecommerce-platform\\eplatform_api\\eplatform_api\\repository\\productrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|solutionrelative:repository\\productrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|d:\\ecommerce-project\\ecommerce-platform\\eplatform_api\\eplatform_api\\services\\synchronizationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{590AF5B6-0180-4AA1-BCB6-D475A87330B1}|EPlatform_API.csproj|solutionrelative:services\\synchronizationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,13 +55,105 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Microsoft.NET.Sdk.Publish.ZipDeploy.targets",
-              "DocumentMoniker": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\Sdks\\Microsoft.NET.Sdk.Publish\\targets\\PublishTargets\\Microsoft.NET.Sdk.Publish.ZipDeploy.targets",
-              "ToolTip": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\Sdks\\Microsoft.NET.Sdk.Publish\\targets\\PublishTargets\\Microsoft.NET.Sdk.Publish.ZipDeploy.targets",
-              "ViewState": "AQIAAC8AAAAAAAAAAAApwDkAAAAEAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2025-04-02T05:32:04.565Z",
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAABIAAAAEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-04-03T04:37:51.71Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Dockerfile",
+              "DocumentMoniker": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\Dockerfile",
+              "RelativeDocumentMoniker": "Dockerfile",
+              "ToolTip": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\Dockerfile",
+              "RelativeToolTip": "Dockerfile",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-04-03T03:46:13.505Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "EPlatform_API",
+              "DocumentMoniker": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\EPlatform_API.csproj",
+              "RelativeDocumentMoniker": "EPlatform_API.csproj",
+              "ToolTip": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\EPlatform_API.csproj",
+              "RelativeToolTip": "EPlatform_API.csproj",
+              "ViewState": "AQIAABgAAAAAAAAAAAAAACgAAABJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-04-03T03:23:58.815Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BlobServices.cs",
+              "DocumentMoniker": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\Services\\BlobServices.cs",
+              "RelativeDocumentMoniker": "Services\\BlobServices.cs",
+              "ToolTip": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\Services\\BlobServices.cs",
+              "RelativeToolTip": "Services\\BlobServices.cs",
+              "ViewState": "AQIAAGEAAAAAAAAAAAAlwHQAAAAsAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-03T03:23:07.767Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ProductManagementController.cs",
+              "DocumentMoniker": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\Controllers\\ShopOwnerControllers\\ProductManagementController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ShopOwnerControllers\\ProductManagementController.cs",
+              "ToolTip": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\Controllers\\ShopOwnerControllers\\ProductManagementController.cs",
+              "RelativeToolTip": "Controllers\\ShopOwnerControllers\\ProductManagementController.cs",
+              "ViewState": "AQIAAI0AAAAAAAAAAAAkwO8AAABkAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-02T17:21:21.316Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AQIAAIEAAAAAAAAAAAAAAJ8AAAAeAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-02T17:06:18.468Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ProductRepository.cs",
+              "DocumentMoniker": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\Repository\\ProductRepository.cs",
+              "RelativeDocumentMoniker": "Repository\\ProductRepository.cs",
+              "ToolTip": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\Repository\\ProductRepository.cs",
+              "RelativeToolTip": "Repository\\ProductRepository.cs",
+              "ViewState": "AQIAACwBAAAAAAAAAAAiwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-02T17:16:26.165Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "SynchronizationService.cs",
+              "DocumentMoniker": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\Services\\SynchronizationService.cs",
+              "RelativeDocumentMoniker": "Services\\SynchronizationService.cs",
+              "ToolTip": "D:\\Ecommerce-Project\\Ecommerce-Platform\\EPlatform_API\\EPlatform_API\\Services\\SynchronizationService.cs",
+              "RelativeToolTip": "Services\\SynchronizationService.cs",
+              "ViewState": "AQIAADYAAAAAAAAAAAAYwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-02T17:06:33.419Z"
             }
           ]
         },
