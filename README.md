@@ -4,9 +4,6 @@
  ### 2. In API, let's paste file appsettings.json, appsettings.Development.json and folder Properties contain launchSettings.json in main folder + cmd: dotnet restore
  ### 3. In UI: let's paste folder environment contain environment.development.ts and environment.ts into /src + cmd: npm install
  ### 4. Cmd: "dotnet watch run" in API and "ng s" in UI
-## How to generate the random data:
- ### 1. In SeedData (Swagger), seed data for order: roles -> users -> categories -> warehouse -> shops -> VietNam location
- ### 2. Admin account: sinhhahaha1@gmail.com - string
  
 #  Actor
  ### Admin, Customer, Shop's Owner, Drop-in Customer
@@ -27,5 +24,8 @@
    ### Search
 # Conclusion
  ###  It's the first app that i do it myself from scratch, so that through each part the code style, UI maybe change a little. And, i do this app with the crucial target learns the programming so that i have tried quite a lot technique and technologies, therefore my code maybe is quite complicated and hard to read becauase the begin and middle phases i almost don't use the command
+ 
+ ### Some technology: SignalR (Realtime - notification when order), authentication (JWT), Authorization(Identity Framework), hangfire (auto synchronize auto completed database),...
+ 
 # Thanks for reading :))
 ### PS: My english is not good, sorry for that :))
