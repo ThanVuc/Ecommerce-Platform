@@ -94,17 +94,18 @@ services.AddSignalR(options =>
 // Config Handfire
 services.AddHangfire(config =>
 {
-   config.UseMongoStorage(configuration.GetConnectionString("Cloud_MongoDB"), configuration["MongoDB:Database"], new MongoStorageOptions
-   {
-       MigrationOptions = new MongoMigrationOptions
-       {
-           MigrationStrategy = new MigrateMongoMigrationStrategy(), // Automatically migrate the schema
-           BackupStrategy = new CollectionMongoBackupStrategy() // Backup existing data before migration
-       },
-       CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection
-   });
+    config.UseMongoStorage(configuration.GetConnectionString("Cloud_MongoDB"), configuration["MongoDB:Database"], new MongoStorageOptions
+    {
+        MigrationOptions = new MongoMigrationOptions
+        {
+            MigrationStrategy = new MigrateMongoMigrationStrategy(), // Automatically migrate the schema
+            BackupStrategy = new CollectionMongoBackupStrategy() // Backup existing data before migration
+        },
+        CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection
+    });
 });
 services.AddHangfireServer();
+services.AddSingleton<IRecurringJobManager, RecurringJobManager>();
 
 // DI
 services.AddTransient<IUnitOfWork, UnitOfWork>();
@@ -141,8 +142,6 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseHangfireDashboard(); // Enable the Hangfire dashboard
-
 app.UseRouting();
 
 app.UseCors("AllowAllCORS");
@@ -153,13 +152,18 @@ app.UseAuthorization();
 
 app.MapHub<NotificationHub>("notificationHub");
 
-// setup Hangfire recurring job to update autocomplete data
-RecurringJob.AddOrUpdate<ISynchronizationService>(
-   "UpdateAutocompleteData",
-   service => service.UpdateAutocompleteData(),
-   Cron.Daily // Run every day
-);
-
 app.MapControllers();
+
+app.UseHangfireDashboard();
+
+using (var scope = app.Services.CreateScope())
+{
+    var recurringJobs = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+    recurringJobs.AddOrUpdate<ISynchronizationService>(
+        "UpdateAutocompleteData",
+        service => service.UpdateAutocompleteData(),
+        Cron.Daily
+    );
+}
 
 app.Run();
