@@ -1,5 +1,6 @@
   .content{
-    margin-bottom: 12vh;
+    min-height: 100vh;
+    background-color: #000;
     .row{
       width: 100%;
 
@@ -136,6 +137,9 @@
     left: 50%;
     transform: translate(-50%, -50%);
     justify-content: center;
+    border: 1px solid rgba($color: white, $alpha: .3);
+    border-radius: 0.5rem;
+    padding-top: 1.5rem;
 
     .title{
       background-image: linear-gradient(to right, #C405AE, #999999);
@@ -162,6 +166,11 @@
         -webkit-text-fill-color: white;
         -webkit-box-shadow: 0 0 0px 1000px #000 inset;
         text-align: center;
+
+        &::placeholder{
+          color: rgba($color: white, $alpha: .6);
+          text-align: center;
+        }
       }
 
       label{

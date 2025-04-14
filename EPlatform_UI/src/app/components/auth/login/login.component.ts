@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { catchError, of } from 'rxjs';
-import { TokenService } from '../../services/token.service';
 import { PassDataService } from '../../services/pass-data.service';
 import { AuthHeaderComponent } from "../../../shares/reusable/auth-header/auth-header.component";
 import { DOCUMENT } from '@angular/common';
@@ -24,7 +23,6 @@ import { ForgotPasswordRequestModel } from '../models/ForgotPasswordRequestMode'
 })
 export class LoginComponent implements OnInit {
   authService = inject(AuthService);
-  tokenService = inject(TokenService);
   router = inject(Router);
   activatedRoute = inject(ActivatedRoute);
   titleService = inject(Title);
@@ -56,18 +54,13 @@ export class LoginComponent implements OnInit {
   }
 
   signIn(){
-    if (this.isRemember){
-      localStorage.setItem("isRemeber","1");
-    }
-
     this.authService.signIn(this.signInModel).pipe(
       catchError((err) => {
         this.extraErr = err;
         return of(null)
       })
     ).subscribe((res) => {
-      if (res?.data != null){
-        this.tokenService.saveJWTToken(res?.data);
+      if (res?.status == 200){
         this.router.navigateByUrl(decodeURIComponent(this.returnUrl));
       }
     })
@@ -125,7 +118,6 @@ export class LoginComponent implements OnInit {
     ).subscribe((res) => {
       if (res?.data){
         this.verifyFailCount = 0;
-        this.tokenService.saveJWTToken(res.data);
         this.router.navigate(["/auth/reset-password"]);
       }
     });

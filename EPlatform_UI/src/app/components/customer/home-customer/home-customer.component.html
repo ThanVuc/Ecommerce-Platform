@@ -71,8 +71,9 @@
                 </a>
             }
         </div>
-        @if (tokenSVC.isAuthenicated()){
-            <button class="btn btn-outline-info today-suggestion-btn" >More Suggestion</button>
+        <!-- need to fix -->
+        @if (isAuthenticatedState) {
+            <button routerLink="/search" class="btn btn-outline-info today-suggestion-btn" >More Suggestion</button>
         }   @else {
             <a routerLink="/auth/login" class="btn btn-outline-primary today-suggestion-btn">Sign In To See More</a>
         }

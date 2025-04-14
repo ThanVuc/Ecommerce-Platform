@@ -9,6 +9,8 @@ $active-color: #20121F;
     flex-direction: row;
     width: 100vw;
     height: 100vh;
+    background-color: black;
+    color: $white;
 }
 
 .sidebar{
@@ -43,7 +45,7 @@ $active-color: #20121F;
             margin: 0.5rem 0 0 0.5rem;
             text-align: center;
             font-family: 'Courier New', Courier, monospace;
-            text-decoration: underline;
+            font-size: 1.5rem
         }
     }
 

@@ -8,7 +8,6 @@ import { JwtTokenModel } from '../models/JwtTokenModel';
 import { throws } from 'assert';
 import { AsyncLocalStorage } from 'async_hooks';
 import { LocalStorageService } from '../../services/local-storage.service';
-import { TokenService } from '../../services/token.service';
 import { Router, RouterLink } from '@angular/router';
 import { PhoneDirective } from '../../validator/PhoneValidator';
 import { CommonModule, DOCUMENT } from '@angular/common';
@@ -43,7 +42,6 @@ export class RegisterComponent implements OnInit {
   }
   titleService = inject(Title)
   authService = inject(AuthService);
-  tokenService = inject(TokenService);
   router = inject(Router);
   extraErr:string | null = null;
   passDataService = inject(PassDataService);
@@ -88,9 +86,8 @@ export class RegisterComponent implements OnInit {
         return of(null);
       })
     ).subscribe((res) => {
-      if (res?.data){
+      if (res?.status == 201){
         this.verifyFailCount = 0;
-        this.tokenService.saveJWTToken(res.data);
         this.router.navigate(["/"]);
       }
     });

@@ -3,11 +3,11 @@
     <div class="top-header">
       <a class="left-chanel" (click)="redirectToShop()" >Shop's Owner Chanel</a>
       <div class="right">
-        @if (role != null && role.includes('Admin')){
+        @if (isAdmin){
           <a routerLink="/admin" class="notification right-item" >Admin</a>
         }
         <a [routerLink]="['purchase']" [queryParams]="{userId: userId}" class="notification right-item" >Purchases</a>
-        @if (tokenSVC.isAuthenicated()){
+        @if (isAuthenticatedState){
           <a class="logout right-item" (click)="signOut()" >Sign Out</a>
         } @else {
           <a class="register right-item" routerLink="/auth/register" >Sign Up</a>

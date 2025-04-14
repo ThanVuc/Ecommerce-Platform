@@ -6,6 +6,20 @@ $background-color: #000000;
     min-height: 100vh;
     color: white;
 
+    @keyframes slideIn {
+        0% {
+            transform: translateX(100%);
+        }
+
+        100% {
+            transform: translateX(0%);
+        }
+    }
+
+    .slideIn{
+        animation: slideIn 0.3s ease-in-out;
+    }
+
     .categories{
         margin-bottom: 1rem;
 

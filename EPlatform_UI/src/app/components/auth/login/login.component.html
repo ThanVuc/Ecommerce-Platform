@@ -98,7 +98,6 @@
     <div id="forgot-password">
       <p class="title">Forgot Password</p>
       <form #formFogot="ngForm" class="verify-form">
-        <label for="verify">Email</label>
         <input
           id="email"
           class="input-form"
@@ -109,6 +108,7 @@
           required
           name="verify"
           [(ngModel)]="forgotPasswordModel.email"
+          placeholder="Email"
         />
         @if (forgotFailErr){
         <p class="extra-err">{{ forgotFailErr }}</p>

@@ -1,12 +1,13 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, inject, OnChanges, OnInit, Renderer2, SimpleChanges } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { TokenService } from '../../../components/services/token.service';
 import { ShopService } from '../../../components/services/shop.service';
 import { AuthService } from '../../../components/services/auth.service';
 import { ProductService } from '../../../components/services/product.service';
 import { FormsModule } from '@angular/forms';
 import { SuggestionModel } from '../../../components/customer/models/suggestion-model';
+import { query } from 'express';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-customerlayout',
@@ -16,22 +17,18 @@ import { SuggestionModel } from '../../../components/customer/models/suggestion-
   styleUrl: './customerlayout.component.scss'
 })
 export class CustomerlayoutComponent implements OnInit {
-  ngOnInit(): void {
+  isAuthenticatedState: boolean = false; // New property to track authentication state
+
+  async ngOnInit(): Promise<void> {
     this.renderer2.setStyle(this.document.body, 'background-color', 'black');
-    this.role = this.tokenSVC.getRole();
+    await this.checkAuthenticated();
     this.router.events.subscribe({
       next: (event) => {
         if (event instanceof NavigationEnd){
           this.url = event.url;
-          if (this.tokenSVC.isAuthenicated()){
-            this.productSVC.getCartNum().subscribe({
-              next: (data) => {
-                this.cartNum = data.data;
-              },
-              error: (error) => {
-                console.log(error);
-              }
-            });
+
+          if (this.isAuthenticatedState){
+            this.getCartNum();
           }
         }
       },
@@ -40,40 +37,26 @@ export class CustomerlayoutComponent implements OnInit {
       }
     });
 
-    if (this.tokenSVC.isAuthenicated()){
-      this.productSVC.getCartNum().subscribe({
-        next: (data) => {
-          this.cartNum = data.data;
-        },
-        error: (error) => {
-          console.log(error);
-        }
-      });
-
-      this.shopSVC.getUserId().subscribe({
-        next: (data) => {
-          this.userId = data.data;
-        },
-        error: (error) => {
-          console.log(error);
-        }
-      });
+    if (this.isAuthenticatedState){
+      console.log("User is authenticated.");
+      this.getCartNum();
+      this.getUserId();
+      this.isAdminCheck();
     }
   }
   productSVC = inject(ProductService);
   renderer2 = inject(Renderer2);
   document = inject(DOCUMENT);
-  tokenSVC = inject(TokenService);
   router = inject(Router);
   shopSVC = inject(ShopService);
   authSVC = inject(AuthService);
-  role: string[] | null = null;
   cartNum: number | null = null;
   url: string | null = null;
   userId: string | null = null;
   searchString: string = "";
   timer!: NodeJS.Timeout | null;
   suggestions: SuggestionModel[] = [];
+  isAdmin: boolean = false;
 
   searchProduct(suggestion: string | null = null) {
     if (suggestion){
@@ -118,20 +101,81 @@ export class CustomerlayoutComponent implements OnInit {
   }
 
   redirectToShop() {
-    if (!this.tokenSVC.isAuthenicated()){
-      this.router.navigateByUrl(`/shop-owner/unauthorized`);
+    // identify the role
+    // if role include shop owner, redirect to shop page
+    // if role != customer, redirect to customer page
+    if (!this.isAuthenticatedState){
+      this.router.navigateByUrl("/auth/login");
       return;
     }
 
-    if (this.role && this.role.includes('ShopOwner')) {
-      this.router.navigateByUrl(`shop-owner/${this.userId}`);
-    } else {
-      this.router.navigateByUrl('shop-owner/create-shop');
-    }
+    // check role
+    this.authSVC.checkRole("ShopOwner").subscribe({
+      next: (res) => {
+        if (res.data){
+          // add shop id to route
+          if (this.userId) {
+            this.router.navigate(["/shop-owner", this.userId]);
+          } else {
+            console.error("User ID is null. Cannot navigate to shop-owner.");
+          }
+        } else {
+          this.router.navigateByUrl("/shop-owner/create-shop");
+        }
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    });
+  }
+
+  getUserId(){
+    this.shopSVC.getUserId().subscribe({
+      next: (data) => {
+        this.userId = data.data;
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    });
+  }
+
+  getCartNum(){
+    this.productSVC.getCartNum().subscribe({
+      next: (data) => {
+        this.cartNum = data.data;
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    });
   }
   
   signOut(){
     this.authSVC.signOut();
-    this.role = null;
+    this.isAuthenticatedState = false; // Reset state on sign-out
+    this.isAdmin = false; // Reset admin state on sign-out
+    this.cartNum = null; // Reset cart number on sign-out
   }
+
+  async checkAuthenticated(): Promise<void> {
+    try {
+      await firstValueFrom(this.authSVC.IsAuthenticatedOrRefresh());
+      this.isAuthenticatedState = true; // Update state on success
+    } catch (err: any) {
+      this.isAuthenticatedState = false; // Update state on failure
+    }
+  }
+
+  isAdminCheck() {
+    this.authSVC.checkRole("Admin").subscribe({
+      next: (res) => {
+        this.isAdmin = res.data;
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    });
+  }
+
 }

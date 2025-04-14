@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=@Sinh1234
+    ports:
+      - "1433:1433"  # Expose SQL Server port
+    volumes:
+      - sqlserver_data:/var/opt/mssql  # Persist database data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eplatform_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Default=Server=sqlserver;Database=EcommercePlatform;User Id=sa;Password=@Sinh1234;TrustServerCertificate=True
+      - ConnectionStrings__VietNamDB=Server=sqlserver;Database=VietnameseLocation;User Id=sa;Password=@Sinh1234;TrustServerCertificate=True
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - sqlserver
+
+volumes:
+  sqlserver_data:

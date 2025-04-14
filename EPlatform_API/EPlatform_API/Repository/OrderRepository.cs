@@ -246,9 +246,10 @@ namespace EPlatform_API.Repository
                     throw new Exception("Order not found");
                 }
 
-                if (order.ShopId != shopId){
-                    throw new Exception($"Order {orderId} not belong to shop {shopId}");
-                }
+                // Only delete the order if she is the owner of account - here have a security issue
+                // if (order.CustomerId != shopId){
+                //     throw new Exception($"Order {orderId} not belong to shop {shopId}");
+                // }
 
                 order.OrderStatusId = (int)statusId;
             } catch(Exception ex) {

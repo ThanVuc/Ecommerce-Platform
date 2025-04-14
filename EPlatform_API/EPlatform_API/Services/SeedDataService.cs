@@ -48,6 +48,10 @@ namespace EPlatform_API.Services
             {
                 _context.Database.BeginTransaction();
 
+                // Delete dependent Orders first to avoid foreign key constraint violations
+                var shopsToDelete = _context.Shops.Where(shop => shop.Name.Contains("@fake-data")).Select(shop => shop.ShopId).ToList();
+                _context.Orders.RemoveRange(_context.Orders.Where(order => shopsToDelete.Contains(order.ShopId)));
+
                 _context.Shops.RemoveRange(_context.Shops.Where(shop => shop.Name.Contains("@fake-data")));
                 _context.Products.RemoveRange(_context.Products.Where(p => p.Name.Contains("@fake-data")));
 
@@ -77,8 +81,7 @@ namespace EPlatform_API.Services
                     Phone = faker.Phone.PhoneNumber("###########"),
                     Email = faker.Internet.Email(),
                     TaxesCode = faker.Random.String2(10, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
-                    IdentificationNumber = faker.Random.String2(12, "0123456789"),
-                    ShopOwner = admin // Assuming you will set this later
+                    IdentificationNumber = faker.Random.String2(12, "0123456789")
                 };
 
                 await _userManager.AddToRoleAsync(admin, RoleStorage.ShopOwner);
@@ -106,7 +109,7 @@ namespace EPlatform_API.Services
                         Description = faker.Commerce.ProductDescription(),
                         Price = faker.Random.Decimal(1, 1000),
                         Slug = UtilityServices.GenerateSlug(name),
-                        AvtImgUrl = "https://sinhnguyen417.blob.core.windows.net/public-images/600x400.png",
+                        AvtImgUrl = "https://hoanghuystorage.blob.core.windows.net/public-images/600x400.png",
                         IsPublic = faker.Random.Bool(),
                         CreatedAt = faker.Date.Recent(),
                         UpdatedAt = faker.Date.Recent(),
@@ -320,7 +323,7 @@ namespace EPlatform_API.Services
         {
             try
             {
-                var sqlScript = System.IO.File.ReadAllText("Sqls/ImportData_vn_units.sql");
+                var sqlScript = System.IO.File.ReadAllText("/app/Sqls/ImportData_vn_units.sql");
                 await _vietnameseLocationContext.Database.ExecuteSqlRawAsync(sqlScript);
             }
             catch (Exception e)

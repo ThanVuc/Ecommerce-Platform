@@ -474,7 +474,7 @@ namespace EPlatform_API.Repository
         }
     
         // SearchProducts
-        public IQueryable<SearchProductsReponse>? SearchProducts(string? searchString, int categoryId)
+        public async Task<IQueryable<SearchProductsReponse>?> SearchProducts(string? searchString, int categoryId)
         {
             try {
                 var products = _context.Products
@@ -500,9 +500,18 @@ namespace EPlatform_API.Repository
 
                 if (categoryId != 0)
                 {
+                    var category = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId == categoryId);
+                    if (category == null)
+                    {
+                        return products;
+                    }
+
+                    var subCategoryIds = category.GetAllSubCategories(category);
+
                     products = products
-                    .AsEnumerable() 
-                    .Where(p => p.CategoryId == categoryId).AsQueryable();
+                    .AsEnumerable()
+                    .Where(p => subCategoryIds.Contains(p.CategoryId))
+                    .AsQueryable();
                 }
 
                 return products;

@@ -7,65 +7,49 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { JwtTokenModel } from '../app/components/auth/models/JwtTokenModel';
 import { ApiModel } from '../app/components/models/ApiModel';
 import { environment } from '../environments/environment.development';
-import { TokenService } from '../app/components/services/token.service';
 import { resolve } from 'path';
 import { rejects } from 'assert';
 import { ApiResModel } from '../app/components/models/api-res-model';
+import { AuthService } from '../app/components/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate{
   router = inject(Router);
-  jwtHelper = inject(JwtHelperService);
   localStorage = inject(LocalStorageService);
-  http = inject(HttpClient);
-  tokenService = inject(TokenService);
+  authSVC = inject(AuthService);
+
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean>{
-    const accessToken = this.localStorage.getValue("AccessToken");
-    if (accessToken && !this.jwtHelper.isTokenExpired(accessToken)){
-      return true;
-    }
-    const isRefresh = await this.tryRefreshToken(accessToken);
-    if (!isRefresh) {
+    const isAuthenticatedOrRefreshed = await this.tryRefreshToken();
+    if (!isAuthenticatedOrRefreshed) {
       this.router.navigate(["auth"], { queryParams: {"returnUrl": "/"} , replaceUrl: true});
     }
-    return isRefresh;
+    return isAuthenticatedOrRefreshed;
   }
 
-  private async tryRefreshToken(accessToken: string | null | undefined) : Promise<boolean>
-  {
-    const refreshToken = this.localStorage.getValue("RefreshToken");
-    if (!accessToken || !refreshToken){
+  private async tryRefreshToken(): Promise<boolean> {
+    try {
+      const refreshRes = await new Promise<boolean>((resolve, reject) => {
+        this.authSVC.IsAuthenticatedOrRefresh().subscribe({
+          next: (res) => {
+            if (res.status == 200) {
+              resolve(res.data);
+            } else {
+              reject(res.message);
+            }
+          },
+          error: (err) => {
+            reject(err);
+          }
+        });
+      });
+      return refreshRes;
+    } catch (error) {
+      console.error("Error refreshing token: ", error);
       return false;
     }
-
-    let isRefresh: boolean = true;
-    let jwtToken: JwtTokenModel = {
-      accessToken: accessToken,
-      refreshToken: refreshToken
-    }
-
-    const refreshRes = await new Promise<JwtTokenModel>((resolve,reject) => {
-      this.http.post<ApiResModel<JwtTokenModel>>(environment.RefreshJWTTokenAPI,jwtToken,{
-        headers: new HttpHeaders({
-          "Content-Type": "application/json"
-        })
-      }).subscribe({
-        next: (res) => resolve(res.data),
-        error: (err) => {
-          reject;
-          console.error(err);
-          isRefresh = false;
-          this.router.navigate(["auth"], { replaceUrl: true});
-        }
-      })
-    })
-
-    this.localStorage.setValue("AccessToken",refreshRes.accessToken);
-    this.localStorage.setValue("RefreshToken",refreshRes.refreshToken);
-    return isRefresh;
   }
 }
 

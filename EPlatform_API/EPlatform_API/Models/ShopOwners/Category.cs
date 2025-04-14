@@ -51,5 +51,27 @@ namespace EPlatform_API.Models.ShopOwners
             }
             return parentCategories;
         }
+    
+        public List<int> GetAllSubCategories(Category category = null)
+        {
+            List<int> subCategoryIds = new List<int>();
+            Queue<Category> queue = new Queue<Category>();
+            queue.Enqueue(this);
+            subCategoryIds.Add(this.CategoryId);
+            while (queue.Count > 0)
+            {
+                Category currentCategory = queue.Dequeue();
+                if (currentCategory.SubCategories != null && currentCategory.SubCategories.Count > 0)
+                {
+                    foreach (var subCategory in currentCategory.SubCategories)
+                    {
+                        subCategoryIds.Add(subCategory.CategoryId);
+                        queue.Enqueue(subCategory);
+                    }
+                }
+            }
+
+            return subCategoryIds;
+        }
     }
 }

@@ -14,6 +14,7 @@ using EPlatform_API.IServices;
 using EPlatform_API.Mappers;
 using EPlatform_API.Models;
 using EPlatform_API.Services;
+using EPlatform_API.Setting;
 using EPlatform_API.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -96,7 +97,7 @@ namespace EPlatform_API.Controllers.Identity
                 });
             }
 
-            var result = await _signInManager.PasswordSignInAsync(userName: loginModel.Username,password: loginModel.Password,isPersistent: false, lockoutOnFailure: true);      
+            var result = await _signInManager.PasswordSignInAsync(userName: loginModel.Username,password: loginModel.Password,isPersistent: true, lockoutOnFailure: true);      
             
             if (!result.Succeeded){
                 return StatusCode(400, new ApiResponseStandard<JwtTokenReponseModel>{
@@ -106,18 +107,25 @@ namespace EPlatform_API.Controllers.Identity
             }
             
             JwtTokenReponseModel tokenResponse = new JwtTokenReponseModel();
+            var jwtSettings = _configuration.GetSection("JWT").Get<JwtSetting>();
             tokenResponse.AccessToken = await _tokenService.GenerateAccessToken(user);
             tokenResponse.RefreshToken = _tokenService.GenerateRefreshToken();
             await _redisServices.SetString(
                 _configuration["JWT:RefreshKey"]+user.Id,
                 tokenResponse.RefreshToken,
-                TimeSpan.FromDays(7)
+                TimeSpan.FromDays(jwtSettings.RefreshTokenExpiryDays)
+            );
+
+            await _tokenService.WriteTokenToCookie(
+                tokenResponse.RefreshToken,
+                tokenResponse.AccessToken,
+                HttpContext,
+                jwtSettings
             );
 
             ApiResponseStandard<JwtTokenReponseModel> response = new ApiResponseStandard<JwtTokenReponseModel>(){
                 Status = 200,
-                Message = "Login Successful",
-                Data = tokenResponse
+                Message = "Login Successful"
             };
 
             await _loggingService.WriteAccountLog(@$"login---account:{user.UserName}---id:{user.Id}---time:{DateTime.Now}");
@@ -186,7 +194,7 @@ namespace EPlatform_API.Controllers.Identity
                     }); 
                 }
 
-                var result = await _userManager.AddToRoleAsync(user,"Customer");
+                var result = await _userManager.AddToRoleAsync(user,RoleStorage.Customer);
                 if (!result.Succeeded){
                     transaction.Rollback();
                     return StatusCode(500,new ApiResponseStandard<object>{
@@ -197,7 +205,7 @@ namespace EPlatform_API.Controllers.Identity
 
                 var listClaims = new List<Claim>{
                     new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Role, "Customer")
+                    new Claim(ClaimTypes.Role, RoleStorage.Customer)
                 };
 
                 var userExist = await _userManager.FindByNameAsync(user.UserName);
@@ -213,18 +221,25 @@ namespace EPlatform_API.Controllers.Identity
                 }
 
                 JwtTokenReponseModel tokenResponse = new JwtTokenReponseModel();
+                var jwtSettings = _configuration.GetSection("JWT").Get<JwtSetting>();
                 tokenResponse.AccessToken = await _tokenService.GenerateAccessToken(userExist);
                 tokenResponse.RefreshToken = _tokenService.GenerateRefreshToken();
                 await _redisServices.GetOrSetString(
                     _configuration["JWT:RefreshKey"]+user.Id,
                     tokenResponse.RefreshToken,
-                    TimeSpan.FromDays(7)
+                    TimeSpan.FromDays(jwtSettings.RefreshTokenExpiryDays)
+                );
+
+                await _tokenService.WriteTokenToCookie(
+                    tokenResponse.RefreshToken,
+                    tokenResponse.AccessToken,
+                    HttpContext,
+                    jwtSettings
                 );
 
                 ApiResponseStandard<JwtTokenReponseModel> response = new ApiResponseStandard<JwtTokenReponseModel>(){
                     Status = 201,
-                    Message = "Register User Successful",
-                    Data = tokenResponse
+                    Message = "Register User Successful"
                 };
 
                 transaction.Commit();
@@ -337,13 +352,21 @@ namespace EPlatform_API.Controllers.Identity
                 AccessToken = await _tokenService.GenerateAccessToken(user),
                 RefreshToken = _tokenService.GenerateRefreshToken()
             };
+
+            var jwtSettings = _configuration.GetSection("JWT").Get<JwtSetting>();
+
             await _redisServices.SetString(
                 _configuration["JWT:RefreshKey"],
                 jwtToken.RefreshToken,
-                TimeSpan.FromDays(7)
+                TimeSpan.FromDays(jwtSettings.RefreshTokenExpiryDays)
             );
 
-            await _loggingService.WriteAccountLog(@$"recovery-password---account:{user.UserName}---id:{user.Id}---time:{DateTime.Now}");
+            await _tokenService.WriteTokenToCookie(
+                jwtToken.RefreshToken,
+                jwtToken.AccessToken,
+                HttpContext,
+                jwtSettings
+            );
 
 
             return Ok(new ApiResponseStandard<JwtTokenReponseModel>{

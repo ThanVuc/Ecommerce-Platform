@@ -1,5 +1,7 @@
 .content{
-  margin-bottom: 12vh;
+  min-height: 100vh;
+  background-color: #000;
+
   .row{
     width: 100%;
 
@@ -136,6 +138,10 @@
     left: 50%;
     transform: translate(-50%, -50%);
     justify-content: center;
+    border: 1px solid rgba($color: white, $alpha: .3);
+    border-radius: 0.5rem;
+    padding-top: 1.5rem;
+
 
     #verify-confirm{
       display: none;
@@ -154,6 +160,11 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+
+      label{
+        color: white;
+      }
+
       .input-form{
         width: 75%;
         height: 2rem;
@@ -166,10 +177,10 @@
         -webkit-text-fill-color: white;
         -webkit-box-shadow: 0 0 0px 1000px #000 inset;
         text-align: center;
-      }
-
-      label{
-        margin-top: 10%;
+        
+        &:focus::placeholder{
+          color: transparent;
+        }
       }
 
       .extra-err{
@@ -178,11 +189,6 @@
         text-align: center;
         color: rgb(218, 6, 6);
         font-size: 0.8em;
-      }
-
-      .input-form::placeholder{
-        color: white;
-        text-align: center;
       }
   
       .submit-btn{

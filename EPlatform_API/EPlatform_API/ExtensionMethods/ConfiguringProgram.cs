@@ -8,6 +8,11 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using EPlatform_API.Data;
 using EPlatform_API.Models;
+using EPlatform_API.Setting;
+using Hangfire;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies;
+using Hangfire.Mongo.Migration.Strategies.Backup;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,11 +28,11 @@ namespace EPlatform_API.ExtensionMethods
     {
         public static void AddSqlDBContext(this IServiceCollection services, IConfiguration configuration){
             services.AddDbContext<AppDbContext>(options => {
-                options.UseSqlServer(configuration.GetConnectionString("Cloud_EcommercePlatformMSSQL"));
+                options.UseSqlServer(configuration.GetConnectionString("Default"));
             });
 
             services.AddDbContext<VietnameseLocationContext>(options => {
-                options.UseSqlServer(configuration.GetConnectionString("Cloud_VietNamDB"));
+                options.UseSqlServer(configuration.GetConnectionString("VietNamDB"));
             });
         }
 
@@ -74,32 +79,34 @@ namespace EPlatform_API.ExtensionMethods
         }
     
         public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration){
-            string signingKey = configuration["JWT:SigningKey"];
-            if (signingKey.IsNullOrEmpty()){
+            var jwtSettings = configuration.GetSection("JWT").Get<JwtSetting>();
+            if (jwtSettings == null || string.IsNullOrEmpty(jwtSettings.SecretKey)){
                 throw new Exception("The Signing Key of your system hasn't set yet!");
             }
+            var key = Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme =
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options => {
-                options.TokenValidationParameters = new TokenValidationParameters(){
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["JWT:Issuer"],
-                    ValidAudience = configuration["JWT:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
                 };
 
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
                     {
+                        context.Token = context.HttpContext.Request.Cookies["access_token"];
+
                         var accessToken = context.Request.Query["access_token"];
                         var path = context.HttpContext.Request.Path;
-
                         // ✅ Ensure the token is passed for SignalR requests
                         if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/notificationHub"))
                         {
@@ -122,9 +129,12 @@ namespace EPlatform_API.ExtensionMethods
             services.AddCors(options => {
                 options.AddPolicy("AllowAllCORS",
                 builder => {
-                    builder.AllowAnyOrigin()
+                    builder
+                    .WithOrigins("http://localhost:4200", "https://localhost:4200")
+                    .SetIsOriginAllowedToAllowWildcardSubdomains()
                     .AllowAnyHeader()
                     .AllowAnyMethod()
+                    .AllowCredentials()
                     .WithExposedHeaders("X-Pagination");
                 });
             });
@@ -171,5 +181,51 @@ namespace EPlatform_API.ExtensionMethods
                 context_vietnam.Database.Migrate();
             }
         }
+
+        public static void ConfigureHangfire(this IServiceCollection services, IConfiguration configuration){
+            services.AddHangfire(config =>
+            {
+                MongoClient mongoClient = null;
+                IMongoDatabase mongoDatabase = null;
+                int retryCount = 5; // Number of retry attempts
+                int delayMilliseconds = 2000; // Delay between retries
+
+                for (int i = 0; i < retryCount; i++)
+                {
+                    try
+                    {
+                        mongoClient = new MongoClient(configuration.GetConnectionString("Cloud_MongoDB"));
+                        mongoDatabase = mongoClient.GetDatabase(configuration["MongoDB:Database"]);
+                        break; // Exit loop if connection is successful
+                    }
+                    catch (Exception ex)
+                    {
+                        if (i == retryCount - 1) // If last attempt fails, rethrow the exception
+                        {
+                            throw new Exception("Failed to connect to MongoDB after multiple attempts.", ex);
+                        }
+                        Task.Delay(delayMilliseconds).Wait(); // Wait before retrying
+                    }
+                }
+
+                var mongoStorageOptions = new MongoStorageOptions
+                {
+                    MigrationOptions = new MongoMigrationOptions
+                    {
+                        MigrationStrategy = new MigrateMongoMigrationStrategy(), // Automatically migrate the schema
+                        BackupStrategy = new CollectionMongoBackupStrategy(), // Backup existing data before migration
+                    },
+                    CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection,
+                    CheckConnection = false, // Disable initial database ping
+                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5), // Increase timeout for MongoDB operations
+                };
+                config.UseMongoStorage(mongoClient, mongoDatabase.DatabaseNamespace.DatabaseName, mongoStorageOptions);
+                config.UseSimpleAssemblyNameTypeSerializer();
+                config.UseRecommendedSerializerSettings();
+            });
+
+            services.AddHangfireServer(); // Move Hangfire server configuration here
+        }
+
     }
 }

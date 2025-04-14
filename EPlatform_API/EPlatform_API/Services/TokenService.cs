@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using EPlatform_API.Data;
 using EPlatform_API.IServices;
 using EPlatform_API.Models;
+using EPlatform_API.Setting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -34,19 +35,26 @@ namespace EPlatform_API.Services
         public async Task<string> GenerateAccessToken(AppUser user)
         {
             var claims = await GetListClaim(user);
-            var secureKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SigningKey"]));
+            var jwtSettings = _configuration.GetSection("JWT").Get<JwtSetting>();
+            if (jwtSettings == null)
+            {
+                throw new Exception("JWT settings not found in configuration.");
+            }
+            var secureKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey));
             var signingCredentials = new SigningCredentials(
                 secureKey,
                 SecurityAlgorithms.HmacSha256
             );
+
             var tokenOptions = new JwtSecurityToken(
-                issuer: _configuration["JWT:Issuer"],
-                audience: _configuration["JWT:Audience"],
+                issuer: jwtSettings.Issuer,
+                audience: jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(5),
+                expires: DateTime.Now.AddMinutes(jwtSettings.AccessTokenExpiryMinutes),
                 signingCredentials: signingCredentials
             );
             var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            
             return tokenString;
         }
 
@@ -83,12 +91,13 @@ namespace EPlatform_API.Services
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
+            var tokenSettings = _configuration.GetSection("JWT").Get<JwtSetting>();
             var TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SigningKey"])),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSettings.SecretKey)),
                 ValidateLifetime = false
             };
 
@@ -101,6 +110,78 @@ namespace EPlatform_API.Services
             }
             
             return principle;
+        }
+
+
+        // Ensure the security by using HttpOnly cookies - this will prevent JavaScript from accessing the cookies.
+        public Task WriteTokenToCookie(string refreshToken, string accessToken, HttpContext context, JwtSetting jwtSettings)
+        {
+            var refreshCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTimeOffset.UtcNow.AddDays(jwtSettings.RefreshTokenExpiryDays),
+                Secure = true, // Set to true if using HTTPS
+                SameSite = SameSiteMode.None,
+                Path = "/"
+            };
+
+            var accessCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                // access token will be expired before cookies deleted, assign the same time with refresh token
+                // to avoid the access token will be deleted when refresh token is still valid
+                Expires = DateTimeOffset.UtcNow.AddMinutes(jwtSettings.RefreshTokenExpiryDays),
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Path = "/"
+            };
+            context.Response.Cookies.Append("refresh_token", refreshToken, refreshCookieOptions);
+            context.Response.Cookies.Append("access_token", accessToken, accessCookieOptions);
+            return Task.CompletedTask;
+        }
+    
+        public Task<bool> IsTokenExpired(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+            return Task.FromResult(jwtToken.ValidTo < DateTime.UtcNow);
+        }
+    
+        public async Task RefreshExpiredToken(string token, HttpContext context, RedisServices redisServices, UserManager<AppUser> userManager)
+        {
+            var accessToken = context.Request.Cookies["access_Token"];
+            var refreshToken = context.Request.Cookies["refresh_Token"];
+            if (accessToken == null){
+                throw new UnauthorizedAccessException("Access Token doen not Exist");
+            }
+
+            var principle = GetPrincipalFromExpiredToken(accessToken);
+            var userId = principle.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var currentRefreshKey = _configuration["JWT:RefreshKey"] + userId;
+            string currentRefreshToken = await redisServices.GetString(currentRefreshKey);
+            // if the refresh token is expired, the redis will delete it, Needless to check
+            if (string.IsNullOrEmpty(currentRefreshToken))
+            {
+                throw new UnauthorizedAccessException("Not Found Refresh Token");
+            }
+
+            if (user == null || currentRefreshToken != refreshToken)
+            {
+                throw new UnauthorizedAccessException("The Refresh Token is invalid");
+            }
+
+            var newAccessToken = await GenerateAccessToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+            var jwtSetting = _configuration.GetSection("JWT").Get<JwtSetting>();
+
+            await redisServices.SetString(
+                currentRefreshKey,
+                newRefreshToken,
+                TimeSpan.FromDays(jwtSetting.RefreshTokenExpiryDays)
+            );
+
+            await WriteTokenToCookie(newRefreshToken, newAccessToken, context, jwtSetting);
         }
     }
 }

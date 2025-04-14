@@ -1,11 +1,11 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { TokenService } from '../../services/token.service';
 import { ProductService } from '../../services/product.service';
 import { RootCategoryModel } from '../models/root-category-model';
 import { ProductBriefModel } from '../models/product-brief-model';
 import { RouterLink } from '@angular/router';
 import { SignalRService } from '../../services/signal-r.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-home-customer',
@@ -16,15 +16,15 @@ import { SignalRService } from '../../services/signal-r.service';
 })
 
 export class HomeCustomerComponent implements OnInit {
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.isAuthenticated();
     this.getCategoriesInHome();
     this.getHotProduct();
     this.getProductTodaySuggestions();
   }
 
-  tokenSVC = inject(TokenService);
   productSVC = inject(ProductService);
-
+  authSVC = inject(AuthService);
   categories: CategoriesHandleModel = {
     start: 0,
     showCount: 6,
@@ -38,6 +38,16 @@ export class HomeCustomerComponent implements OnInit {
   };
 
   productTodaySuggestions: ProductBriefModel[] = [];
+  isAuthenticatedState: boolean = false; // New property to track authentication state
+
+  async isAuthenticated(): Promise<void> {
+    try {
+      await firstValueFrom(this.authSVC.IsAuthenticatedOrRefresh());
+      this.isAuthenticatedState = true;
+    } catch (error: any) {
+      this.isAuthenticatedState = false; // Update state on failure
+    }
+  }
 
   getCategoriesInHome() {
     this.productSVC.getCategoriesInHome().subscribe({

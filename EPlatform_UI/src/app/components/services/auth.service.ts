@@ -9,6 +9,7 @@ import { SignInRequestModel } from '../auth/models/SignInRequestModel';
 import { LocalStorageService } from './local-storage.service';
 import { ResetPasswordRequestModel } from '../auth/models/ResetPasswordRequestModel';
 import { ForgotPasswordRequestModel } from '../auth/models/ForgotPasswordRequestMode';
+import { ApiResModel } from '../models/api-res-model';
 
 @Injectable({
   providedIn: 'root'
@@ -26,16 +27,14 @@ export class AuthService {
   }
 
   signOut(){
-    let refreshToken = this.localStorage.getValue("RefreshToken");
-
-    if (refreshToken){
-      this.http.post(environment.RevokeJWTTokenAPI,null).subscribe((res) => {
-        console.log("Logut Successful")
-      });
-    }
-
-    this.localStorage.removeValue('AccessToken');
-    this.localStorage.removeValue('RefreshToken');
+    return this.http.post<ApiModel<object>>(environment.RevokeJWTTokenAPI,{}).subscribe({
+      next: (res) => {
+        
+      },
+      error: (err) => {
+        console.error("Error signing out: ", err);
+      }
+    });
   }
 
   resetPassword(resetPasswordModel: ResetPasswordRequestModel): Observable<ApiModel<object>>{
@@ -44,5 +43,17 @@ export class AuthService {
 
   recoveryPassword(forgotPasswordModel: ForgotPasswordRequestModel): Observable<ApiModel<object>>{
     return this.http.post<ApiModel<object>>(environment.ForgotPasswordAPI,forgotPasswordModel);
+  }
+
+  IsAuthenticatedOrRefresh(): Observable<ApiModel<boolean>> {
+    return this.http.post<ApiResModel<boolean>>(environment.RefreshJWTTokenAPI,null,
+      { withCredentials: true } // Ensure cookies are sent with the request
+    );
+  }
+
+  checkRole(role: string): Observable<ApiModel<boolean>> {
+    return this.http.post<ApiModel<boolean>>(environment.checkRoleAPI, { role: role }, 
+      { withCredentials: true}
+    );
   }
 }

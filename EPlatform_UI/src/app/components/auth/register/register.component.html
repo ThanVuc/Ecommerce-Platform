@@ -89,8 +89,7 @@
     <div class="otp-box">
       <p class="title" >OTP Confirm</p>
       <form class="otp-form" >
-        <label for="otp">OTP</label>
-        <input id="otp" class="input-form" type="text" #otp="ngModel" required name="otp" [(ngModel)]="signUpModel.verifyCode" >
+        <input id="otp" class="input-form" placeholder="OTP" type="text" #otp="ngModel" required name="otp" [(ngModel)]="signUpModel.verifyCode" >
         @if (verifyFailCount>0){
           <p class="extra-err">Enter wrong otp: {{verifyFailCount}}/5</p>
         }

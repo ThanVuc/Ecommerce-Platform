@@ -12,6 +12,7 @@ using Hangfire.Mongo;
 using Hangfire.Mongo.Migration.Strategies;
 using Hangfire.Mongo.Migration.Strategies.Backup;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
@@ -21,6 +22,11 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+// Explicitly configure Kestrel to listen on port 5120 for HTTPS
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5120, listenOptions => listenOptions.UseHttps()); // Bind to all interfaces()); // Bind to localhost
+});
 
 // Add services to the container.
 
@@ -53,6 +59,21 @@ services.AddSwaggerGen(option =>
             new string[]{}
         }
     });
+});
+
+// Configure HTTPS redirection
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.HttpsPort = 5120;  // Port for HTTPS
+});
+
+// ConfigureApplicationCookie
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.Name = ".AspNetCore.Identity.Application";
 });
 
 
@@ -91,21 +112,8 @@ services.AddSignalR(options =>
     options.KeepAliveInterval = TimeSpan.FromSeconds(10);
 });
 
-// Config Handfire
-services.AddHangfire(config =>
-{
-    config.UseMongoStorage(configuration.GetConnectionString("Cloud_MongoDB"), configuration["MongoDB:Database"], new MongoStorageOptions
-    {
-        MigrationOptions = new MongoMigrationOptions
-        {
-            MigrationStrategy = new MigrateMongoMigrationStrategy(), // Automatically migrate the schema
-            BackupStrategy = new CollectionMongoBackupStrategy() // Backup existing data before migration
-        },
-        CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection
-    });
-});
-services.AddHangfireServer();
-services.AddSingleton<IRecurringJobManager, RecurringJobManager>();
+// Config Hangfire
+services.ConfigureHangfire(configuration);
 
 // DI
 services.AddTransient<IUnitOfWork, UnitOfWork>();
@@ -127,16 +135,22 @@ services.AddScoped<NotificationRepo, NotificationRepo>();
 services.AddScoped<SearchMongoRepo, SearchMongoRepo>();
 services.AddSingleton<ISynchronizationService, SynchronizationService>();
 services.AddScoped<RedisServices, RedisServices>();
+services.AddSingleton<IRecurringJobManager, RecurringJobManager>();
+
 
 var app = builder.Build();
-
+app.UseHttpsRedirection();  
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//    // app.ApplyMigrations();
-//}
+// apply migrations to the database
+using (var scope = app.Services.CreateAsyncScope()){
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    // await dbContext.Database.EnsureDeletedAsync();
+    await dbContext.Database.MigrateAsync();
+    var vietnamContext = scope.ServiceProvider.GetRequiredService<VietnameseLocationContext>();
+    await vietnamContext.Database.MigrateAsync();
+}
+
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -150,11 +164,8 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapHub<NotificationHub>("notificationHub");
-
-app.MapControllers();
-
-app.UseHangfireDashboard();
+// Ensure Hangfire is initialized before using its APIs
+app.UseHangfireDashboard(); // Retain only the dashboard middleware
 
 using (var scope = app.Services.CreateScope())
 {
@@ -165,5 +176,9 @@ using (var scope = app.Services.CreateScope())
         Cron.Daily
     );
 }
+
+app.MapHub<NotificationHub>("notificationHub");
+
+app.MapControllers();
 
 app.Run();

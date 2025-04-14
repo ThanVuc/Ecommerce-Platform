@@ -10,17 +10,7 @@ import { HandleErrService } from '../guard/handle-err.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    importProvidersFrom(
-      JwtModule.forRoot({
-        config: {
-          tokenGetter: () => {
-            return localStorage.getItem('AccessToken');
-          },
-          allowedDomains: ["http://localhost:4200","http://localhost:5119"],
-          disallowedRoutes: []
-        }
-      })
-    ),
+    importProvidersFrom(),
     provideHttpClient(
       withFetch(), 
       withInterceptors([addJwtInterceptor]),

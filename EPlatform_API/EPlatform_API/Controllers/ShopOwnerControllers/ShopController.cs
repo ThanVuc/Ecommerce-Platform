@@ -222,7 +222,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         public async Task<IActionResult> GetUserId()
         {
             try
-            {;
+            {
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 return Ok(new ApiResponseStandard<object>
                 {

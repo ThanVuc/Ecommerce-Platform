@@ -266,7 +266,7 @@ namespace EPlatform_API.Controllers.ShopOwnerControllers
         {
             try {
                 // search products by name and select by category id
-                var products = _productRepo.SearchProducts(query.SearchString, query.CategoryId);
+                var products = await _productRepo.SearchProducts(query.SearchString, query.CategoryId);
                 if (products == null || products.Count() == 0) {
                     return Ok(new ApiResponseStandard<object>
                     {

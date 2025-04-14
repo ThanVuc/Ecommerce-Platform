@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { start } from 'repl';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { TokenService } from './token.service';
+import { env } from 'process';
 
 @Injectable({
   providedIn: 'root'
@@ -22,8 +22,9 @@ export class SignalRService {
 
   startConnection() {
     if (isPlatformBrowser(this.platformId)) {
+      console.log(environment.notification);
       this.hubConnection = new HubConnectionBuilder()
-      .withUrl('https://eplatformapi-hbfrdue7g9gkg7f7.eastasia-01.azurewebsites.net/notificationHub', {
+      .withUrl(environment.notification, {
         accessTokenFactory: () => localStorage.getItem('AccessToken') || '',
         transport: HttpTransportType.WebSockets,
         skipNegotiation: true,

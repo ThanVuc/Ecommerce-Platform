@@ -5,8 +5,9 @@ import { ProductService } from '../../services/product.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AddToCartModel } from '../models/add-to-cart-model';
-import { TokenService } from '../../services/token.service';
 import { spec } from 'node:test/reporters';
+import { AuthService } from '../../services/auth.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-product-detail',
@@ -16,7 +17,8 @@ import { spec } from 'node:test/reporters';
   styleUrl: './product-detail.component.scss'
 })
 export class ProductDetailComponent implements OnInit {
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.isAuthenticated();
     const productId = this.activatedRoute.snapshot.queryParamMap.get("product_id");
     if (productId) {
       this.productId = parseInt(productId);
@@ -54,8 +56,8 @@ export class ProductDetailComponent implements OnInit {
 
   activatedRoute = inject(ActivatedRoute);
   productSVC = inject(ProductService);
-  tokenSVC = inject(TokenService);
   router = inject(Router);
+  authSVC = inject(AuthService);
 
   productDetail: ProductDetailModel = {
     name: '',
@@ -87,6 +89,20 @@ export class ProductDetailComponent implements OnInit {
     specInfo: '',
     productId: 0
   };
+  isAuthenticatedState = false;
+
+  async isAuthenticated(): Promise<void> {
+      try {
+        await firstValueFrom(this.authSVC.IsAuthenticatedOrRefresh());
+        this.isAuthenticatedState = true;
+      } catch (error: any) {
+        if (error.status == 401) {
+          this.isAuthenticatedState = false; // Update state on failure
+        } else {
+          console.error("Error checking authentication: ", error);
+        }
+      }
+    }
 
   minusQuantity() {
     if (this.addToCartModel.quantity > 1) {
@@ -227,11 +243,11 @@ export class ProductDetailComponent implements OnInit {
   }
 
   checkProductConditionToAddToCart() : boolean{
-    if (!this.tokenSVC.isAuthenicated()){
-      this.router.navigateByUrl('/carts');
+    if (!this.isAuthenticatedState){
+      this.router.navigateByUrl('/auth/login');
       return false;
     }
-    
+
     if (this.spec.primaryName === ''){
       alert('This product is invalid');
       return false;

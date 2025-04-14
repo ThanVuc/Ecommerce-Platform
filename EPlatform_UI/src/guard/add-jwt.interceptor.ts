@@ -1,20 +1,17 @@
 import { HttpContext, HttpContextToken, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { LocalStorageService } from '../app/components/services/local-storage.service';
 import { inject } from '@angular/core';
+import { ɵparseCookieValue } from '@angular/common';
 
 export const addJwtInterceptor: HttpInterceptorFn = (req, next) => {
+  req = req.clone({
+    withCredentials: true, // Ensure cookies are sent with every request
+  });
+
   if (req.context.get(IS_PUBLIC)) {
     return next(req);
   }
 
-  if (typeof localStorage !== 'undefined') {
-    let accessToken = localStorage.getItem("AccessToken");
-    if (accessToken) {
-      return next(req.clone({
-        headers: req.headers.set('Authorization', `Bearer ${accessToken}`)
-      }));
-    }
-  }
   return next(req);
 };
 
