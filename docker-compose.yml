@@ -1,0 +1,65 @@
+services:
+  api:
+    build:
+      context: ./EPlatform_API/EPlatform_API
+      dockerfile: ./Dockerfile
+    container_name: eplatform_api
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Default=Server=sqlserver;Database=EcommercePlatform;User Id=sa;Password=@Sinh1234;TrustServerCertificate=True
+      - ConnectionStrings__VietNamDB=Server=sqlserver;Database=VietnameseLocation;User Id=sa;Password=@Sinh1234;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+    networks:
+      - app-network
+    restart: always
+
+  ui:
+    build:
+      context: ./EPlatform_UI
+      dockerfile: ./Dockerfile
+    container_name: eplatform_ui
+    ports:
+      - "4200:80"
+    networks:
+      - app-network
+    restart: always
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/api.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ui.conf:/etc/nginx/conf.d/ui.conf:ro
+    depends_on:
+      - api
+      - ui
+    networks:
+      - app-network
+    restart: always
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=@Sinh1234
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlvolume:/var/opt/mssql
+    restart: always
+    networks:
+      - app-network
+
+volumes:
+  sqlvolume:
+
+networks:
+  app-network:
+    driver: bridge

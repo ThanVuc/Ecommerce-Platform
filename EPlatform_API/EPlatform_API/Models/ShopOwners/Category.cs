@@ -52,12 +52,12 @@ namespace EPlatform_API.Models.ShopOwners
             return parentCategories;
         }
     
-        public List<int> GetAllSubCategories(Category category = null)
+        public List<int> GetAllSubCategories(Category category)
         {
             List<int> subCategoryIds = new List<int>();
             Queue<Category> queue = new Queue<Category>();
-            queue.Enqueue(this);
-            subCategoryIds.Add(this.CategoryId);
+            queue.Enqueue(category);
+            subCategoryIds.Add(category.CategoryId);
             while (queue.Count > 0)
             {
                 Category currentCategory = queue.Dequeue();

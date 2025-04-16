@@ -25,7 +25,7 @@ var configuration = builder.Configuration;
 // Explicitly configure Kestrel to listen on port 5120 for HTTPS
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(5120, listenOptions => listenOptions.UseHttps()); // Bind to all interfaces()); // Bind to localhost
+    options.ListenAnyIP(80); // Bind to all interfaces()); // Bind to localhost
 });
 
 // Add services to the container.
@@ -62,10 +62,10 @@ services.AddSwaggerGen(option =>
 });
 
 // Configure HTTPS redirection
-builder.Services.AddHttpsRedirection(options =>
-{
-    options.HttpsPort = 5120;  // Port for HTTPS
-});
+// builder.Services.AddHttpsRedirection(options =>
+// {
+//     options.HttpsPort = 5120;  // Port for HTTPS
+// });
 
 // ConfigureApplicationCookie
 builder.Services.ConfigureApplicationCookie(options =>
@@ -139,7 +139,16 @@ services.AddSingleton<IRecurringJobManager, RecurringJobManager>();
 
 
 var app = builder.Build();
-app.UseHttpsRedirection();  
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();  // Redirect HTTP to HTTPS in development
+}
+else
+{
+
+}
+
 // Configure the HTTP request pipeline.
 // apply migrations to the database
 using (var scope = app.Services.CreateAsyncScope()){
@@ -153,8 +162,6 @@ using (var scope = app.Services.CreateAsyncScope()){
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
 
 app.UseRouting();
 
@@ -177,7 +184,7 @@ using (var scope = app.Services.CreateScope())
     );
 }
 
-app.MapHub<NotificationHub>("notificationHub");
+app.MapHub<NotificationHub>("api/notification-hub");
 
 app.MapControllers();
 

@@ -500,7 +500,9 @@ namespace EPlatform_API.Repository
 
                 if (categoryId != 0)
                 {
-                    var category = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId == categoryId);
+                    var category = await _context.Categories
+                    .Include(c => c.SubCategories)
+                    .FirstOrDefaultAsync(c => c.CategoryId == categoryId);
                     if (category == null)
                     {
                         return products;

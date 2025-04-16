@@ -130,7 +130,15 @@ namespace EPlatform_API.ExtensionMethods
                 options.AddPolicy("AllowAllCORS",
                 builder => {
                     builder
-                    .WithOrigins("http://localhost:4200", "https://localhost:4200")
+                    .WithOrigins("http://localhost:4200", 
+                    "https://localhost:4200", 
+                    "https://localhost:5120", 
+                    "https://eplatform.online", 
+                    "http://www.eplatform.online", 
+                    "https://eplatform.online", 
+                    "https://trans.eplatform.online",
+                    "https://api.eplatform.online"
+                    )
                     .SetIsOriginAllowedToAllowWildcardSubdomains()
                     .AllowAnyHeader()
                     .AllowAnyMethod()

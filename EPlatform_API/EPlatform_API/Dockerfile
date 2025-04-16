@@ -5,8 +5,7 @@ RUN apk add --no-cache icu-libs  # Install ICU for full globalization support
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 USER app
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 ARG BUILD_CONFIGURATION=Release
@@ -15,7 +14,7 @@ COPY ["EPlatform_API.csproj", "."]
 RUN dotnet restore "./EPlatform_API.csproj"
 
 COPY . .
-WORKDIR "/src/."
+WORKDIR /src/.
 RUN dotnet build "./EPlatform_API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
