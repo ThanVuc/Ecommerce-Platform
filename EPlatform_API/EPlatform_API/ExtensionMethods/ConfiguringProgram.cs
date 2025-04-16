@@ -129,24 +129,16 @@ namespace EPlatform_API.ExtensionMethods
             services.AddCors(options => {
                 options.AddPolicy("AllowAllCORS",
                 builder => {
-                    Console.WriteLine("Origin: " + builder.ToString());
                     builder
-                    .SetIsOriginAllowed(origin => {
-                            Console.WriteLine($"Origin: {origin}");
-                            if (string.IsNullOrEmpty(origin))
-                            {
-                                return false;
-                            }
-
-                            try
-                            {
-                                return new Uri(origin).Host.EndsWith("eplatform.online");
-                            }
-                            catch
-                            {
-                                return false;
-                            }
-                    })
+                    .WithOrigins("http://localhost:4200", 
+                    "https://localhost:4200", 
+                    "https://localhost:5120", 
+                    "https://eplatform.online", 
+                    "https://www.eplatform.online", 
+                    "https://eplatform.online", 
+                    "https://trans.eplatform.online",
+                    "https://api.eplatform.online"
+                    )
                     .SetIsOriginAllowedToAllowWildcardSubdomains()
                     .AllowAnyHeader()
                     .AllowAnyMethod()
