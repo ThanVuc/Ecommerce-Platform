@@ -150,6 +150,9 @@ namespace EPlatform_API.ExtensionMethods
 
         public static void ConfigRedisCatching(this IServiceCollection services, IConfiguration configuration){
             var redisConnectionString = configuration.GetConnectionString("Cloud_RedisDB");
+            if (string.IsNullOrEmpty(redisConnectionString)){
+                throw new Exception("The Redis Connection String of your system hasn't set yet!");
+            }
             ConfigurationOptions redisConfig = new ConfigurationOptions{
                 EndPoints = { {redisConnectionString, 19350} },
                 User = "default",
