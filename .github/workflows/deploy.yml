@@ -1,8 +1,4 @@
-name: Deploy App to VPS
-
-on:
-
-name: CI/CD Pipeline
+name: Deploy Ecommerce App
 
 on:
   push:
