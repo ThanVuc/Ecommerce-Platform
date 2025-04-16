@@ -16,7 +16,7 @@ jobs:
 
       - name: Create appsettings.json
         run: |
-          echo "${{ secrets.APPSETTINGS_JSON }}" > ./app/appsettings.Production.json
+          echo "${{ secrets.APPSETTINGS_PROD }}" > ./app/appsettings.Production.json
 
       # Step 2: Set up Docker Buildx (optional, for multi-platform builds)
       - name: Set up Docker Buildx
