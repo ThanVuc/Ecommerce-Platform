@@ -1,5 +1,6 @@
 services:
   api:
+    image: sinhnguyen417/ecommerce-platform-api:latest
     build:
       context: ./EPlatform_API/EPlatform_API
       dockerfile: ./Dockerfile
@@ -17,6 +18,7 @@ services:
     restart: always
 
   ui:
+    image: sinhnguyen417/ecommerce-platform-ui:latest
     build:
       context: ./EPlatform_UI
       dockerfile: ./Dockerfile
