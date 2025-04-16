@@ -17,7 +17,7 @@ jobs:
       - name: Create appsettings.json
         run: |
           echo "${{ secrets.APPSETTINGS_PROD }}" > encoded_file.txt
-          base64 -d -i encoded_file.txt > appsettings.Production.json
+          base64 -d -i encoded_file.txt > appsettings.json
           rm encoded_file.txt
 
       # Step 2: Set up Docker Buildx (optional, for multi-platform builds)
