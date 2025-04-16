@@ -61,13 +61,13 @@ jobs:
           port: 22
           script: |
             # Go to the directory where your app's Docker Compose file is located
-            cd /home/debian/your-app-directory
+            cd /home/debian/
 
             # Pull the latest images from Docker Hub (useful if you pushed the new images)
-            docker-compose pull
+            docker compose pull
 
             # Shut down the existing containers
-            docker-compose down
+            docker compose down
 
             # Start the containers with the updated images
-            docker-compose up -d
+            docker compose up -d
