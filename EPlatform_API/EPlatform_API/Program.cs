@@ -22,7 +22,6 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-// Explicitly configure Kestrel to listen on port 5120 for HTTPS
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(80); // Bind to all interfaces()); // Bind to localhost

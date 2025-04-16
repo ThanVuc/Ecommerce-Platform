@@ -13,7 +13,7 @@
 **/obj/
 
 # Ignore EntityFramework migrations metadata
-/EntityFrameworkMigrationsHistory
+# /EntityFrameworkMigrationsHistory
 
 # Ignore *.user files
 *.user
@@ -22,4 +22,4 @@
 # Exclude appsettings files
 **/appsettings*.json
 # Exclude launchSettings files
-**/launchSettings*.json
+# **/launchSettings*.json
