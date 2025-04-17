@@ -51,20 +51,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup SSH Key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.VPS_IP }} >> ~/.ssh/known_hosts
-
-      # Step 2: Upload nginx folder and docker-compose.yml to VPS
-      - name: Copy docker-compose.yml ansd Nginx folder to VPS
-        run: |
-          scp -i ~/.ssh/id_rsa docker-compose.yml ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:/home/${{ secrets.VPS_USER }}/
-          scp -i ~/.ssh/id_rsa -r ./nginx ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:/home/${{ secrets.VPS_USER }}/
-
-      # Step 3: SSH to VPS and deploy
+      # Step 2: SSH to VPS and deploy
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v0.1.7
         with:
