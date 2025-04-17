@@ -51,7 +51,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: SSH to VPS and deploy
+            # Step 2: Upload nginx folder and docker-compose.yml to VPS
+      - name: Upload nginx and docker-compose.yml
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          source: |
+            ./nginx/
+            ./docker-compose.yml
+          target: /home/debian/
+
+      # Step 3: SSH to VPS and deploy
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v0.1.7
         with:
