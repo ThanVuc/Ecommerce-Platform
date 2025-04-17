@@ -61,8 +61,8 @@ jobs:
       # Step 2: Upload nginx folder and docker-compose.yml to VPS
       - name: Copy docker-compose.yml ansd Nginx folder to VPS
         run: |
-          scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:/home/debian/
-          scp -r -o StrictHostKeyChecking=no ./nginx ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:/home/debian/
+          scp -i ~/.ssh/id_rsa docker-compose.yml ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:/home/${{ secrets.VPS_USER }}/
+          scp -i ~/.ssh/id_rsa -r ./nginx ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:/home/${{ secrets.VPS_USER }}/
 
       # Step 3: SSH to VPS and deploy
       - name: Deploy via SSH
