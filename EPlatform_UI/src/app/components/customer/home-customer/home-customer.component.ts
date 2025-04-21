@@ -17,10 +17,13 @@ import { firstValueFrom } from 'rxjs';
 
 export class HomeCustomerComponent implements OnInit {
   async ngOnInit(): Promise<void> {
-    await this.isAuthenticated();
-    this.getCategoriesInHome();
-    this.getHotProduct();
-    this.getProductTodaySuggestions();
+    try {
+      await this.isAuthenticated();
+    } finally {
+      this.getCategoriesInHome();
+      this.getHotProduct();
+      this.getProductTodaySuggestions();
+    }
   }
 
   productSVC = inject(ProductService);
