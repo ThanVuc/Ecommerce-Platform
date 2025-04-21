@@ -18,6 +18,7 @@ import { firstValueFrom } from 'rxjs';
 export class HomeCustomerComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     try {
+      console.log("Trigger ng onInit in HomeCustomerComponent");
       await this.isAuthenticated();
     } finally {
       this.getCategoriesInHome();
