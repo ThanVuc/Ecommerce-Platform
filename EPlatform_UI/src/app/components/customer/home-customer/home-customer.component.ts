@@ -64,6 +64,7 @@ export class HomeCustomerComponent implements OnInit {
   }
 
   getHotProduct() {
+    console.log("getHotProduct");
     this.productSVC.getHotProducts().subscribe({
       next: res => {
         this.productHandler.products = res.data;
@@ -91,6 +92,7 @@ export class HomeCustomerComponent implements OnInit {
   }
 
   getProductTodaySuggestions() {
+    console.log("getProductTodaySuggestions");
     this.productSVC.getProductTodaySuggestions().subscribe({
       next: res => {
         this.productTodaySuggestions = res.data;
