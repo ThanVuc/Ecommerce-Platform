@@ -24,14 +24,15 @@ export class ProductService {
   }
 
   getHotProducts() : Observable<ApiResModel<ProductBriefModel[]>> {
+    console.log("Get hot products from API");
     return this.http.get<ApiResModel<ProductBriefModel[]>>(environment.HotProduct, {
-      headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+      headers: { 'Cache-Control': 'no-cache' }
     });
   }
 
   getProductTodaySuggestions() : Observable<ApiResModel<ProductBriefModel[]>> {
     return this.http.get<ApiResModel<ProductBriefModel[]>>(environment.TodaySuggestion, {
-      headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+      headers: { 'Cache-Control': 'no-cache' }
     });
   }
 

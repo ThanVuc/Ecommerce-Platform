@@ -37,10 +37,7 @@ export const routes: Routes = [
             },
             {
                 path: 'home',
-                loadComponent() {
-                    return import('./components/customer/home-customer/home-customer.component')
-                    .then(hc => hc.HomeCustomerComponent)
-                },
+                component: HomeCustomerComponent,
             },
             {
                 path: 'products/:product_slug',
