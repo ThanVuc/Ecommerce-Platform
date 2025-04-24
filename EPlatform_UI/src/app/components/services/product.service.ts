@@ -24,11 +24,15 @@ export class ProductService {
   }
 
   getHotProducts() : Observable<ApiResModel<ProductBriefModel[]>> {
-    return this.http.get<ApiResModel<ProductBriefModel[]>>(environment.HotProduct);
+    return this.http.get<ApiResModel<ProductBriefModel[]>>(environment.HotProduct, {
+      headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+    });
   }
 
   getProductTodaySuggestions() : Observable<ApiResModel<ProductBriefModel[]>> {
-    return this.http.get<ApiResModel<ProductBriefModel[]>>(environment.TodaySuggestion);
+    return this.http.get<ApiResModel<ProductBriefModel[]>>(environment.TodaySuggestion, {
+      headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+    });
   }
 
   getProductDetail(productId: number) : Observable<ApiResModel<ProductDetailModel>> {

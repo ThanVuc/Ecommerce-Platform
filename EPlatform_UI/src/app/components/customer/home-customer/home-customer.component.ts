@@ -17,10 +17,12 @@ import { firstValueFrom } from 'rxjs';
 
 export class HomeCustomerComponent implements OnInit {
   async ngOnInit(): Promise<void> {
+    console.log('ngOnInit called');
     try {
       console.log("Trigger ng onInit in HomeCustomerComponent");
       await this.isAuthenticated();
     } finally {
+      console.log('Calling methods after authentication');
       this.getCategoriesInHome();
       this.getHotProduct();
       this.getProductTodaySuggestions();
@@ -65,13 +67,14 @@ export class HomeCustomerComponent implements OnInit {
   }
 
   getHotProduct() {
-    console.log("getHotProduct");
+    console.log('Fetching hot products...');
     this.productSVC.getHotProducts().subscribe({
       next: res => {
+        console.log('Hot products fetched:', res.data);
         this.productHandler.products = res.data;
       },
       error: err => {
-        console.log(err);
+        console.error('Error fetching categories:', err);
       }
     });
   }
