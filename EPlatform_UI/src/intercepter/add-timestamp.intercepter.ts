@@ -4,7 +4,7 @@ import { inject } from '@angular/core';
 import { ɵparseCookieValue } from '@angular/common';
 
 export const addTimeStampIntercepter: HttpInterceptorFn = (req, next) => {
-    if (req.method !== 'GET') {
+    if (req.method === 'GET') {
         req = req.clone({
             setHeaders: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' },
             params: req.params.append('timestamp', Date.now().toString())
