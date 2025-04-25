@@ -1,7 +1,7 @@
-export const domain = "https://api.eplatform.online/api/v1/";
-export const domainHub = "https://api.eplatform.online/";
-// export const domain = "http://localhost/api/v1/";
-// export const domainHub = "http://localhost/";
+// export const domain = "https://api.eplatform.online/api/v1/";
+// export const domainHub = "https://api.eplatform.online/";
+export const domain = "http://localhost/api/v1/";
+export const domainHub = "http://localhost/";
 
 export const environment = {
     SignUpAPI: domain + "auth/register",

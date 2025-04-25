@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(),
     provideHttpClient(
       withFetch(), 
-      withInterceptors([addJwtInterceptor, addJwtInterceptor]),
+      withInterceptors([addJwtInterceptor, addTimeStampIntercepter]),
       withInterceptorsFromDi()
     ),
     {provide: HTTP_INTERCEPTORS, useClass: HandleErrService, multi: true},

@@ -10,5 +10,3 @@ export const addTimeStampIntercepter: HttpInterceptorFn = (req, next) => {
     });
     return next(req);
 };
-
-export const IS_PUBLIC = new HttpContextToken(() => false);
