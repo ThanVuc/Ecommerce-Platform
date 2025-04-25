@@ -130,7 +130,7 @@ namespace EPlatform_API.Services
                 HttpOnly = true,
                 // access token will be expired before cookies deleted, assign the same time with refresh token
                 // to avoid the access token will be deleted when refresh token is still valid
-                Expires = DateTimeOffset.UtcNow.AddMinutes(jwtSettings.RefreshTokenExpiryDays),
+                Expires = DateTimeOffset.UtcNow.AddDays(jwtSettings.RefreshTokenExpiryDays),
                 Secure = true,
                 SameSite = SameSiteMode.None,
                 Path = "/"
