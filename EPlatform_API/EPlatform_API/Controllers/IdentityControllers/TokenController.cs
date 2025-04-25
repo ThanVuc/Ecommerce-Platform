@@ -149,8 +149,15 @@ namespace EPlatform_API.Controllers.Identity
         [HttpPost("check-authenticated-and-refresh"), Authorize]
         public async Task<IActionResult> IsAuthenticatedAndRefresh(){
             try {
-                var accessToken = HttpContext.Request.Cookies["access_Token"];
-                if (await _tokenService.IsTokenExpired(accessToken) || string.IsNullOrEmpty(accessToken)){
+                var accessToken = HttpContext.Request.Cookies["access_token"];
+                if (string.IsNullOrEmpty(accessToken)){
+                    return Unauthorized(new ApiResponseStandard<object>
+                    {
+                        Status = 401,
+                        Message = "Access Token does not exist"
+                    });
+                }
+                if (await _tokenService.IsTokenExpired(accessToken)){
                     try {
                         await _tokenService.RefreshExpiredToken(accessToken, HttpContext, _redisServices, _userManager);
                     } catch (Exception e) {
