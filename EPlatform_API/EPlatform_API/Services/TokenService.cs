@@ -149,8 +149,8 @@ namespace EPlatform_API.Services
     
         public async Task RefreshExpiredToken(string token, HttpContext context, RedisServices redisServices, UserManager<AppUser> userManager)
         {
-            var accessToken = context.Request.Cookies["access_Token"];
-            var refreshToken = context.Request.Cookies["refresh_Token"];
+            var accessToken = context.Request.Cookies["access_token"];
+            var refreshToken = context.Request.Cookies["refresh_token"];
             if (accessToken == null){
                 throw new UnauthorizedAccessException("Access Token doen not Exist");
             }
