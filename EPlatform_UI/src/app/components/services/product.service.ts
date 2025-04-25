@@ -20,22 +20,16 @@ export class ProductService {
   constructor(private http: HttpClient) { }
 
   getCategoriesInHome() : Observable<ApiResModel<RootCategoryModel[]>> {
-    return this.http.get<ApiResModel<RootCategoryModel[]>>(environment.getCategoriesInHome+`?timestamp=${Date.now()}`, {
-      headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
-    });
+    return this.http.get<ApiResModel<RootCategoryModel[]>>(environment.getCategoriesInHome);
   }
 
   getHotProducts() : Observable<ApiResModel<ProductBriefModel[]>> {
     console.log("Get hot products from API");
-    return this.http.get<ApiResModel<ProductBriefModel[]>>(environment.HotProduct, {
-      headers: { 'Cache-Control': 'no-cache' }
-    });
+    return this.http.get<ApiResModel<ProductBriefModel[]>>(environment.HotProduct);
   }
 
   getProductTodaySuggestions() : Observable<ApiResModel<ProductBriefModel[]>> {
-    return this.http.get<ApiResModel<ProductBriefModel[]>>(environment.TodaySuggestion, {
-      headers: { 'Cache-Control': 'no-cache' }
-    });
+    return this.http.get<ApiResModel<ProductBriefModel[]>>(environment.TodaySuggestion);
   }
 
   getProductDetail(productId: number) : Observable<ApiResModel<ProductDetailModel>> {
