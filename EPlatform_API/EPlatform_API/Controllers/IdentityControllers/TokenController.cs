@@ -146,7 +146,7 @@ namespace EPlatform_API.Controllers.Identity
             }
         }
 
-        [HttpPost("check-authenticated-and-refresh"), Authorize]
+        [HttpPost("check-authenticated-and-refresh")]
         public async Task<IActionResult> IsAuthenticatedAndRefresh(){
             try {
                 var accessToken = HttpContext.Request.Cookies["access_token"];

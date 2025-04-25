@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanActivateFn, GuardResult, MaybeAsync, Router, RouterStateSnapshot } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { catchError, Observable, of } from 'rxjs';
+import { catchError, firstValueFrom, Observable, of } from 'rxjs';
 import { LocalStorageService } from '../app/components/services/local-storage.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { JwtTokenModel } from '../app/components/auth/models/JwtTokenModel';
@@ -31,23 +31,15 @@ export class AuthGuard implements CanActivate{
 
   private async tryRefreshToken(): Promise<boolean> {
     try {
-      const refreshRes = await new Promise<boolean>((resolve, reject) => {
-        this.authSVC.IsAuthenticatedOrRefresh().subscribe({
-          next: (res) => {
-            if (res.status == 200) {
-              resolve(res.data);
-            } else {
-              reject(res.message);
-            }
-          },
-          error: (err) => {
-            reject(err);
-          }
-        });
-      });
-      return refreshRes;
+      const res = await firstValueFrom(this.authSVC.IsAuthenticatedOrRefresh());
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        console.error("Token refresh failed:", res.message);
+        return false;
+      }
     } catch (error) {
-      console.error("Error refreshing token: ", error);
+      console.error("Error refreshing token:", error);
       return false;
     }
   }

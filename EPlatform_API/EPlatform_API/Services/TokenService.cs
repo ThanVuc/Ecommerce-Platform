@@ -156,7 +156,7 @@ namespace EPlatform_API.Services
             }
 
             var principle = GetPrincipalFromExpiredToken(accessToken);
-            var userId = principle.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var userId = principle.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             var currentRefreshKey = _configuration["JWT:RefreshKey"] + userId;
             string currentRefreshToken = await redisServices.GetString(currentRefreshKey);
